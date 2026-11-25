@@ -1,0 +1,4 @@
+[
+  { "id": "L001", "book": "Il nome della rosa", "lentBy": "Tommi", "borrowedBy": "Marco", "dateLent": "15/09/2026" },
+  { "id": "L002", "book": "1984", "lentBy": "Papà", "borrowedBy": "Luisa", "dateLent": "01/10/2026" }
+]

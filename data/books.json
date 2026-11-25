@@ -1,0 +1,14 @@
+[
+  { "t": "Il nome della rosa", "a": "Umberto Eco", "l": "Libreria legno - mansarda" },
+  { "t": "Se questo è un uomo", "a": "Primo Levi", "l": "Cubotti - mansarda" },
+  { "t": "The Hobbit", "a": "J.R.R. Tolkien", "l": "Libreria - scala", "lang": "English", "h": "Tommi" },
+  { "t": "Harry Potter and the Philosopher's Stone", "a": "J.K. Rowling", "l": "Cubotti - cameretta piccoli", "lang": "English", "h": "Ale" },
+  { "t": "Cent'anni di solitudine", "a": "Gabriel García Márquez", "l": "Libreria bianca - mansarda", "lang": "Spanish" },
+  { "t": "Momo", "a": "Michael Ende", "l": "Mensola - cameretta grandi", "lang": "German" },
+  { "t": "Pinocchio", "a": "Carlo Collodi", "l": "Mensola - letto Ale" },
+  { "t": "Il piccolo principe", "a": "Antoine de Saint-Exupéry", "l": "Cubotti - cameretta grandi" },
+  { "t": "1984", "a": "George Orwell", "l": "Libreria bianca - cameretta piccoli", "lang": "English" },
+  { "t": "Don Chisciotte della Mancia", "a": "Miguel de Cervantes", "l": "Libreria legno - mansarda", "lang": "Spanish", "h": "Papà" },
+  { "t": "Le avventure di Pinocchio", "a": "Carlo Collodi", "l": "Cubotti - mansarda", "h": "Checco" },
+  { "t": "Il barone rampante", "a": "Italo Calvino", "l": "Libreria - scala", "h": "Vitto" }
+]
