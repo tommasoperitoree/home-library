@@ -28,18 +28,27 @@ function doGet(e) {
     });
   }
 
+  if (action === 'debug') {
+    const booksSheet = ss.getSheetByName('Books');
+    const loansSheet = ss.getSheetByName('Loans');
+    return jsonResponse({
+      booksHeaderRaw: booksSheet ? booksSheet.getDataRange().getValues()[0] : null,
+      loansHeaderRaw: loansSheet ? loansSheet.getDataRange().getValues()[0] : null,
+    });
+  }
+
   return jsonResponse({ error: 'unknown action' });
 }
 
 function parseBooks(sheet) {
   if (!sheet) return [];
   const rows = sheet.getDataRange().getValues();
-  const header = rows.shift().map((h) => String(h).trim().toLowerCase());
+  const header = rows.shift().map(normalizeHeaderKey);
 
   const idx = {
     title: header.indexOf('title'),
     author: header.indexOf('author'),
-    shelf: header.indexOf('library/shelf'),
+    shelf: header.indexOf('libraryshelf'),
     language: header.indexOf('language'),
     heldBy: header.indexOf('heldby'),
   };
@@ -72,7 +81,7 @@ function parseBooks(sheet) {
 function parseLoans(sheet) {
   if (!sheet) return [];
   const rows = sheet.getDataRange().getValues();
-  const header = rows.shift().map((h) => String(h).trim().toLowerCase());
+  const header = rows.shift().map(normalizeHeaderKey);
 
   const idx = {
     id: header.indexOf('id'),
@@ -96,6 +105,12 @@ function parseLoans(sheet) {
     });
   }
   return loans;
+}
+
+// Strips spaces/punctuation so header variants like "Library/Shelf",
+// "Library / Shelf" or "library-shelf" all match the same lookup key.
+function normalizeHeaderKey(h) {
+  return String(h).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
 function normalizeLanguage(raw) {

@@ -6,7 +6,8 @@
 //   window.APPS_SCRIPT_URL = 'https://script.google.com/macros/s/XXXX/exec';
 
 export const APPS_SCRIPT_URL =
-  window.APPS_SCRIPT_URL || 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+  window.APPS_SCRIPT_URL ||
+  'https://script.google.com/macros/s/AKfycbwLQtleZ5vkGoxp9N_3UsejNOIAlzVv6Hw_9u5pY6t4vhKXIWVJ1BX-aZm1ygC-mcJz/exec';
 
 export const CACHE_KEY = 'hl_cache_v1';
 export const SELECTED_MEMBER_KEY = 'hl_selected_member';
