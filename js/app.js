@@ -1,9 +1,12 @@
 import {
   MEMBERS,
+  SHELVES,
+  LANGUAGES,
   loadLibraryData,
   getSelectedMember,
   setSelectedMember,
   bookLangCode,
+  addBook,
 } from './data.js';
 import {
   renderMemberGrid,
@@ -147,9 +150,15 @@ function filteredCatalogBooks() {
   });
 }
 
+const LANG_CODE_TO_NAME = { EN: 'English', ES: 'Spanish', DE: 'German' };
+
 function renderTabCatalogo() {
   const panel = panels.catalogo;
   panel.innerHTML = '';
+
+  const addBookSection = el('div');
+  panel.appendChild(addBookSection);
+  renderAddBookToggle(addBookSection);
 
   const searchBox = el('div', { className: 'search-box' });
   const searchInput = el('input', {
@@ -190,6 +199,105 @@ function renderTabCatalogo() {
   panel.appendChild(el('div', { attrs: { id: 'catalog-load-more' } }));
 
   renderCatalogResults();
+}
+
+function renderAddBookToggle(container) {
+  container.innerHTML = '';
+  container.appendChild(
+    el('button', {
+      className: 'add-book-toggle',
+      text: '+ Aggiungi libro',
+      onClick: () => renderAddBookForm(container),
+    })
+  );
+}
+
+function renderAddBookForm(container) {
+  container.innerHTML = '';
+
+  const titleInput = el('input', { className: 'form-input', attrs: { type: 'text', placeholder: 'Titolo *' } });
+  const authorInput = el('input', { className: 'form-input', attrs: { type: 'text', placeholder: 'Autore' } });
+  const isbnInput = el('input', { className: 'form-input', attrs: { type: 'text', placeholder: 'ISBN (opzionale)' } });
+
+  const shelfSelect = el('select', { className: 'form-select' }, [
+    el('option', { text: 'Scaffale (opzionale)', attrs: { value: '' } }),
+    ...SHELVES.map((s) => el('option', { text: s.label, attrs: { value: s.key } })),
+  ]);
+
+  const langSelect = el('select', { className: 'form-select' }, [
+    el('option', { text: 'Italiano (default)', attrs: { value: '' } }),
+    ...LANGUAGES.filter((l) => l.key !== 'IT').map((l) => el('option', { text: l.label, attrs: { value: l.key } })),
+  ]);
+
+  const message = el('div', { className: 'form-message' });
+
+  const cancelBtn = el('button', {
+    className: 'btn-secondary',
+    text: 'Annulla',
+    onClick: () => renderAddBookToggle(container),
+  });
+
+  const submitBtn = el('button', { className: 'btn-primary', text: 'Aggiungi' });
+  submitBtn.addEventListener('click', async () => {
+    const title = titleInput.value.trim();
+    if (!title) {
+      message.textContent = 'Il titolo è obbligatorio.';
+      message.className = 'form-message error';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Aggiungo…';
+    message.textContent = '';
+
+    const author = authorInput.value.trim();
+    const shelf = shelfSelect.value;
+    const langCode = langSelect.value;
+    const langName = LANG_CODE_TO_NAME[langCode] || '';
+
+    try {
+      await addBook({
+        title,
+        author,
+        shelf,
+        language: langName,
+        isbn: isbnInput.value.trim(),
+      });
+
+      // Optimistic local update so it shows up in Catalogo immediately,
+      // ahead of the next full refetch from the sheet.
+      const newBook = { t: title, a: author };
+      if (shelf) newBook.l = shelf;
+      if (langName) newBook.lang = langName;
+      state.books.push(newBook);
+
+      message.textContent = `"${title}" aggiunto.`;
+      message.className = 'form-message success';
+      setTimeout(() => {
+        renderAddBookToggle(container);
+        renderCatalogResults();
+      }, 900);
+    } catch (err) {
+      message.textContent = `Errore: ${err.message}`;
+      message.className = 'form-message error';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Aggiungi';
+    }
+  });
+
+  container.appendChild(
+    el('div', { className: 'add-book-form' }, [
+      el('h3', { text: 'Nuovo libro' }),
+      el('div', { className: 'form-row' }, [titleInput]),
+      el('div', { className: 'form-row' }, [authorInput]),
+      el('div', { className: 'form-row' }, [shelfSelect]),
+      el('div', { className: 'form-row' }, [langSelect]),
+      el('div', { className: 'form-row' }, [isbnInput]),
+      message,
+      el('div', { className: 'form-actions' }, [submitBtn, cancelBtn]),
+    ])
+  );
+  titleInput.focus();
 }
 
 function renderCatalogResults() {

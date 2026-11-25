@@ -9,6 +9,13 @@ export const APPS_SCRIPT_URL =
   window.APPS_SCRIPT_URL ||
   'https://script.google.com/macros/s/AKfycbwLQtleZ5vkGoxp9N_3UsejNOIAlzVv6Hw_9u5pY6t4vhKXIWVJ1BX-aZm1ygC-mcJz/exec';
 
+// WRITE_TOKEN gates write actions (addBook, …) and must match the
+// `WRITE_TOKEN` script property set in the Apps Script project. Set it via
+// `js/config.js` (gitignored): window.WRITE_TOKEN = '...'. Note this only
+// deters casual abuse of the bare endpoint — it ships in the public client
+// bundle, so it is not real secrecy. See FEATURES.md.
+export const WRITE_TOKEN = window.WRITE_TOKEN || '';
+
 export const CACHE_KEY = 'hl_cache_v1';
 export const SELECTED_MEMBER_KEY = 'hl_selected_member';
 
@@ -104,6 +111,27 @@ export async function loadLibraryData() {
     if (cached) return cached;
     return fetchFromBundledFallback();
   }
+}
+
+/**
+ * Add a book via the Apps Script write endpoint.
+ * @param {{title: string, author?: string, shelf?: string, language?: string,
+ *   isbn?: string, publisher?: string, year?: string|number, coverUrl?: string,
+ *   subjects?: string, heldBy?: string}} fields
+ * @returns {Promise<{ok: true, row: number}>}
+ */
+export async function addBook(fields) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    // text/plain avoids a CORS preflight, which Apps Script web apps don't
+    // handle; the body itself is still JSON and parsed as such server-side.
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action: 'addBook', token: WRITE_TOKEN, ...fields }),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
 }
 
 export function getSelectedMember() {

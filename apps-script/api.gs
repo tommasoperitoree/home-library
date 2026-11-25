@@ -46,6 +46,78 @@ function doGet(e) {
   return jsonResponse({ error: 'unknown action' });
 }
 
+// Write endpoint. Body must be JSON (sent as Content-Type: text/plain from
+// the browser to avoid a CORS preflight, which Apps Script web apps can't
+// handle) with shape { action, token, ...actionFields }.
+//
+// Set the shared token in Project Settings → Script Properties → WRITE_TOKEN.
+// Note: since this script's source and the webapp's client JS are both
+// public, this token only deters casual/bot abuse of the bare URL — it is
+// not a substitute for real per-user auth.
+function doPost(e) {
+  let payload;
+  try {
+    payload = JSON.parse(e.postData.contents);
+  } catch (err) {
+    return jsonResponse({ error: 'invalid JSON body' });
+  }
+
+  if (!checkToken(payload.token)) {
+    return jsonResponse({ error: 'unauthorized' });
+  }
+
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+
+  if (payload.action === 'addBook') {
+    return handleAddBook(ss, payload);
+  }
+
+  return jsonResponse({ error: 'unknown action' });
+}
+
+function checkToken(token) {
+  const expected = PropertiesService.getScriptProperties().getProperty('WRITE_TOKEN');
+  return !!expected && token === expected;
+}
+
+function handleAddBook(ss, payload) {
+  const sheet = ss.getSheetByName('Books');
+  if (!sheet) return jsonResponse({ error: 'Books sheet not found' });
+
+  const title = String(payload.title || '').trim();
+  if (!title) return jsonResponse({ error: 'title is required' });
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const headerRaw = sheet.getDataRange().getValues()[0];
+    const header = headerRaw.map(normalizeHeaderKey);
+    const row = new Array(headerRaw.length).fill('');
+
+    const setByKey = (key, value) => {
+      const i = header.indexOf(key);
+      if (i >= 0 && value !== undefined && value !== null && value !== '') row[i] = value;
+    };
+
+    setByKey('title', title);
+    setByKey('author', payload.author || '');
+    setByKey('library', payload.shelf || '');
+    setByKey('language', payload.language || '');
+    setByKey('isbn', payload.isbn || '');
+    setByKey('publisher', payload.publisher || '');
+    setByKey('year', payload.year || '');
+    setByKey('coverurl', payload.coverUrl || '');
+    setByKey('subjects', payload.subjects || '');
+    setByKey('heldby', payload.heldBy || '');
+    setByKey('scannedtime', new Date());
+
+    sheet.appendRow(row);
+    return jsonResponse({ ok: true, row: sheet.getLastRow() });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
 function parseBooks(sheet) {
   if (!sheet) return [];
   const rows = sheet.getDataRange().getValues();
