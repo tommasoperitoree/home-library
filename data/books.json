@@ -1,14 +1,5446 @@
 [
-  { "t": "Il nome della rosa", "a": "Umberto Eco", "l": "Libreria legno - mansarda" },
-  { "t": "Se questo è un uomo", "a": "Primo Levi", "l": "Cubotti - mansarda" },
-  { "t": "The Hobbit", "a": "J.R.R. Tolkien", "l": "Libreria - scala", "lang": "English", "h": "Tommi" },
-  { "t": "Harry Potter and the Philosopher's Stone", "a": "J.K. Rowling", "l": "Cubotti - cameretta piccoli", "lang": "English", "h": "Ale" },
-  { "t": "Cent'anni di solitudine", "a": "Gabriel García Márquez", "l": "Libreria bianca - mansarda", "lang": "Spanish" },
-  { "t": "Momo", "a": "Michael Ende", "l": "Mensola - cameretta grandi", "lang": "German" },
-  { "t": "Pinocchio", "a": "Carlo Collodi", "l": "Mensola - letto Ale" },
-  { "t": "Il piccolo principe", "a": "Antoine de Saint-Exupéry", "l": "Cubotti - cameretta grandi" },
-  { "t": "1984", "a": "George Orwell", "l": "Libreria bianca - cameretta piccoli", "lang": "English" },
-  { "t": "Don Chisciotte della Mancia", "a": "Miguel de Cervantes", "l": "Libreria legno - mansarda", "lang": "Spanish", "h": "Papà" },
-  { "t": "Le avventure di Pinocchio", "a": "Carlo Collodi", "l": "Cubotti - mansarda", "h": "Checco" },
-  { "t": "Il barone rampante", "a": "Italo Calvino", "l": "Libreria - scala", "h": "Vitto" }
+  {
+    "t": "L'origine del sublime",
+    "a": "Fabio Rosini",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Delitto e castigo",
+    "a": "Fëdor Dostoevskij",
+    "h": "Tommi"
+  },
+  {
+    "t": "Castità : la riconciliazione dei sensi",
+    "a": "Erik Varden",
+    "h": "Tommi"
+  },
+  {
+    "t": "Confessioni",
+    "a": "Sant'Agostino",
+    "h": "Mamma"
+  },
+  {
+    "t": "C'è speranza? : il fascino della scoperta",
+    "a": "Julián Carrón",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "L'incontro che accende la speranza",
+    "a": "Luigi Giussani",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "De la piedra al Maestro",
+    "a": "Etsuro Sotoo",
+    "l": "Libreria legno - mansarda",
+    "lang": "Spanish"
+  },
+  {
+    "t": "Gesù di Nazaret. 2 parte: Dall'ingresso in Gerusalemme fino alla risurrezione",
+    "a": "Papa Benedetto XVI",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La notte",
+    "a": "Elie Wiesel",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il sorriso delle campane di Nagasaki : [il racconto degli anni vissuti accanto al padre Takashi Nagai dopo il 9 agosto 1945]",
+    "a": "Makoto Nagai",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il ragazzo con la cetra",
+    "a": "Ezio Savino",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Bravo, burro!",
+    "a": "John Fante, Rudolph Borchert",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Assassinio sull'Orient-Express",
+    "a": "Agatha Christie",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "I fratelli Cuordileone",
+    "a": "Astrid Lindgren",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "L'intensità dell'istante",
+    "a": "Simone Riva",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Ho fatto tutto per essere felice : Enzo Piccinini, storia di un insolito chirurgo",
+    "a": "Marco Bardazzi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La mia prima fine del mondo",
+    "a": "Emanuele Fant",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "L'ultimo lenzuolo bianco",
+    "a": "Farhad Bitani",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Danny l'eletto",
+    "a": "Chaim Potok",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "L' isola del muto",
+    "a": "Guido Sgardoli",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "fame d'aria",
+    "a": "Daniele Mencarelli",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Aiuto, Poirot",
+    "a": "Agatha Christie",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il buio oltre la siepe",
+    "a": "Harper Lee",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Enrico Fermi e i secchi della Sora Cesarina",
+    "a": "Fabio Cardone, Roberto Mignani",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Gathering Blue",
+    "a": "Lois Lowry",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Cose che nessuno sa",
+    "a": "Alessandro D'Avenia",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Gli occhi del drago",
+    "a": "Stephen King",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La chiave segreta per l'universo",
+    "a": "Lucy Hawking",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La paranza dei bambini",
+    "a": "Roberto Saviano",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il cacciatore di aquiloni",
+    "a": "Khaled Hosseini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Auggie & me ; Pluto ;  Shingaling : three wonder stories : The Julian chapter",
+    "a": "R. J. Palacio",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Contropiede : la vittoria e impossibile solo per chi non crede nei propri sogni",
+    "a": "Marco Pozza",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "L' uomo che fu Giovedì : un incubo",
+    "a": "Gilbert Keith Chesterton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La crepa e la luce : sulla strada del perdono : la mia storia",
+    "a": "Gemma Capra",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Fatti vivo",
+    "a": "Alberto Reggiori",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Govindo : il dono di Madre Teresa",
+    "a": "Marina Ricci",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La guerra dei like",
+    "a": "Alessia Cruciani",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "1984",
+    "a": "George Orwell",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il Gattopardo",
+    "a": "Giuseppe Tomasi di Lampedusa",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Giovanna la fanciulla guerriera",
+    "a": "Louis de Wohl",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Barzellette e battute sul Milan",
+    "a": "Zio Fester",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Creature impossibili",
+    "a": "Katherine Rundell",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "A viso scoperto : un mito rinarrato",
+    "a": "C. S. Lewis",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Harry Potter and the deathly hallows",
+    "a": "J. K. Rowling",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Harry Potter and the Half-Blood Prince",
+    "a": "J. K. Rowling",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "L' isola del tesoro",
+    "a": "Robert Louis Stevenson",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Apeirogon",
+    "a": "Colum McCann",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il potere e la gloria",
+    "a": "Graham Greene",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "L'alba delle torri",
+    "a": "Francesco Fadigati",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Harry Potter e il principe mezzosangue : romanzo",
+    "a": "J. K. Rowling",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "I misteri di Ca' di sotto",
+    "a": "Elisa Salvaterra",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Io ho tutto : i 18 anni di Chiara Luce",
+    "a": "Michele Zanzucchi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Eccomi! : storia di una preghiera virale",
+    "a": "Alberto Del Grossi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il seme di Nasiriyah : Giuseppe Coletta il brigadiere dei bambini",
+    "a": "Lucia Bellaspiga",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Eluana, i fatti",
+    "a": "Lucia Bellaspiga",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Alice nel paese delle meraviglie",
+    "a": "Lewis Carroll",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Eneide Versione poetica di Cesare Vivaldi",
+    "a": "Virgilio",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "L' Eneide di Virgilio",
+    "a": "Virgilio",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Ero un bullo : la vera storia di Daniel Zaccaro",
+    "a": "Andrea Franzoso",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "I Regni del Fuoco. 2 La principessa perduta",
+    "a": "T. T. Sutherland",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "I Regni del Fuoco. 4 L' oscuro segreto",
+    "a": "T. T. Sutherland",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "I Regni del Fuoco. 3 Nel cuore della foresta",
+    "a": "T. T. Sutherland",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "I cavalieri della tavola rotonda",
+    "a": "Mino Milani",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il ponte di San Luis Rey",
+    "a": "Thornton Wilder",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "C'era una volta, ascolta",
+    "a": "Roberto Piumini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Canto di Natale",
+    "a": "Charles Dickens",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La bellezza ch'io vidi... la Divina Commedia e i mosaici di Ravenna",
+    "a": "Manuela Mambelli",
+    "l": "Libreria legno - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Ho paura anche io",
+    "a": "Angidemon",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Harry Potter and the philosopher's stone",
+    "a": "J. K. Rowling",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Harry Potter and the chamber of secrets",
+    "a": "J. K. Rowling",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "I problemi di matematica : difficoltà di comprensione e formulazione del testo",
+    "a": "Rosetta Zan",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Harry Potter and the prisoner of the Azkaban",
+    "a": "J. K. Rowling",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Harry Potter and the Goblet of Fire",
+    "a": "J. K. Rowling",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "La freccia nera : una storia delle due rose",
+    "a": "Robert Louis Stevenson",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Dophin Tale 2",
+    "a": "Gabrielle Reyes",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Bailey's Story. A dog's purpose novel",
+    "a": "W. Bruce Cameron",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Bears of the ice. The quest of the cubs",
+    "a": "Kathryn Lasky",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Escape from Mr. Lemoncello’s library",
+    "a": "Chris Grabenstein",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Boy - Tales Of Childhood",
+    "a": "Roald Dahl",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Dalla parte del desiderio : da una paternità un metodo nella cura",
+    "a": "Cesare Maria Cornaggia",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Harry Potter and the Order of the Phoenix",
+    "a": "J. K. Rowling",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Il giro del mondo in 80 giorni",
+    "a": "Jules Verne",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La boutique del mistero",
+    "a": "Dino Buzzati",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Ho fatto gol in Champions!",
+    "a": "Paolo Colombo",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "L' estate incantata",
+    "a": "Ray Bradbury",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il vento nei salici",
+    "a": "Kenneth Grahame",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Horizon",
+    "a": "Scott Westerfeld",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "La fune d'acciaio",
+    "a": "Katja Centomo",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Assassinio sull'Orient Express",
+    "a": "Agatha Christie",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il mastino dei Baskerville",
+    "a": "Arthur Conan Doyle",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La fattoria degli animali",
+    "a": "George Orwell",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il mistero di Anna : Ca’ Edimar: l’avventura della carità",
+    "a": "Mario Dupuis",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La casa sull'albero",
+    "a": "Bianca Pitzorno",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "L' arte di essere fragili : come Leopardi può salvarti la vita",
+    "a": "Alessandro D'Avenia",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Klincus Corteccia e la semprequercia parlante",
+    "a": "Alessandro Gatti",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Inkiostrik il mostro del calcio",
+    "a": "Ursel Scheffler",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il gufo che aveva paura del buio",
+    "a": "Jill Tomlinson",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "L'occhio di Horus",
+    "a": "Alain Surget",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il re dei viaggi Ulisse",
+    "a": "Roberto Piumini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Dietro la porta d'oro",
+    "a": "Pinin Carpi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il campione",
+    "a": "Mal Peet",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Cion Cion Blu",
+    "a": "Pinin Carpi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Da grande farò il calciatore",
+    "a": "Luigi Garlando",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La grande Gilly Hopkins",
+    "a": "Katherine Paterson",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Guida all'era glaciale",
+    "a": "Mary Pope Osborne",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il bambino Nelson Mandela",
+    "a": "Viviana Mazza",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La mia prima Enciclopedia",
+    "a": "Angela Wilkes",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il Papa che ama il calcio",
+    "a": "Michael Part",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Fuga sul Kenya : 17 giorni di libertà",
+    "a": "Felice Benuzzi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Fiore di roccia : romanzo",
+    "a": "Ilaria Tuti",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Essere padre oggi : un san Giuseppe per tempi postmoderni",
+    "a": "Fabrice Hadjadj",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Con un piede in paradiso : la sofferenza non è fine a sé stessa",
+    "a": "Luca Montini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Io non ho paura : la storia di Francesca Pedrazzini",
+    "a": "Davide Perillo",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Era veramente uomo : rivisitando la figura di Gesu nel Vangeli",
+    "a": "Bruno Maggioni",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La casa degli sguardi : romanzo",
+    "a": "Daniele Mencarelli",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il segreto del Bosco Vecchio",
+    "a": "Dino Buzzati",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Across Five Aprils",
+    "a": "Irene Hunt",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "La notte dei desideri, ovvero Il satanarchibugiardinfernalcolico Grog di Magog",
+    "a": "Michael Ende",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il vascello fantasma",
+    "a": "Alain Surget",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Caddie Woodlawn",
+    "a": "Carol Ryrie Brink",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "King of the wind : the story of the godolphin arabian",
+    "a": "Marguerite Henry",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Il mio amico Dante",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "L' isola del tesoro",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "I viaggi di Gulliver",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Decimo viaggio nel regno della fantasia",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La fabbrica di cioccolato",
+    "a": "Roald Dahl",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La fabbrica di cioccolato",
+    "a": "Roald Dahl",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "1",
+    "a": "Aquilino",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Bad Kitty vs Uncle Murray",
+    "a": "Nick Bruel",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Calcio d'inizio",
+    "a": "Luigi Garlando",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Calcio d'inizio",
+    "a": "Luigi Garlando",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Eragon",
+    "a": "Christopher Paolini",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "La cruna dell'ago",
+    "a": "Ken Follett",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "L'inverno del mondo. Century Trilogy II",
+    "a": "Ken Follett",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La caduta dei giganti. Century Trilogy I",
+    "a": "Ken Follett",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "I giorni dell'eternità. Century Trilogy III",
+    "a": "Ken Follett",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Dante Alighieri. Inferno. Commentato da Franco Nembrini. Illustrato da Gabriele Dell'Otto.",
+    "a": "Dante Alighieri, Franco Nembrini",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Dante Alighieri. Purgatorio. Commentato da Franco Nembrini. Illustrato da Gabriele Dell'Otto.",
+    "a": "Dante Alighieri, Franco Nembrini",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Dante Alighieri. Paradiso. Commentato da Franco Nembrini. Illustrato da Gabriele Dell'Otto.",
+    "a": "Dante Alighieri, Franco Nembrini",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Brama di vivere. Il romanzo di Van Hogh",
+    "a": "Irving Stone",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Fiabe e storie",
+    "a": "Hans Christian Andersen",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Fiabe italiane. Vol 1, 2, 3.",
+    "a": "Italo Calvino",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Hans Christian Andersen Tales",
+    "a": "Hans Christian Andersen",
+    "l": "Libreria legno - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Cambridge Essential english dictionary",
+    "a": "",
+    "l": "Libreria legno - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Dizionario Inglese. Collins Pocket",
+    "a": "Legoprint",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Dizionario Spagnolo",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il dizionario dei sinonimi e dei contrari",
+    "a": "Decio Cinti",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Fratellino",
+    "a": "Amets Arzallus Antia, Ibrahima Balde",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Come vento cucito alla terra",
+    "a": "Ilaria Tuti",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Giannis Antetokounmpo",
+    "a": "Daniele Fantini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "L'albero della vita",
+    "a": "Louis de Wohl",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Dizionario Spagnolo",
+    "a": "",
+    "l": "Libreria legno - mansarda",
+    "lang": "Spanish"
+  },
+  {
+    "t": "La librazione del gigante",
+    "a": "Louis de Wohl",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La mia natura è il fuoco. Vita di Caterina da Siena.",
+    "a": "Louis de Wohl",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il filo d'oro. Il racconto della vita di Ignazio di Loyola.",
+    "a": "Louis de Wohl",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Fondata sulla pietra. Una storia della Chiesa Cattolica.",
+    "a": "Louis de Wohl",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Attila : la tempesta dall'Oriente",
+    "a": "Louis de Wohl",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Giuliano. L'imperatore apostata",
+    "a": "Louis de Wohl",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Davide di Gerusalemme",
+    "a": "Louis de Wohl",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La lancia di Longino: la storia straordinaria di un uomo comune",
+    "a": "Louis de Wohl",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La gloriosa follia. Un romanzo del tempo di San Paolo.",
+    "a": "Louis de Wohl",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il gioioso mendicante : vita di Francesco d'Assisi",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il passeggero",
+    "a": "Cormac McCarthy",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Bomba atomica",
+    "a": "Roberto Mercadini",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "I giorni della tempesta",
+    "a": "Antonio Socci",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La cattedrale del mare : romanzo",
+    "a": "Ildefonso Falcones",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il padrone del mondo",
+    "a": "Robert Hugh Benson",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Da questi luoghi bui",
+    "a": "Francesco Fadigati",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il miracolo di padre Malachia",
+    "a": "Bruce Marshall",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Catechismo della Chiesa cattolica",
+    "a": "Catholic Church",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il treno dei bambini",
+    "a": "Viola Ardone",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Cronache di un pellegrino",
+    "a": "Luca Montini",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Anna, papà e i fiori. Fiori e piante per bambini spiegati da un papà",
+    "a": "Giuseppe Monaco",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il bambino. L'attesa e la nascita",
+    "a": "Sheila Kitzinger",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "doveva accadere. il luogo, il crocefisso, il campo. William Congdon in Lombardia 1979-1998",
+    "a": "William Congdon",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Chi sei tu che mi guardi : padre, madre, figli",
+    "a": "Vittoria Maioli Sanese",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Educazione. Comunicazione di sé",
+    "a": "Julián Carrón",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Diario di un curato di campagna",
+    "a": "Georges Bernanos",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Gianna. La beata Gianna Beretta Molla nel ricordo del marito.",
+    "a": "Pietro Molla",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il santo semplice",
+    "a": "Laura Cioni",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Cristo e il lavandino",
+    "a": "Aldo Trento",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "American dream : in viaggio con i santi americani",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il treno delle spighe dorate. Cronaca di una missione in Siberia",
+    "a": "Francesco Bertolina",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Giuseppe il falegname",
+    "a": "Giampiero Pizzol",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "L'ardimento",
+    "a": "Stefano Zurlo",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Fino alla cima",
+    "a": "P. Domínguez Prieto",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "E il fiore verrà",
+    "a": "Jesus Montiel",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "L' invenzione del presepe : San Francesco e Giotto, il Natale del 1223 tra storia e arte, con gli affreschi della Basilica di Assisi",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Book of Hours",
+    "a": "",
+    "l": "Libreria legno - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Canti Blu",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La mia voce e le tue parole",
+    "a": "Paola Scaglione",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La Madonna a Treblinka",
+    "a": "Vasilij Grossman",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Incomparabili genitori : ricordo filiale della sorella di santa Teresa di Gesù bambino",
+    "a": "Maria Celina Martin",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Boys : 7 segreti per crescere i figli maschi",
+    "a": "Meg Meeker",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Intemperie : romanzo",
+    "a": "Jesús Carrasco",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Centoquarantanove anni : gli occhi che guardarono la Sindone : romanzo",
+    "a": "Ada Grossi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La masseria delle allodole",
+    "a": "Antonia Arslan",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Animal farm : a fairy story",
+    "a": "George Orwell",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "In Other Words",
+    "a": "Jhumpa Lahiri",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Giobbe :  romanzo di un uomo semplice",
+    "a": "Joseph Roth",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Corrierino delle famiglie",
+    "a": "Giovanni Guareschi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il ragazzo che guarda il vento",
+    "a": "Silvia Pozzi, Claudio Pozzi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il bene che permane : dialoghi di Famiglie per l'accoglienza",
+    "a": "Associazione Famiglie per l'accoglienza",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il profumo dei limoni :  tecnologia e rapporti umani nell'era di facebook",
+    "a": "Jonah Lynch",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Educare con le fiabe : Andersen, Collodi, Saint-Exupéry, Lewis",
+    "a": "Roberto Filippetti",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Ho sete, per piacere : padre, madre, figli: una esperienza in aiuto ai genitori",
+    "a": "Vittoria Maioli Sanese",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Di padre in figlio",
+    "a": "Franco Nembrini",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Io mi fido di te : storia dei miei figli nati dal cuore",
+    "a": "Luciana Littizzetto",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "... Che ne sarà di loro?",
+    "a": "Paolo Merlo",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Ed io che sono? : tra psicologia ed educazione",
+    "a": "Giancarlo Cesana",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Amicizia coniugale",
+    "a": "Francesco Ventorino",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "I vostri figli hanno bisogno di voi : perchè i genitori oggi contano piu che mai",
+    "a": "Gordon Neufeld",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Diario di bordo : una prof di matematica e i suoi studenti nell'anno del lockdown",
+    "a": "Sofia Sabatti",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Klara e il Sole",
+    "a": "Kazuo Ishiguro",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Io, robot",
+    "a": "Isaac Asimov",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il protagonista della storia : nascita e natura del cristianesimo",
+    "a": "José Miguel García Pérez",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Alèxandros : Il figlio del sogno",
+    "a": "Valerio Massimo Manfredi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La grande bugia",
+    "a": "Giampaolo Pansa",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Cigni selvatici : tre figlie della Cina",
+    "a": "Jung Chang",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La casta : così i politici italiani sono diventati intoccabili",
+    "a": "Sergio Rizzo",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Io, prigioniero in Russia",
+    "a": "Vincenzo di Michele",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il girasole : i limiti del perdono",
+    "a": "Simon Wiesenthal",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "I racconti di guerra",
+    "a": "Mario Rigoni Stern",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "L'ultima legione",
+    "a": "Valerio Massimo Manfredi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Gli ultimi soldati del re",
+    "a": "Eugenio Corti",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il sergente nella neve : ricordi della ritirata di Russia",
+    "a": "Mario Rigoni Stern",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Aspettando l'alba e altri racconti",
+    "a": "Mario Rigoni Stern",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "I piu non ritornano : diario di ventotto giorni in una sacca sul fronte russo ( inverno 1942-43 )",
+    "a": "Eugenio Corti",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La nostra guerra, 1940-1945 : l'avventura bellica tra bugie e verità",
+    "a": "Arrigo Petacco",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "L' armata scomparsa : l'avventura degli Italiani in Russia",
+    "a": "Arrigo Petacco",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Freddo dentro",
+    "a": "Marco Andreolli",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Bici rossa",
+    "a": "Marco Andreolli",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Controstoria",
+    "a": "Luigi Negri",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Diario di guerra dal Corno di Cavento",
+    "a": "Felix Wilhelm Hect von Eleda",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Caccia alla Bismark",
+    "a": "Ludovic Kennedy",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il tempo e il tempio",
+    "a": "Luigi Giussani",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il conte di Montecristo",
+    "a": "Alexandre Dumas",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Famiglie nella comunità: il modello di affido a cometa",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Ciò che non muore mai : il cammino di un uomo",
+    "a": "Takashi Paolo Nagai",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Amadeo Peter Giannini : il banchiere galantuomo",
+    "a": "Giorgio A. Chiarva",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Fine di una storia",
+    "a": "Graham Greene",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il tagliapietre",
+    "a": "Cormac McCarthy",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Bellezza, gratuità, cameratismo : professionisti e dilettanti: la vocazione iniziale nel fare sport",
+    "a": "",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il fuoco sotto la cenere : invito alla lettura di Ilia ed Alberto, Vita e destino, Corpi e anime, Lettere sul dolore",
+    "a": "Enzo Piccinini",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Enzo : un'avventura di amicizia",
+    "a": "Emilio Bonicelli",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Giobbe e l'enigma della sofferenza : c'è qualcuno che ascolta il mio grido?",
+    "a": "",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il morfo blu",
+    "a": "Omar Cirulli",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il rischio educativo di Luigi Giussani nella scuola di oggi",
+    "a": "Eraldo Affinati, Julián Carrón",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Chi sono i giovani che incontriamo oggi nella scuola",
+    "a": "Pierluigi Banna, Luisa Leoni Bassani, Alberto Bonfanti, Silvio Cattarina, Francesco Valenti",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il sangue dei vinti",
+    "a": "Giampaolo Pansa",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Come vento cucito alla terra",
+    "a": "Ilaria Tuti",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Barabba",
+    "a": "Pär Lagerkvist",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Cronache del nuovo mondo",
+    "a": "Roberto Fontolan",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "L' oceano del mistero",
+    "a": "Aleksandr Filonenko",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Francesco d'Assisi : raccontato alle donne e agli uomini di poca fede che lo hanno in simpatia",
+    "a": "Gilbert Keith Chesterton",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Divina Commedia",
+    "a": "Dante Alighieri",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il bambino irraggiungibile : [storia di un ragazzo autistico non verbale ma pensante]",
+    "a": "Manuel Sirianni",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il vecchio e il mare",
+    "a": "Ernest Hemingway",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il pastore d'Islanda",
+    "a": "Gunnar Gunnarsson",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Alla fine è sempre all'improvviso : romanzo",
+    "a": "Marco Pozza",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Dilexit nos: lettera enciclica sull'amore umano e divino del Cuore di Gesù Cristo",
+    "a": "Papa Francesco",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Dilexit nos: lettera enciclica sull'amore umano e divino del Cuore di Gesù Cristo",
+    "a": "Papa Francesco",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Dilexit nos: lettera enciclica sull'amore umano e divino del Cuore di Gesù Cristo",
+    "a": "",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Chiedimi (ancora) se sono felice : storie di vita, domande e amicizia",
+    "a": "",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Cara Giulia : quello che ho imparato da mia figlia",
+    "a": "Gino Cecchettin",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "L'opera del movimento. La fraternità di Comunione e Librazione",
+    "a": "Luigi Giussani",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "La leggenda del santo bevitore : racconto",
+    "a": "Joseph Roth",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "La leggenda del santo bevitore : racconto",
+    "a": "Joseph Roth",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "A song for Nagasaki : the story of Takashi Nagai, scientist, convert and survivor of the atomic bomb",
+    "a": "Paul Glynn",
+    "l": "Cubotti - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Giotto. Le Storie Francescane",
+    "a": "Giuseppe Basile",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "I veggenti raccontano",
+    "a": "Krešimir Šego",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il Vangelo secondo Giotto : la vita di Gesù raccontata ai bambini attraverso gli affreschi della Cappella degli Scrovegni",
+    "a": "Roberto Filippetti",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Io sono Zero",
+    "a": "Luigi Ballerini",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il nervo scoperto del mondo",
+    "a": "TEMPI",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "L' abbraccio : verso una cultura dell'incontro",
+    "a": "Mikel Azurmendi",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Diario 1941-1943",
+    "a": "Etty Hillesum",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Cilla : la libertà di sentirsi amati",
+    "a": "P. Soldi",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Andrea Aziani, febbre di vita",
+    "a": "Gianni Mereghetti",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "L'Annuncio a Maria",
+    "a": "Paul Claudel",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "I pilastri della terra",
+    "a": "Ken Follett",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il richiamo della foresta",
+    "a": "Jack London",
+    "l": "Libreria bianca - mansarda",
+    "h": "Gio"
+  },
+  {
+    "t": "Farès pecàt a lamentàm : Dario e Clementina Nembrini: una fede feconda",
+    "a": "Roberto Persico",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Emilia Vergani: saggia e ardente",
+    "a": "",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "L' irresistibile fascino del tempo",
+    "a": "Antonio Zichichi",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "E Perche No?",
+    "a": "",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Diario clandestino : 1943-1945",
+    "a": "Giovanni Guareschi",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "La ferita, la letizia : faccia a faccia con san Francesco, poeta di Dio e del mondo",
+    "a": "Davide Rondoni",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "La ferita, la letizia : faccia a faccia con san Francesco, poeta di Dio e del mondo",
+    "a": "Davide Rondoni",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Introduzione a don Giussani",
+    "a": "Massimo Camisasca",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "L'opera del movimento",
+    "a": "Luigi Giussani",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Franz Jägerstätter : un fulgido esempio in tempi bui",
+    "a": "Erna Putz",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "È bello lasciarsi andare tra le braccia del figlio di Dio",
+    "a": "Giacomo Tantardini",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Davanti al re : sotto lo sguardo di Cristo",
+    "a": "Vincent Nagle",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "La famiglia che raggiunse Cristo : la saga di Cîteaux",
+    "a": "M. Raymond",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "I quattro amori : affetto, amicizia, eros, carità",
+    "a": "C. S. Lewis",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il brillio degli occhi : che cosa ci strappa dal nulla?",
+    "a": "Julián Carrón",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "L' orizzonte della nostra esistenza : ascoltare, nel silenzio, la propria vocazione",
+    "a": "Andrea D'Auria",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Decisione per l'esistenza",
+    "a": "Luigi Giussani",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "L'amato presente",
+    "a": "Mauro Giuseppe Lepori",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Harry Potter e la pietra filosofale : romanzo",
+    "a": "J. K. Rowling",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Eroi dell'Olimpo 1: L' eroe perduto",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Eroi dell'Olimpo 2: Il figlio di Nettuno",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Eroi dell'Olimpo 3: Il marchio di Atena",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Eroi dell'Olimpo 5: Il sangue dell'Olimpo",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Campo mezzosangue : il libro segreto",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "1: Harry Potter e la pietra filosofale",
+    "a": "J. K. Rowling",
+    "l": "Mensola - letto Ale"
+  },
+  {
+    "t": "2: Harry Potter e la camera dei segreti",
+    "a": "J. K. Rowling",
+    "l": "Mensola - letto Ale"
+  },
+  {
+    "t": "3: Harry Potter e il prigioniero di Azkaban",
+    "a": "J. K. Rowling",
+    "l": "Mensola - letto Ale"
+  },
+  {
+    "t": "4: Harry Potter e il Calice di Fuoco",
+    "a": "J. K. Rowling",
+    "l": "Mensola - letto Ale"
+  },
+  {
+    "t": "5: Harry Potter e l'Ordine della Fenice",
+    "a": "J. K. Rowling",
+    "l": "Mensola - letto Ale"
+  },
+  {
+    "t": "6: Harry Potter e il Principe Mezzosangue",
+    "a": "J. K. Rowling",
+    "l": "Mensola - letto Ale"
+  },
+  {
+    "t": "7: Harry Potter e i doni della morte",
+    "a": "J. K. Rowling",
+    "l": "Mensola - letto Ale"
+  },
+  {
+    "t": "Cavallo rosso",
+    "a": "Eugenio Corti",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Costellazione Kurt",
+    "a": "Alessandro Grittini",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Adelmo che voleva essere settimo",
+    "a": "Daniele Mencarelli",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "L'armata Invincibile",
+    "a": "Simon Scarrow",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "L'Enigma della Cattedrale Sommersa",
+    "a": "Fabrizio Santi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il senso religioso",
+    "a": "Luigi Giussani",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Amati. Un'esperienza possibile",
+    "a": "Massimo Piciotti, Andrea Franchi",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Bolle Pionieri e la ragazza di Hong Kong",
+    "a": "Martina Saltamacchia, José Medina, Michele Averchi",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il regalo di Bizzo",
+    "a": "Marco Pippione",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Caterina. Diario di un padre nella tempesta",
+    "a": "Antonio Socci",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Amico carissimo. Enzo Piccinini nelle sue parole e nei suoi racconti di chi lo ha conosciuto",
+    "a": "Pier Paolo Bellini, Chiara Piccinini",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il senso religioso",
+    "a": "Luigi Giussani",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il senso della nascita",
+    "a": "Giovanni Testori, Luigi Giussani",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Abitare il nostro tempo",
+    "a": "Julián Carrón, Charles Taylor",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Am Ursprung des christlichen Anspruchs",
+    "a": "Luigi Giussani",
+    "l": "Cubotti - mansarda",
+    "lang": "German"
+  },
+  {
+    "t": "Innanzitutto uomini. Le storie di 15 giovani preti",
+    "a": "Marina Corradi",
+    "h": "Tommi"
+  },
+  {
+    "t": "Fuochi accesi : i ragazzi di Portofranco : un'esperienza di educazione e integrazione",
+    "a": "Davide Perillo",
+    "h": "Tommi"
+  },
+  {
+    "t": "Comunione e liberazione. La ripresa (1969-1976)",
+    "a": "Massimo Camisasca",
+    "h": "Tommi"
+  },
+  {
+    "t": "La Chiesa",
+    "a": "Massimo Camisasca",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Gesù di Nazaret",
+    "a": "Papa Benedetto XVI",
+    "h": "Tommi"
+  },
+  {
+    "t": "Cara beltà... : poesie",
+    "a": "Giacomo Leopardi",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Grimm. Tutte le fiabe",
+    "a": "Fratelli Grimm",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il manuale fotografico per le patenti A e B",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Canon EOS Digital Rebel XT",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il cacciatore di draghi",
+    "a": "J. R. R. Tolkien",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il Signore degli Anelli I. La compagnia dell'anello",
+    "a": "J. R. R. Tolkien",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La camera chiara : nota sulla fotografia",
+    "a": "Roland Barthes",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Caligola",
+    "a": "Albert Camus",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Il Signore degli Anelli II. Le due torri",
+    "a": "J. R. R. Tolkien",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il Signore degli Anelli III. Il ritorno del re",
+    "a": "J. R. R. Tolkien",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Dalla : come è profondo il mare : viaggio nell'anima di un grande poeta",
+    "a": "Enrico Impalà",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Francesco Guccini : siamo quello che non resta",
+    "a": "Claudio Sassi",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Il Gius : una vita appassionante",
+    "a": "Carmen Giussani",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Alzarsi all'alba",
+    "a": "Mario Calabresi",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Avvenimento di libertà",
+    "a": "Luigi Giussani",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Gli uccelli cantano, i pesci ascoltano... : Sant'Antonio di Padova : romanzo",
+    "a": "Jan Dobraczyński",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "1: Il senso religioso",
+    "a": "Luigi Giussani",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "La camera bella : romanzo",
+    "a": "Laura Blandino",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "2: All'origine della pretesa cristiana",
+    "a": "Luigi Giussani",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "All'origine della pretesa cristiana",
+    "a": "Luigi Giussani",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Accettare se stessi",
+    "a": "Romano Guardini",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Il primo libro di fotografia",
+    "a": "David Bate",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Jérôme Lejeune : la libertà dello scienziato",
+    "a": "Aude Dugast",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Il silenzio",
+    "a": "Massimo Camisasca",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Atomic habits : an easy & proven way to build good habits & break bad ones",
+    "a": "James Clear",
+    "l": "Mensola - cameretta grandi",
+    "lang": "English"
+  },
+  {
+    "t": "Canti della Montagna",
+    "a": "CeT, Coro della SAT",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Centomila gavette di ghiaccio",
+    "a": "Giulio Bedeschi",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Finché c'è qualcuno da amare : e lui era pronto, adesso, adesso non aveva più paura",
+    "a": "Susanna Bo",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "La commedia umana",
+    "a": "William Saroyan",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "I vostri nomi sono scritti nei cieli : nel mondo di Rose Busingye",
+    "a": "Davide Perillo",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Foglia di Niggle",
+    "a": "J. R. R. Tolkien",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il diario di Adamo ed Eva",
+    "a": "Mark Twain",
+    "l": "Mensola - cameretta grandi",
+    "lang": "English"
+  },
+  {
+    "t": "Il castello dei destini incrociati",
+    "a": "Italo Calvino",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Altro È un Bene",
+    "a": "Mikel Azurmendi",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Il segreto di Luca",
+    "a": "Ignazio Silone",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Il Profumo",
+    "a": "Patrick Süskind",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Il bene sia con voi!",
+    "a": "Vasilij Grossman",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "La guerra della scintilla. Ravnica",
+    "a": "Greg Weisman",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Di cosa è fatta la speranza : il romanzo di Cicely Saunders, che si è presa cura degli incurabili",
+    "a": "Emmanuel Exitu",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Il fu Mattia Pascal",
+    "a": "Luigi Pirandello",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "La buona battaglia : le grandi acque non possono spegnere l'amore",
+    "a": "Susanna Bo",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Ciò che inferno non è",
+    "a": "Alessandro D'Avenia",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Cristo con gli alpini",
+    "a": "Carlo Gnocchi",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Il piccolo principe",
+    "a": "Antoine de Saint-Exupéry",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "DIABOLIK Swiisss Diamanti maledetti",
+    "a": "Luciana Giussani Angela Giussani",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "DIABOLIK Swiisss Manette per Diabolik",
+    "a": "Luciana Giussani Angela Giussani",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Diario di una Schiappa. 4 Come resistere ai cuccioli di casa",
+    "a": "Jeff Kinney",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Diario di una Schiappa. 2 Come resistere alle vacanze catastrofiche",
+    "a": "Jeff Kinney",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Diario di una Schiappa. 5 Come resistere agli amici più strambi",
+    "a": "Jeff Kinney",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Il caso Saint-Fiacre",
+    "a": "Georges Simenon",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Il dono di Asher Lev",
+    "a": "Chaim Potok",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "La mia storia",
+    "a": "Marcos Pou Gallo",
+    "h": "Tommi"
+  },
+  {
+    "t": "La mia storia",
+    "a": "Marcos Pou Gallo",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Ho finito la scuola. E adesso?",
+    "a": "Riccardo Guidetti",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Book 2: The scorch trials",
+    "a": "James Dashner",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Diario di una Schiappa. 3 Come resistere a una scuola disastrosa",
+    "a": "Jeff Kinney",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Diario di una Schiappa. 1 Come resistere a una famiglia imbarazzante",
+    "a": "Jeff Kinney",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "I promessi sposi",
+    "a": "Alessandro Manzoni",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Diario di una Schiappa: COME RESISTERE ai passatempi più strani",
+    "a": "Jeff Kinney",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Diary of a Wimpy Kid",
+    "a": "Jeff Kinney",
+    "l": "Cubotti - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "Diary of a wimpy kid : The third wheel",
+    "a": "Jeff Kinney",
+    "l": "Cubotti - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "Diario di una schiappa : guai in arrivo!",
+    "a": "Jeff Kinney",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Diario di una schiappa : disastro totale",
+    "a": "Jeff Kinney",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Diary of a wimpy kid : hard luck",
+    "a": "Jeff Kinney",
+    "l": "Cubotti - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "Diario di una schiappa : Vita da cani",
+    "a": "Jeff Kinney",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "CAPTAIN UNDERPANTS and the terrifying return of TIPPY TINETROUSERS",
+    "a": "Dav Pilkey",
+    "l": "Cubotti - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "BIG NATE: in a class by himself",
+    "a": "Lincoln Pierce",
+    "l": "Cubotti - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "Il castello di Zampaciccia Zanzamiao",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "I ragazzi della via Pál",
+    "a": "Ferenc Molnár",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Il ragazzo che volava con i draghi",
+    "a": "Andy Shepherd",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "L' estate di Nico",
+    "a": "Luigi Ballerini",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Archie Greene e il segreto del mago : romanzo",
+    "a": "D. D. Everest",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Al paradiso è meglio credere",
+    "a": "Giacomo Poretti",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il buio oltre la siepe",
+    "a": "Harper Lee",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Il signore delle mosche",
+    "a": "William Golding",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Geopolitica dell'intelligenza artificiale",
+    "a": "Alessandro Aresu",
+    "h": "Papà"
+  },
+  {
+    "t": "Algoritmi di felicità",
+    "a": "Giancarlo Parini",
+    "h": "Papà"
+  },
+  {
+    "t": "Bellezza, ascesi, utilità : la sfida educativa nello sport",
+    "a": "",
+    "h": "Papà"
+  },
+  {
+    "t": "2: All'origine della pretesa cristiana : volume secondo del perCorso",
+    "a": "Luigi Giussani",
+    "h": "Papà"
+  },
+  {
+    "t": "In nome della madre",
+    "a": "Erri De Luca",
+    "h": "Papà"
+  },
+  {
+    "t": "Franz e Franziska : non c'è amore più grande : i coniugi Jägerstätter e il martirio della coscienza",
+    "a": "Andrea Caspani",
+    "h": "Papà"
+  },
+  {
+    "t": "Il pittore di anime : romanzo",
+    "a": "Ildefonso Falcones",
+    "h": "Papà"
+  },
+  {
+    "t": "Che il mondo ti somigli : la saga di Francesco Cirio",
+    "a": "Allegra Groppelli",
+    "h": "Papà"
+  },
+  {
+    "t": "Cento ripartenze : quando la vita ricomincia : volume 2",
+    "a": "Giorgio Paolucci",
+    "h": "Papà"
+  },
+  {
+    "t": "Diario dal campo 304. Memorie di prigionia di Raffaele Minniti",
+    "a": "Daniele Blundo, Luisa Minniti",
+    "h": "Papà"
+  },
+  {
+    "t": "La memoria rende liberi : la vita interrotta di una bambina nella Shoah",
+    "a": "Liliana Segre",
+    "h": "Papà"
+  },
+  {
+    "t": "Fu invitato anche Gesù. Conversazioni sulla vocazione familiare",
+    "a": "Mauro Giuseppe Lepori",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Italian Dictionary",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Evangelii gaudium : esortazione apostolica ai vescovi, ai presbiteri e ai diaconi, alle persone consacrate e ai fedeli laici sull'annuncio del Vangelo nel mondo attuale",
+    "a": "Papa Francesco",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Evangelii gaudim : esortazione apostolica",
+    "a": "Papa Francesco",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Esortazione apostolica Gaudete et exsultate del santo padre Francesco sulla chiamata alla santità nel mondo contemporaneo : in appendice lettera Placuit Deo della Congregazione per la dottrina della fede su alcuni aspetti della salvezza cristiana",
+    "a": "Papa Francesco",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Esortazione apostolica postsinodale Amoris Laetitia del santo padre Francesco ai vescovi ai presbiteri e ai diaconi, alle persone consacrate, agli sposi cristiani e a tutti i fedeli laici sull'amore nella famiglia",
+    "a": "Papa Francesco",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Idi di marzo",
+    "a": "Valerio Massimo Manfredi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Dizionario Oxford Study",
+    "a": "",
+    "lang": "English"
+  },
+  {
+    "t": "La convenienza umana della fede",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Dare la vita per l'opera di un altro",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Generare tracce nella storia del mondo",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Comunione e liberazione",
+    "a": "Massimo Camisasca",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Comunione e liberazione. Le origini (1954-1968)",
+    "a": "Massimo Camisasca",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Il miracolo dell'ospitalità",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "All'origine della pretesa cristiana. Volume secondo del PerCorso",
+    "a": "Luigi Giussani",
+    "h": "Mamma"
+  },
+  {
+    "t": "Il cammino al vero è un'esperienza",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Francesco : il dito e la luna",
+    "a": "Franco Nembrini, Fabio Rosini",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "365 giorni con San Francesco : pensieri, scritti e preghiere",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il rischio educativo",
+    "a": "Luigi Giussani",
+    "h": "Mamma"
+  },
+  {
+    "t": "Admirabile Signum: lettera apostolica sul significato del presepe",
+    "a": "Papa Francesco",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Admirabile signum : lettera apostolica sul significato e il valore del presepe",
+    "a": "Papa Francesco",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Alla ricerca del volto umano",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "L' io, il potere, le opere",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Il senso religioso : volume primo del PerCorso",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "In cammino : 1992-1998",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "La Liberta di Dio",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "La difficile speranza",
+    "a": "",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "La bellezza disarmata",
+    "a": "Julián Carrón",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Il senso di dio e l'uomo moderno",
+    "a": "luigi Giuseppe",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Il giorno della civetta",
+    "a": "Leonardo Sciascia",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Il cristianesimo e la formazione della civiltà occidentale",
+    "a": "Christopher Dawson",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "I nostri atti ci seguono",
+    "a": "Paul Bourget",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Cori da \"La rocca\"",
+    "a": "T. S. Eliot",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "L' ultima al patibolo ; e La figlia di Farinata ; La moglie di Pilato",
+    "a": "Gertrud : von Le Fort",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Elena : la madre dell'Imperatore",
+    "a": "Evelyn Waugh",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Cani perduti senza collare",
+    "a": "Gilbert Cesbron",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Ilia ed Alberto",
+    "a": "Angelo Gatti",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "L'attrattiva Gesù. Quasi Tischreden",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Dal temperamento un metodo. Quasi Tischreden",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Affezione e dimora. Quasi Tischreden",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Antoni Gaudí. Il mondo come lo vedono gli angeli.",
+    "a": "Alessandro Grittini",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Come il vento tra i mandorli",
+    "a": "Michelle Cohen Corasanti",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il giorno della civetta",
+    "a": "Leonardo Sciascia",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Canto di Natale",
+    "a": "Leonardo Sciascia, Charles Dickens",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Il conte di Montecristo - volume II",
+    "a": "Alexandre Dumas",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Il conte di Montecristo - volume I",
+    "a": "Alexandre Dumas",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Il ritorno di Casanova",
+    "a": "Arthur Schnitzler",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Frankenstein ovvero Il prometeo moderno",
+    "a": "Mary Shelly",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Il giocatore",
+    "a": "Fëdor Dostoevskij",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "La lettera scarlatta",
+    "a": "Nathaniel Hawtorne",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Cuore di tenebra",
+    "a": "Joseph Conrad",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Giobbe",
+    "a": "Joseph Roth",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Kim",
+    "a": "Rudyard Kipling",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Bel-Ami",
+    "a": "Guy de Maupassant",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "La metamorfosi",
+    "a": "Franz Kafka",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "La morte di Ivan Il'ić",
+    "a": "Lev N. Tolstoj",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Il piccolo principe",
+    "a": "Antoine de Saint-Exupéry",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "I promessi sposi",
+    "a": "Alessandro Manzoni",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "L'immortalità",
+    "a": "Milan Kundera",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Addio alle armi",
+    "a": "Ernest Hemingway",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "La ciociara",
+    "a": "Alberto Moravia",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Il ritratto di Dorian Gray",
+    "a": "Oscar Wilde",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Cuccioli",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L' incredibile storia di Lavinia",
+    "a": "Bianca Pitzorno",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Ermanno e Uber : alla scoperta del mondo",
+    "a": "Agnese Simonetto",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L' enigma di pagina 100 : un giallo, due ragazzi e un vecchio libro",
+    "a": "Maurizio Giannini",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "A caccia dell'orso",
+    "a": "Michael Rosen",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L' albero delle 1000 dolcezze",
+    "a": "Angela Ragusa",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il pacchetto rosso",
+    "a": "Gino Alberti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Estrela e il fiore perduto",
+    "a": "Diletta Lago",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il fiore della vita : una storia contro la prepotenza per imparare la pace",
+    "a": "Alberto Pellai",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il bosco : un libro con più di 60 finestrelle",
+    "a": "Tony Wolf",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L' oritteropo che non sapeva chi era",
+    "a": "Jill Tomlinson",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il Brutto Anatroccolo",
+    "a": "Hans Christian Andersen, Natasha Stenvert",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il sogno del gigante",
+    "a": "Jon Fosse",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il ladro di sole",
+    "a": "Alice Hemming",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il mondo ti aspetta",
+    "a": "Kobi Yamada",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Io gomitolo, tu filo",
+    "a": "Alberto Pellai",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Drommi vince la paura",
+    "a": "Emanuela Nava",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La leggenda dei tre alberi",
+    "a": "Elena Pasquali",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I colori inutili",
+    "a": "Guido Clericetti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La mia prima enciclopedia",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Giuditta, l'asinello e il Bambino",
+    "a": "Regine Schindler, Ivan Gantschev",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I tre briganti",
+    "a": "Tomi Ungerer",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Favole tra i sogni",
+    "a": "Maria Luisa Sacchi",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L' arco di luce : una favola per bambini, una parabola per adulti",
+    "a": "Giovanna Conti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Io e te",
+    "a": "Smriti Prasadam-Halls",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Alessandro il grande",
+    "a": "Stefania Stefani",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L'universo. Stelle, pianeti, galassi",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Animali",
+    "a": "Laurence Boukobza",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L' universo",
+    "a": "Émilie Beaumont",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il libro delle scoperte",
+    "a": "Tony Wolf",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Re Artù e i cavalieri della Tavola Rotonda",
+    "a": "Laura <traduttrice> Russo",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "E da quel giorno...",
+    "a": "Emanuela Nava",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Alessandro Magno : sui passi di un condottiero : al tempo del Regno di Macedonia",
+    "a": "Michele Santuliana",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "A Heart Greater Than The Grat War",
+    "a": "CeT",
+    "l": "Cubotti - cameretta grandi",
+    "lang": "English"
+  },
+  {
+    "t": "Accogliere un bambino, rinnovare il mondo",
+    "a": "Mario Rivardo, Fabrice Hadjadj",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Andare - esperienze di studio nel mondo",
+    "a": "CLU",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Andate in tutto il mondo",
+    "a": "Fraternità San Carlo",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Anthropoid. The silent witnesses",
+    "a": "Ministry of defense of the Czech Republic",
+    "lang": "English",
+    "h": "Papà"
+  },
+  {
+    "t": "Barzellette super-top-compilation 1",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Barzellette super-top-compilation 2",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Barzellette super-top-compilation 3",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Cancionero Picos 2018",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Canti 2012",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Canti 2018",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Canti 2019",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Canti Blu",
+    "a": "",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Canti di montagna",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Canti Verde",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Chi ci libera dal male?",
+    "a": "Emmanuele Silanos",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Come orizzonte l'universo. Intervista di Mattia Ferraresi a mons. Massimo Camisasca e suor Rachele Paiusco",
+    "a": "",
+    "h": "Tommi"
+  },
+  {
+    "t": "Comunione e Liberazione",
+    "a": "Luigi Giussani, Robi Ronza",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "The duckling gets a cookie!?",
+    "a": "Mo Willems",
+    "l": "Libreria bianca - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "Così abbraccio un amico",
+    "a": "Anna Corciulo",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Cristo, vita della vita (esercizi della fraternità di comunione e liberazione)",
+    "a": "Comunione e liberazione"
+  },
+  {
+    "t": "Le fiabe della buonanotte",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Dio con noi",
+    "a": "Emanuela Mazzola",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Dio si rivela e nulla può restare fermo. Il cammino dei Magi. Meeting 2026",
+    "a": "Fraternità San Carlo",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Dizionario Garzanti Italiano Francese",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Esio Trot",
+    "a": "Roald Dahl",
+    "l": "Cubotti - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Il mistero della rosa scarlatta",
+    "a": "Alessandro Gatti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Fare di Cristo il cuore del mondo",
+    "a": "Francesco Ferrari",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il trio della Dama Nera",
+    "a": "Alessandro Gatti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Formare discepoli missionari",
+    "a": "Curtis Martin",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Fra Claudio Granzotto",
+    "a": "P. R. Fusato",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La storia di Dedalo e Icaro",
+    "a": "Mino Milani",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Gianna Beretta Molla madre di famiglia",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Giotto. L'uomo che dipingeva il cielo",
+    "a": "Davide Rondoni",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Davanti al mare blu",
+    "a": "Lucia Panzieri",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La Banda delle 3 emme e i linguaggi segreti",
+    "a": "Mario Sala Gallini",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Terremoto di piume",
+    "a": "Daniela Morelli",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La mummia vivente",
+    "a": "James Gelsey",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Le avventure di Pokonaso",
+    "a": "John Grant",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il CanZacchiere",
+    "a": "Amici di Zaccheo",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il dono di sé",
+    "a": "Martino de Carli",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il grande amico Meaulnes",
+    "a": "Alain-Fournier",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Il libro delle Ore",
+    "a": "Luigi Giussani",
+    "h": "Tommi"
+  },
+  {
+    "t": "Il libro delle Ore",
+    "a": "Luigi Giussani",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Il tesoro più bello",
+    "a": "Janosch",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Posta per la tigre!",
+    "a": "Janosch",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Guida ai pianeti",
+    "a": "Will Osborne",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il segreto dei tre fraticelli",
+    "a": "Nadia Cislaghi",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Una stella tutta per me",
+    "a": "Fulvia Degl'Innocenti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Guarda che chiamo l'uomo nero!",
+    "a": "Roberto Pavanello",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il pappagallo francese",
+    "a": "Lia Levi",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L' albero e il bambino",
+    "a": "Emanuela Nava",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Italia meravigliosa - Chiese e Cattedrali",
+    "a": "",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Kidnapped",
+    "a": "Robert Louis Stevenson",
+    "l": "Cubotti - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Il principe zero",
+    "a": "Alberto Melis",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L'arte dell'allattamento materno",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "L'isola del tesoro a fumetti",
+    "a": "Claudio Nizzi, Carlo Boscarato",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La bellezza che salva il mondo",
+    "a": "Paolo Prosperi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La bellissima storia di Medjugorje",
+    "a": "Suor Emmanuel",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La lunga strada: dispensa di racconti per le classi quinte",
+    "a": "dipartimento di italiano"
+  },
+  {
+    "t": "La lunga strada. Dispensa di racconti per la classe quinta",
+    "a": "Fondazione Grossman",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "L'ultimo dei Moicani",
+    "a": "James Fenimore Cooper",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La nostra voce canta con un perché",
+    "a": "Luigi Giussani"
+  },
+  {
+    "t": "Annibale",
+    "a": "Maria Angela Masino",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Un regalo inaspettato",
+    "a": "Ferdinando Albertazzi",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il libro della giungla",
+    "a": "Rudyard Kipling",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La pianta mannara",
+    "a": "Cristina <1964- > Brambilla",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Gli occhiali fantastici",
+    "a": "Guia Risari",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Mezzanotte in Egitto",
+    "a": "Tony Bradman",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La pedagogia della lumaca : per una scuola lenta e nonviolenta",
+    "a": "Gianfranco Zavalloni",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "La perla",
+    "a": "John Steinbeck",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La perla",
+    "a": "Chiara M.",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La peste",
+    "a": "Albert Camus",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "La piccola violinista",
+    "a": "Jon Fosse",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La piu' incredibile storia mai scritta : il libro perduto",
+    "a": "Pierdomenico Baccalario",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La porta del tempo",
+    "a": "Pierdomenico Baccalario",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La prima Bibbia : [tutta la Bibbia, la Bibbia per tutti]",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La profezia della luce",
+    "a": "Emmanuel Exitu",
+    "h": "Papà"
+  },
+  {
+    "t": "La promessa",
+    "a": "Giorgia Coppari",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "La promessa della nostra amicizia. L'ideale della vita comune nella Fraternità San Carlo",
+    "a": "Paolo Sottopietra",
+    "h": "Tommi"
+  },
+  {
+    "t": "La ragazza del sogno",
+    "a": "Awa Bela",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "La rete",
+    "a": "Sara Allegrini",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "La Rosa bianca",
+    "a": "Inge Scholl",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "La scuola all'ultimo piano",
+    "a": "Louis Sachar",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La Scuola degli Acchiappadraghi",
+    "a": "K. H. McMullan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La spada nella roccia",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La storia del Titanic",
+    "a": "Will Osborne",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La storia di Ulisse e Argo",
+    "a": "Mino Milani",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La storia infinita : romanzo dalla A alla Z con capiletera di Antonio Basoli ; traduzione di Amina Pandolfi",
+    "a": "Michael Ende",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La strada",
+    "a": "Cormac McCarthy",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "La strada",
+    "a": "Cormac McCarthy",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "La tunica",
+    "a": "Lloyd C. Douglas",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La valle dell'Eden",
+    "a": "John Steinbeck",
+    "h": "Papà"
+  },
+  {
+    "t": "La valle piu bella del mondo : racconti dal vero",
+    "a": "Ezio Franceschini",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La vera storia di Tom Trueheart giovane eroe",
+    "a": "Ian Beck",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "La vita per l'opera di un Altro",
+    "a": "Suore di Carità dell'Assunzione",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "La voce unica dell'ideale",
+    "a": "Julián Carrón",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "La voz única del ideal",
+    "a": "Julián Carrón",
+    "l": "Libreria legno - mansarda",
+    "lang": "Spanish"
+  },
+  {
+    "t": "Lasciando questi ragazzi",
+    "a": "Takashi Paolo Nagai",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Le 100 cose da fare con il papà",
+    "a": "Chris Stevens",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Le avventure di Cipollino",
+    "a": "Gianni Rodari",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Le avventure di Pinocchio",
+    "a": "Carlo Collodi",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Le avventure di Tom Sawyer",
+    "a": "Mark Twain",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Le battaglie navali del Mediterraneo nella seconda guerra mondiale",
+    "a": "Arrigo Petacco",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Le campane di Bicêtre",
+    "a": "Georges Simenon",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Le catacombe per i bambini",
+    "a": "Fabrizio Bisconti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Le città invisibili",
+    "a": "Italo Calvino",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Le cronache di Narnia",
+    "a": "C. S. Lewis",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Le Cronache di Narnia. 2: Il leone, la strega e l'armadio",
+    "a": "C. S. Lewis",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Le grandi esplorazioni",
+    "a": "Stefano Varanelli",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Le infradito blu",
+    "a": "Felice Achilli",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Le mie Letture",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Le mie letture",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Le mie preghiere",
+    "a": "Teresa di Calcutta",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Le mille e una notte - volume I",
+    "a": "",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Le mille e una notte - volume II",
+    "a": "",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Le mitiche avventure di Capitan Mutanda",
+    "a": "Dav Pilkey",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Le notti bianche",
+    "a": "S. Prina, Fëdor Dostoevskij",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Le parole sono finestre [oppure muri] : introduzione alla Comunicazione nonviolenta",
+    "a": "Marshall B. Rosenberg",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Le patenti A e B",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Le più belle barzellette da brivido",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Le più belle fiabe dei fratelli Grimm",
+    "a": "Fratelli Grimm",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Le storie di Furlana : il cavaliere della Dama di Luna",
+    "a": "Francesco Fadigati",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Le tredici vite e mezzo del capitano Orso Blu : metà dei ricordi di vita di un orso di mare riccamente illustrate e corredate di citazioni dal Dizionario enciclopedico dei portenti, degli organismi e dei fenomeni bisognosi di spiegazione di Zamonia e dintorni del prof. dott. Abdul Noctambulotti",
+    "a": "Walter Moers",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Lei",
+    "a": "Mariapia Veladiano",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Lettera a una professoressa",
+    "a": "Scuola di Barbiana",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Lettera enciclica Deus caritas est del sommo pontefice Benedetto XVI ai vescovi ai presbiteri e ai diaconi alle persone consacrate e a tutti i fedeli laici sull'amore cristiano",
+    "a": "Benedictus 16. papa",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Lettera enciclica Fratelli tutti del santo padre Francesco sulla fraternita e l'amicizia sociale",
+    "a": "Papa Francesco",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Lettera enciclica Lumen Fidei del sommo pontefice Francesco ai vescovi ai presbiteri e ai diaconi alle persone consacrate e a tutti i fedeli laici sulla fede",
+    "a": "Papa Francesco",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Lettere a un giovane poeta ; Lettere a una giovane signora ; Su Dio",
+    "a": "Rainer Maria Rilke",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Lettere da Babbo Natale",
+    "a": "J. R. R. Tolkien",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Lettere di Nicodemo : la vita di Gesù",
+    "a": "Jan Dobraczyński",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Lettere familiari",
+    "a": "Zelia e Luigi Martìn",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Lettere sul dolore",
+    "a": "Emmanuel Mounier",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Libertà è vita",
+    "a": "Vasilij Grossman",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Libretto canti Oratorio Estivo",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Libro primo: Eragon",
+    "a": "Christopher Paolini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Libro quarto: Inheritance, o La volta delle anime",
+    "a": "Christopher Paolini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Libro secondo: Eldest",
+    "a": "Christopher Paolini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Libro terzo: Brisingr",
+    "a": "Christopher Paolini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Liederbuch",
+    "a": "",
+    "l": "Libreria legno - mansarda",
+    "lang": "German"
+  },
+  {
+    "t": "Lo hobbit o la Riconquista del Tesoro",
+    "a": "J. R. R. Tolkien",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Lo scudo di Talos",
+    "a": "Valerio Massimo Manfredi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Lo spirituale nell'arte",
+    "a": "Vasilij Vasilʹevič Kandinskij",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Lo strano caso del dottor Jekyll e del signor Hyde",
+    "a": "Robert Louis Stevenson",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Lontano dal pianeta silenzioso",
+    "a": "C. S. Lewis",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Los amigos de Jesús",
+    "a": "Joseph Ratzinger",
+    "l": "Cubotti - mansarda",
+    "lang": "Spanish"
+  },
+  {
+    "t": "Magnifica Humanitas : lettera enciclica sulla custodia della persona umana nel tempo dell'intelligenza artificiale",
+    "a": "Papa Leone XIV",
+    "h": "Papà"
+  },
+  {
+    "t": "Magnifica Humanitas : lettera enciclica sulla custodia della persona umana nel tempo dell'intelligenza artificiale",
+    "a": "Papa Leone XIV",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Maïti : Resistenza e perdono",
+    "a": "Maïti Girtanner",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Manuale del guerriero della luce",
+    "a": "Paulo Coelho",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Manuale del guerriero della luce",
+    "a": "",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Maratona",
+    "a": "Geoffrey Trease",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Marcellino pane e vino",
+    "a": "José María Sanchez-Silva",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Marcellino Pane e Vino",
+    "a": "José María Sanchez-Silva",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Marco Gallo : anche i sassi si sarebbero messi a saltellare",
+    "a": "Marco Gallo",
+    "h": "Mamma"
+  },
+  {
+    "t": "Maria madre e discepola : trentuno meditazioni evangeliche",
+    "a": "Bruno Maggioni",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Martina. Hai risvegliato molti cuori",
+    "a": "Anna Ballarino, Anna Grillo",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Martini e Ferretti",
+    "a": "Marco Andreolli",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Maus : racconto di un sopravvissuto",
+    "a": "Art Spiegelman",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Mi trovo nel cuore dell'inferno : manoscritti di un prigioniero del Sonderkommando trovati ad Auschwitz",
+    "a": "Zalmen Gradowski",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Mia giovinezza : poesie",
+    "a": "",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Miguel Mañara",
+    "a": "Oscar Vladislav de Lubicz Milosz",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Milano, per Amore",
+    "a": "Giorgio Armani",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Mille splendidi soli",
+    "a": "Khaled Hosseini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Mistero Medjugorje",
+    "a": "Antonio Socci",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Moby Dick",
+    "a": "Herman Melville",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Moby Dick",
+    "a": "Herman Melville",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Monelli. Canzoni per bambini terribili",
+    "a": "Carlo Pastori",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Morte, dov'è la tua vittoria?",
+    "a": "Henri Daniel-Rops",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "My life as a gamer",
+    "a": "Janet Tashjian, Jake Tashjian",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Mythos : I miti più suggestivi del mondo classico",
+    "a": "Giovanni Angelo Brindisi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Narciso e Boccadoro",
+    "a": "Hermann Hesse",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Natale nella stalla",
+    "a": "Astrid Lindgreen",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Nel mare ci sono i coccodrilli : storia vera di Enaiatollah Akbari",
+    "a": "Fabio Geda",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Nelson Mandela: una luce per tutti",
+    "a": "Pape Kane",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Niente di nuovo sul fronte occidentale",
+    "a": "",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Night",
+    "a": "Elie Wiesel",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Noi siamo infinito",
+    "a": "Stephen Chbosky",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Non chiamarmi Cina!",
+    "a": "Luigi Ballerini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Non chiedere perché",
+    "a": "Franco Di Mare",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Non dimenticate il desiderio : l'eredità di don Anas: dialoghi sul matrimonio",
+    "a": "Antonio Anastasio",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Non svegliare il drago!",
+    "a": "Bianca Schulze",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Non temete per noi, la nostra vita sarà meravigliosa : storie di ragazzi che non hanno avuto paura di diventare grandi",
+    "a": "Mario Calabresi",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Notre-Dame de Paris",
+    "a": "Victor Hugo",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Novecento : un monologo",
+    "a": "Alessandro Baricco",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Nulla anteporre all'amore di Cristo",
+    "a": "Sergio Massalongo, San Benedetto",
+    "h": "Tommi"
+  },
+  {
+    "t": "Nuove avventure di Lupo Uragano",
+    "a": "Pinin Carpi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "O todo o nada. Se. Clare Crockett: la felicità è un cuore indiviso",
+    "a": "Massimo Piciotti, Gianni Mereghetti, Cristiano Guarneri, Giulia Fuga, Alessandra Chalmers",
+    "h": "Mamma"
+  },
+  {
+    "t": "Odissea",
+    "a": "Omero",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Of Mice and Men",
+    "a": "John Steinbeck",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Oltre c'è la felicità",
+    "a": "Maria Gadaldi",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Oltre l'AIDS",
+    "a": "Comunità Cenacolo - Saluzzo",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "One for the Murphys",
+    "a": "Lynda Mullaly Hunt",
+    "l": "Cubotti - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Open : la mia storia",
+    "a": "Andre Agassi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Orlando Furioso",
+    "a": "Ludovico Ariosto",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Oscar e la dama rosa",
+    "a": "Éric-Emmanuel Schmitt",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Pace su Nagasaki : il medico che guariva i cuori",
+    "a": "",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Paperboy",
+    "a": "Vince Vawter",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Pappagalli verdi : cronache di un chirurgo di guerra",
+    "a": "Gino Strada",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Paradiso e inferno",
+    "a": "Jón Kalman Stefánsson",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Parole-Ultime Cose Mediterranee-Uccelli. Quasi un Racconto, Poesie di Umberto Saba",
+    "a": "Umberto Saba",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Patria",
+    "a": "Fernando Aramburu",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Pausa libro : 101 pillole di scienza e cultura per quando posi il telefono",
+    "a": "Andrea Moccia",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Pensieri",
+    "a": "Blaise Pascal",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Per custodire il fuoco : vademecum dopo l'apocalisse",
+    "a": "Luigi Maria Epicoco",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Per niente al mondo",
+    "a": "Ken Follett",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Per questo ho vissuto : la mia vita ad Auschwitz-Birkenau e altri esili",
+    "a": "Sami Modiano",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Per questo mi chiamo Giovanni : [da un padre a un figlio il racconto della vita di Giovanni Falcone]",
+    "a": "Luigi Garlando",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Perché la Chiesa",
+    "a": "Luigi Giussani",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "PERCHE LA CHIESA: il segna efficace del divino nella storia (vol.3 PerCorso)",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Perchè mi cercate? : incontri con Gesù nel Vangelo",
+    "a": "Massimo Camisasca",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Perché sono un uomo : scene dalla vita di don Giussani",
+    "a": "Fernando de Haro",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Perchè ti amo : un uomo, una donna",
+    "a": "Vittoria Maioli Sanese",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "PerCorso vol.2: All'Origine della Pretesa Cristiana",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Percy Jackson & gli dei dell'Olimpo : Il mare dei mostri",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Percy Jackson & gli dei dell'Olimpo : le storie segrete",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Percy Jackson & the Olympians. 4. The battle of the labyrinth",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Percy Jackson e gli dei dell'Olimpo : il ladro di fulmini",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Percy Jackson e gli dei dell'Olimpo : il libro segreto",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Percy Jackson e gli dei dell'Olimpo 3: la maledizione del Titano",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Percy Jackson e gli Dei dell'Olimpo 4: La battaglia del labirinto",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Percy Jackson e gli Dei dell'Olimpo 6:Il calice degli dei",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Percy Jackson e gli Dei dell'Olimpo5: Lo scontro finale",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Percy Jackson racconta gli dei greci",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Percy Jackson racconta gli eroi greci",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Perdonare la notte",
+    "a": "Federico Pichetto",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Picasso",
+    "a": "AA.VV.",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Piccola storia della fotografia",
+    "a": "Walter Benjamin",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Piccoli suicidi tra amici",
+    "a": "Arto Paasilinna",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Pietro : un uomo nel vento",
+    "a": "Roberto Benigni",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Pietro Leoni",
+    "a": "Mara Quadri, Alessandro Rondoni",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Pin lo spazzacamino",
+    "a": "Alessandro Grittini",
+    "h": "Mamma"
+  },
+  {
+    "t": "Più forte dell'odio",
+    "a": "Tim Guénard",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Psyché : liberamente tratto dal diario di Chicca",
+    "a": "Franco Casadidio",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Quaderno n29",
+    "a": "Kalós",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Qualcosa era successo",
+    "a": "Raffaela Paggi",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Qualcuno con cui correre",
+    "a": "David Grossman",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Quattro giorni quarant'anni con padre Bepi in Sierra Leone",
+    "a": "Davide Rondoni",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Quella casa che vola : la storia delle sacre pietre di Loreto : contesto storico, tradizione, documenti, richerche, indagine archeologica, analisi, evidenze",
+    "a": "Pier Luigi Guiducci",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Quello che non ti dicono",
+    "a": "Mario Calabresi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Questo immenso non sapere : conversazioni con alberi, animali e il cuore umano",
+    "a": "Chandra Livia Candiani",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Racconti italiani dell'800 e del'900",
+    "a": "Angela Felice",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Realtà e Giovinezza: la sfida",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Requiem per un impero defunto",
+    "a": "François Fejtó",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Resisti, cuore : l'Odissea e l'arte di essere mortali",
+    "a": "Alessandro D'Avenia",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Restart : [lose your memory, find your life]",
+    "a": "Gordon Korman",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Ricambi",
+    "a": "Michael Marshall Smith",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Ritorniamo a sognare",
+    "a": "Austen Ivereigh, Papa Francesco",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Robinson Crusoe : versione integrale",
+    "a": "Daniel Defoe",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Ruvido umano",
+    "a": "Mariangela Gualtieri",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "S. Francesco secondo Giotto",
+    "a": "Roberto Filippetti",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Salvatore Giuliano - il \"re\" di Montelepre",
+    "a": "Angelo Vecchio",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "San Giuseppe, l'eco del Padre",
+    "a": "Mauro Giuseppe Lepori",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "San Martino di Tours",
+    "a": "Gruppo il Sicomoro",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Santi",
+    "a": "",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Santi nella carità",
+    "a": "Antonio Maria Sicari",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Santi per 365 giorni",
+    "a": "Monica Del Soldato",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Scandalosa misericordia",
+    "a": "Suor Emmanuel",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Scritti corsari",
+    "a": "Pier Paolo Pasolini",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Scusa!",
+    "a": "Barry Timms",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Se il mondo vi odia... Martiri per la fede nel regime sovietico",
+    "a": "Irina Osipova",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Se mai potrai capire",
+    "a": "Marco Andreolli",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Se ti perdo vienimi a cercare",
+    "a": "Francesco Fadigati",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Sea floor stories",
+    "a": "D. Connelly",
+    "l": "Libreria bianca - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "Sempre tornare",
+    "a": "Daniele Mencarelli",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Senilità",
+    "a": "Italo Svevo",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Sette Eoni in Tibet : fascisti da Yuggoth",
+    "a": "Antonio Costantini",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Shakespeare's Sonnets and Other Poems",
+    "a": "William Shakespeare",
+    "l": "Libreria legno - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Shh! Abbiamo un piano",
+    "a": "Chris Haughton",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Si può (veramente?|) vivere così?",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Si può vivere così?",
+    "a": "Luigi Giussani",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Si può vivere cosi? : uno strano approccio all'esistenza cristiana",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Si vive solo per morire?",
+    "a": "Mauro Giuseppe Lepori",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Siamo nati e non moriremo mai più : storia di Chiara Corbella Petrillo",
+    "a": "Simone Troisi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Silence",
+    "a": "Shūsaku Endō",
+    "l": "Libreria legno - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Simone chiamato Pietro : sui passi di un uomo alla sequela di Dio",
+    "a": "Mauro Giuseppe Lepori",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Six easy pieces : essentials of physics explained by its most brilliant teacher",
+    "a": "Richard P. Feynman",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Smile : la mia vita tra calcio, musica e moda",
+    "a": "Rafael Leão",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Sognando la finalissima",
+    "a": "Luigi Garlando",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Songbook",
+    "a": "",
+    "l": "Libreria legno - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Sophocles, The Oedipus Cycle",
+    "a": "Sophocles",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Sotto le mura di Vienna",
+    "a": "Jan Dobraczyński",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Spe Salvi",
+    "a": "Papa Benedetto XVI",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Spingendo la notte più in là : storia della mia famiglia e di altre vittime del terrorismo",
+    "a": "Mario Calabresi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Sposala e muori per lei :  uomini veri per donne senza paura",
+    "a": "Costanza Miriano",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Sposati e sii sottomessa : pratica estrema per donne senza paura",
+    "a": "Costanza Miriano",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Storia di Gordon Pym",
+    "a": "Edgar Allan Poe",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Storia di un'anima : scritti autobiografici",
+    "a": "S. Thérèse de l'Enfant Jésus",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Storia di una ladra di libri",
+    "a": "Markus Zusak",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Storia illustrata della mafia",
+    "a": "Angelo Vecchio",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Storia militare della Seconda Guerra Mondiale - Volume Primo",
+    "a": "B. H. Liddell Hart",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Storia militare della Seconda Guerra Mondiale - Volume Secondo",
+    "a": "B. H. Liddell Hart",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Storie del buon Dio",
+    "a": "Rainer Maria Rilke",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Storie piccine",
+    "a": "Valeria Fiorentino",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Stranamente felice : dai diari di Claudia Finzi",
+    "a": "Claudia Finzi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Sunset limited : romanzo in forma drammatica",
+    "a": "Cormac McCarthy",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Suor Clare Crockett  Serva del Focolare della Madre : Sola con il Solo",
+    "a": "Kristen Gardner",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Suor Clare Crockett  Serva del Focolare della Madre : Sola con il Solo",
+    "a": "Kristen Gardner",
+    "h": "Mamma"
+  },
+  {
+    "t": "Tardi ti ho amato, bellezza tanto antica e tanto nuova",
+    "a": "Sant'Agostino, Monica Scholz-Zappa",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Terra degli uomini",
+    "a": "Antoine de Saint-Exupéry",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Terzo viaggio nel regno della fantasia",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "The  wonderful wizard of Oz",
+    "a": "L. Frank Baum",
+    "l": "Libreria bianca - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "The Adventures of Huckleberry Finn",
+    "a": "Clay Stafford",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The Complete Father Brown Mysteries",
+    "a": "Gilbert Keith Chesterton",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The curious incident of the dog in the night-time",
+    "a": "Mark Haddon",
+    "l": "Mensola - cameretta grandi",
+    "lang": "English"
+  },
+  {
+    "t": "The curious incident of the dog in the night-time - summary",
+    "a": "Mark Haddon",
+    "l": "Mensola - cameretta grandi",
+    "lang": "English"
+  },
+  {
+    "t": "The Death Cure",
+    "a": "James Dashner, James Dashner",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The Fork, the Witch, and the Worm",
+    "a": "Christopher Paolini, Angela Paolini",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The Heroes of Olympus 1: The lost hero",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The Kane Chronicles. La piramide rossa",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "The kid who only hit homers",
+    "a": "Matthew F. Christopher",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The Map to Everywhere",
+    "a": "Carrie Ryan",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The mark of Athena",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The Martian",
+    "a": "Andy Weir",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The Maze Runner",
+    "a": "James Dashner",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The memoirs of Sherlock Holmes",
+    "a": "Arthur Conan Doyle",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The secret garden",
+    "a": "Frances Hodgson Burnett",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The sign of the beaver",
+    "a": "Elizabeth George Speare",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The son of neptune",
+    "a": "Rick Riordan",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The strange case of Dr. Jekyll and Mr. Hyde",
+    "a": "Robert Louis Stevenson",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The summer of the swans",
+    "a": "Betsy Cromer Byars",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The Twins",
+    "a": "Roald Dahl",
+    "l": "Cubotti - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "The Wimpy Kid: Do-It-For-Yourself book",
+    "a": "Jeff Kinney",
+    "l": "Cubotti - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "Think Talk Create",
+    "a": "David Brendel, Ryan Stelzer",
+    "l": "Libreria legno - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Thinking, fast and slow",
+    "a": "Daniel Kahneman",
+    "l": "Mensola - cameretta grandi",
+    "lang": "English"
+  },
+  {
+    "t": "This is a job for an Emergency Machine",
+    "a": "Chris Oxlade",
+    "l": "Libreria bianca - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "Ti voglio bene perché...",
+    "a": "Susie Linn",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "To Kill a Mockingbird",
+    "a": "Harper Lee",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Tonio Kröger",
+    "a": "Thomas Mann",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Torniamo a casa : l'imprevisto: storia di un pericolante e dei suoi ragazzi",
+    "a": "Silvio Cattarina",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Traccia di Dio",
+    "a": "Montserrat del Amo",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Trappola per troll",
+    "a": "Beastly Boys",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Tre avventure con gli amici cuccioli",
+    "a": "Tea Stilton",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Tre camere a Manhattan",
+    "a": "Georges Simenon",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Triduo pasquale ambrosiano",
+    "a": "",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Tu o dell'amicizia. Quasi Tischreden",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Tutta la gloria nel profondo. Il mondo, la carne e padre Smith",
+    "a": "Bruce Marshall",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Tutte le poesie",
+    "a": "Cesare Pavese",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Tutti vostri? : viaggio nel mondo delle famiglie numerose",
+    "a": "Associazione nazionale famiglie numerose",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Tutto chiede salvezza : romanzo",
+    "a": "Daniele Mencarelli",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Tutto scorre...",
+    "a": "Vasilij Grossman",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Ulisse : il mare color del vino : il racconto dell'eroe più astuto, più intelligente e più umano dell'antichità : romanzo",
+    "a": "Giovanni Nucci",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Un anno con il Vangelo : i vangeli della liturgia di ogni giorno : anno 2023",
+    "a": "",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Un anno sull'Altipiano",
+    "a": "Emilio Lussu",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Un caffè in compagnia",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Un cammino di bellezza. L'abbazia di Morimondo attraverso lo sguardo di Sandro Rondena",
+    "a": "Sandro Rondena, Mauro Giuseppe Lepori"
+  },
+  {
+    "t": "Un cavaliere prima dell'alba",
+    "a": "Mary Pope Osborne",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Un istante prima dell'alba : Siria : cronache di guerra e di speranza da Aleppo",
+    "a": "Ibrahim Alsabagh",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Un luogo chiamato liberta'",
+    "a": "Ken Follett",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Un mese con Montalbano",
+    "a": "Andrea Camilleri",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Un popolo e i suoi canti",
+    "a": "Tommaso Baviera",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Un popolo pieno di canti",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Un' amicizia... in ballo : storia di un'integrazione a suon di musica",
+    "a": "Roberto Morgese",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Un' avventura per sé : si puo vivere così",
+    "a": "",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Un'altra musica",
+    "a": "Pippo Molino",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Un'avvenimento di vita cioè: UNA STORIA",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Una casa per il paguro Bernardo",
+    "a": "Eric Carle",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Una casetta troppo stretta",
+    "a": "Julia Donaldson",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Una coppia beata per le famiglie - Beati Zelia e Luigi Martin",
+    "a": "P. Raffaele Giuseppe Amendolagine",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Una fiamma inestinguibile : l'avventurosa vita di sant'Agostino",
+    "a": "Louis de Wohl",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Una per i Murphy",
+    "a": "Lynda Mullaly Hunt",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Una ragione per affidarsi",
+    "a": "Giuseppe Monaco",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Una rivoluzione di sé : la vita come comunione (1968-1970)",
+    "a": "Luigi Giussani",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Una santa famiglia : Teresa di Lisieux e i suoi genitori Zelia Guérin e Luigi Martin",
+    "a": "Antonio Maria Sicari",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Una via per incominciare",
+    "a": "Marta Dell'Asta",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Una volta sola : storie di chi ha avuto il coraggio di scegliere",
+    "a": "Mario Calabresi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Undicesimo viaggio nel regno della fantasia : l'isola dei draghi",
+    "a": "Geronimo Stilton",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Ungaretti: un'antologia delle opere",
+    "a": "Leone Piccioni",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Uno sguardo luminoso : beata Chiara Badano",
+    "a": "Mariagrazia Magrini",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Uno spirito in piedi",
+    "a": "Elio Nicola Bardi",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Unplanned. e la sua distribuzione",
+    "a": "Federica Picchi Roncali",
+    "h": "Papà"
+  },
+  {
+    "t": "Unscripted : esci dal copione vita, libertà e spirito imprenditoriale",
+    "a": "MJ DeMarco",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Vacanze all'isola dei gabbiani",
+    "a": "Astrid Lindgren",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Valeria : il cielo lo si porta dentro",
+    "a": "Sr. Estela Morales Pérez",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Van Thuan : libero tra le sbarre",
+    "a": "Teresa Gutiérrez de Cabiedes",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Vangeli e Atti degli apostoli",
+    "a": "",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Vangeli e atti degli Apostoli : testo e guida di lettura",
+    "a": "",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Vangelo e Atti degli Apostoli",
+    "a": "",
+    "h": "Mamma"
+  },
+  {
+    "t": "Verrà la morte e avrà i tuoi occhi",
+    "a": "Cesare Pavese",
+    "l": "Cubotti - cameretta grandi"
+  },
+  {
+    "t": "Via Crucis",
+    "a": "Giacomo Landoni",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Viaggio al centro della terra",
+    "a": "Jules Verne",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Viaggio intorno alla terra. Atlante tridimensionale",
+    "a": "François Michel",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Videro e credettero: la bellezza e la gioia di essere cristiani",
+    "a": "",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Vita di don Giussani",
+    "a": "Alberto Savorana",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Vita di Gesù",
+    "a": "Francois Mauriac",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Vita e destino",
+    "a": "Vasilij Grossman",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Viteliù : il viaggio di Marzio : romanzo storico",
+    "a": "Nicola Mastronardi",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Viva le ragazze! : guida per crescere col sorriso",
+    "a": "Séverine Clochard",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Vivendo nella carne. Quasi Tischreden",
+    "a": "Luigi Giussani",
+    "l": "Libreria - scala"
+  },
+  {
+    "t": "Voglio tutto",
+    "a": "Marta Bellavista",
+    "l": "Mensola - cameretta grandi"
+  },
+  {
+    "t": "Vol. 1: 1981-1994 : dalle prime apparizioni agli anni della guerra in Bosnia",
+    "a": "Marco Vignati",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Vol. 2: Dal 1995 a oggi : la più grande iniziativa di Dio per il nostro tempo",
+    "a": "Marco Vignati",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Vol. 2: Purgatorio",
+    "a": "Franco Nembrini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Vol. 3: Paradiso",
+    "a": "Franco Nembrini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Vol.1: Inferno",
+    "a": "Franco Nembrini",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "Wandmaker",
+    "a": "Ed Masessa",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Wings of Fire 5: The Brightest Night",
+    "a": "T. T. Sutherland",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Wings of Fire 6: Moon Rising",
+    "a": "T. T. Sutherland",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Wings of Fire 8: Escaping Peril",
+    "a": "T. T. Sutherland",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Wonder",
+    "a": "R. J. Palacio",
+    "l": "Libreria bianca - mansarda",
+    "lang": "English"
+  },
+  {
+    "t": "Wonder (italiano)",
+    "a": "R. J. Palacio",
+    "l": "Cubotti - mansarda"
+  },
+  {
+    "t": "Zanna bianca",
+    "a": "Jack London",
+    "l": "Libreria bianca - mansarda"
+  },
+  {
+    "t": "I tre doni del giullare",
+    "a": "Max Bolliger; Gianni De Conno",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Draghi",
+    "a": "Tony Wolf",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L' Alhambra raccontata ai bambini",
+    "a": "Ricardo Villa-Real",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il gigante egoista",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Aerei di carta",
+    "a": "Doug Stillinger",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il libro dei perché. La scienza",
+    "a": "Katie Daynes",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Aiuto",
+    "a": "Jutta Langreuter; Andrea Hebrock",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il posto giusto",
+    "a": "Beatrice Masini",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I Don't Want to Be A Frog",
+    "a": "Dev Petty",
+    "l": "Libreria bianca - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "La città che sussurrò",
+    "a": "Jennifer Elvgren",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I cavalieri della tavola rotonda",
+    "a": "Stelio Martelli",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il grande libro della mitologia. Iliade ; Odissea ; Eneide",
+    "a": "Stelio Martelli; Stefania Stefani",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Natura è...",
+    "a": "Sonia Maria Luce Possentini",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Ci son 2 coccodrilli",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I tre moschettieri",
+    "a": "Alexandre Dumas",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Le barzellette della nonna pop 2",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I capelli del sole",
+    "a": "Peppino Cislaghi",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Canzoni Animali. dalla A alla Zebra",
+    "a": "Umberto Abbiati",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "GrammatiCanto",
+    "a": "Alberto Villa",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Cicloni e Uragani",
+    "a": "Jack Challoner",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Le battaglie",
+    "a": "Richard Holmes",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Storie allegre",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Le avventure di Tonino l'invisibile",
+    "a": "Gianni Rodari",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Michele e i colori",
+    "a": "Martino Santuari",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Nel regno di Belgarbo : [perfino i draghi conoscono le buone maniere!]",
+    "a": "Flavia Franco",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il fantasma dispettoso : [Una storia di paura tutta da ridere!]",
+    "a": "Loredana Frescura",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Vacanze pazze",
+    "a": "Luigino Quaresima",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Strega comanda colori : [Leggi e gioca con i colori dell'arcobaleno]",
+    "a": "David Conati",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il gigante più elegante",
+    "a": "Julia Donaldson",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La famiglia orsetti. Una sorellina in arrivo!",
+    "a": "Stan Berenstain",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La famiglia orsetti. Tanti auguri, mamma!",
+    "a": "Stan Berenstain",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La famiglia orsetti. Facciamo pace!",
+    "a": "Stan Berenstain",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La famiglia orsetti. Troppi impegni",
+    "a": "Stan Berenstain",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Io e il mio amico vuoto",
+    "a": "Azam Mahdavī",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La famiglia orsetti. Si cambia casa",
+    "a": "Stan Berenstain",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "The Berenstain bears and the truth",
+    "a": "Stan Berenstain",
+    "l": "Libreria bianca - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "Il Gruffalò",
+    "a": "Julia Donaldson",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I doni di San Nicola",
+    "a": "Gianluca Recalcati",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "You gotta be kidding!",
+    "a": "Randy Horn",
+    "l": "Libreria bianca - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "DIABOLIK Swiisss. Il morto che uccide",
+    "a": "Giussani Angela",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La sfera delle meraviglie",
+    "a": "Arcadio Lodato",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Addio Bosconatìo",
+    "a": "Mary Risk",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Un' amica in pericolo",
+    "a": "Mary Risk",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il dono. Un racconto di Natale",
+    "a": "Antonio Anastasio",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Cavoli a merenda e le basi per cantare insieme",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Red e Toby nemiciamici",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il tuo dono speciale",
+    "a": "Max Lucado",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Tu sei speciale : una storia per tutti",
+    "a": "Max Lucado",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Tu sei mio: un dono per tutti",
+    "a": "Max Lucado",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Le più belle filastrocche",
+    "a": "Tony Wolf",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La coccinella prepotente",
+    "a": "Eric Carle",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I Camion",
+    "a": "Lara Bryan",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Federico",
+    "a": "Leo Lionni",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Guizzino",
+    "a": "Leo Lionni",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Storia di una gabbianella e del gatto che le insegnò a volare : [romanzo]",
+    "a": "Luis Sepúlveda",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Gastone ha paura dell'acqua",
+    "a": "Attilio Locatelli",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il pesciolino d'oro",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L'alba del dragone",
+    "a": "Mary Pope Osborne",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Un gancio in mezzo al cielo",
+    "a": "Giulia Gabrielli",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Ho fatto gol in champions!",
+    "a": "Paolo Colombo",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il mio viaggio della speranza. Dal Senegal all'Italia in cerca di fortuna",
+    "a": "Bay Mademba",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "GOL! La sfida decisiva",
+    "a": "Luigi Garlando",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Miss Marple nei Caraibi",
+    "a": "Agatha Christie",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il lupo che andò a Betlemme",
+    "a": "Antonio Anastasio",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Cammino d'Avvento. La notte Santa",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Posso diventare un campione dello sport",
+    "a": "Evonne Goolagong",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I tre porcellini",
+    "a": "Walt Disney",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "San Galgano e la spada nella roccia",
+    "a": "Daniela Braccini",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Amici per Sempre. Rita da Cascia, Pier Giorgio Frassati, Padre Pio",
+    "a": "Ines Belski Lagazzi",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Tre amici per la vita. Antionio di Padova, Caterina da Siena, Bernadetta",
+    "a": "Ines Belski Lagazzi; Giuseppino De Roma",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Viveva a Gerico un uomo di nome Zaccheo",
+    "a": "Eugenio Dal Pane",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Frate Francesco e i suoi fioretti",
+    "a": "Dino Battaglia",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Horton and the Kwuggerbug and more lost stories",
+    "a": "Dr. Seuss",
+    "l": "Libreria bianca - cameretta piccoli",
+    "lang": "English"
+  },
+  {
+    "t": "Pregare",
+    "a": "Luigi Giussani",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Gli impressionisti. Alle origini della pittura contemporanea",
+    "a": "Francesco Salvi",
+    "l": "Libreria legno - mansarda"
+  },
+  {
+    "t": "Nella tomba dell'antico faraone",
+    "a": "Štěpánka Sekaninová",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Che rabbia!",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Pingu e la sua famiglia",
+    "a": "Tony Wolf",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Chissadove",
+    "a": "Cristiana <1970 - > Valentini",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Lumba il leone",
+    "a": "Stefano Mammimi",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Bernadette de Lourder. Raccontata ai bambini",
+    "a": "A. Doucet",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I pastorelli di Fatima",
+    "a": "Gianni Caratelli",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Tullio, un anno dopo : 10 parabole raccontate da un ragazzo",
+    "a": "Massimo Camisasca",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I più bei racconti della Bibbia",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I perché della Bibbia : 110 domande sulla sacra scrittura",
+    "a": "Roberta Taverna",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Aspettando Natale 2: calendario d'Avvento ogni giorno una storia",
+    "a": "Annalena Valenti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Grande libro dei Santi : vita, morte e miracoli dei principali santi del calendario liturgico",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il più bel libro dei santi : dai tempi di Gesù ad oggi!",
+    "a": "David Self",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La mia prima storia di Gesù",
+    "a": "Christopher Doyle",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Maria e Giuseppe : storie di uomini storia di Dio",
+    "a": "Andrea Marinzi",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Vogliamo vedere Gesù : i bambini interrogano il Patriarca",
+    "a": "Angelo Scola",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Mio Signore e mio Dio : la fede di Tommaso : omelia ai bambini del 7 aprile 2002, prima domenica di Pasqua",
+    "a": "Mauro Inzoli",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La profezia di Isaia ad Acaz",
+    "a": "Mauro Inzoli",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il pane del cielo",
+    "a": "Pierdomenico Baccalario",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Un amico in paradiso : la vita di papa Giovanni Paolo 2. raccontata ai bambini",
+    "a": "Laura Putzu",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Abbracciati da Gesù. La confessione",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Perché tu sia felice : Eucaristia, nutrimento della vita",
+    "a": "Eugenio Dal Pane",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Le dieci parole di Tullio : i 10 comandamenti raccontati da un bambino",
+    "a": "Massimo Camisasca",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Caro Dio. ti scrivo",
+    "a": "Stella Gurnet",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Via Crucis. L'amore di Dio per ogni uomo",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "La notte più bella. È Natale: nasce Gesù Bambino",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Ecco come funziona. 250 oggetti da scoprire",
+    "a": "Jaël e Clément Lebeaume",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Le più belle preghiere per la comunione",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Natale porta il tuo nome : racconti ai bambini",
+    "a": "Mario Delpini",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Per un'altra strada. Nel corteo dei Magi",
+    "a": "Mario Delpini",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Carlo Acutis",
+    "a": "Maria Teresa Antognazza",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Originali, non fotocopie : Carlo Acutis e Francesco d'Assisi",
+    "a": "Domenico Sorrentino",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Storia semplice di Francesco",
+    "a": "Augustina Marchetti Dori",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I tre pastorelli di Fatima",
+    "a": "Piera Paltro",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Santa Caterina Labouré",
+    "a": "Marie-Geneviève Roux",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "San Vincenzo de Paoli",
+    "a": "Suor Catherinne Ethievant",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Vivere da grandi",
+    "a": "Angelo Scola",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Sant'Agostino",
+    "a": "Elena Pascoletti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "San Camillo de Lellis",
+    "a": "Elena Pascoletti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "San Francesco d'Assisi",
+    "a": "Silvia Vecchini",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "San Giovanni Bosco",
+    "a": "Bruno Ferrero",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Sant'Ignazio di Loyola",
+    "a": "Sylwia Proniewicz",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Sant'Ambrogio",
+    "a": "Elena Pascoletti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Santa Giuseppina Bakhita",
+    "a": "Francesca Fabris",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "San Pietro",
+    "a": "Elena Pascoletti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "San Filippo Neri",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Santa Caterina da Siena",
+    "a": "Francesca Fabris",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Santa Teresa d'Avila",
+    "a": "piccolo gregge",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Santa Bernadette",
+    "a": "Claudia Cellesi",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Santa Chiara d'Assisi",
+    "a": "Francesca Fabris",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "San Paolo",
+    "a": "Gruppo il Sicomoro",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Sant'Agata",
+    "a": "Francesca Fabris",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Chiara Luce Badano",
+    "a": "Baldassare Palermo",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "San Giovanni della Croce",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "San Luca",
+    "a": "piccolo gregge",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "San Giuseppe",
+    "a": "Francesca Fabris",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Gianna Beretta Molla",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Isacco",
+    "a": "Don Antonio Villa",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Davide",
+    "a": "Don Antonio Villa",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Mosè",
+    "a": "Don Antonio Villa",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Giobbe",
+    "a": "Don Antonio Villa",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Cieli in dialogo",
+    "a": "Anna Casalone",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il vangelo raccontato ai bambini",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Gli amici di Gesù : brani dalle udienze generali del Santo Padre dedicate ai dodici Apostoli e a San Paolo",
+    "a": "Papa Benedetto XVI",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I miei santi : brani tratti da interventi del Santo Padre su san Giuseppe, san Benedetto e sant'Agostino",
+    "a": "Papa Benedetto XVI",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Il beato Rolando Rivi : io sono di Gesù",
+    "a": "Emilio Bonicelli",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Manolo e il dottor Pampuri",
+    "a": "Giampiero Pizzol",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Gesù vi dà la forza",
+    "a": "Papa Francesco",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Venite a vedere : gli incontri del Vangelo raccontati",
+    "a": "Luca Doninelli",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I ragazzi di Gesù",
+    "a": "Don Antonio Villa",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L' asino che portava Gesù",
+    "a": "Roberto Filippetti",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Non abbiate paura di sognare cose grandi : Papa Francesco parla ai ragazzi",
+    "a": "Papa Francesco",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Don Bosco per ragazzi",
+    "a": "Teresio Bosco",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "I miracoli di Gesù messi in cena",
+    "a": "Michael Perry",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Dall'Avvento al Natale. In cammino verso Gesù",
+    "a": "",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Giona",
+    "a": "Don Antonio Villa",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Sansone",
+    "a": "Don Antonio Villa",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Solo Lui pace vera per gli uomini",
+    "a": "Cammino d'Avvento Cometa",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Seguiamo la Stella",
+    "a": "Cammino d'Avvento Cometa",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "L' arte di ricominciare : i sei giorni della creazione e l'inizio del discernimento",
+    "a": "Fabio Rosini"
+  }
 ]

@@ -1,4 +1,30 @@
 [
-  { "id": "L001", "book": "Il nome della rosa", "lentBy": "Tommi", "borrowedBy": "Marco", "dateLent": "15/09/2026" },
-  { "id": "L002", "book": "1984", "lentBy": "Papà", "borrowedBy": "Luisa", "dateLent": "01/10/2026" }
+  {
+    "id": "L002",
+    "book": "Il treno delle spighe dorate. Cronaca di una missione in Siberia",
+    "lentBy": "Tommi",
+    "borrowedBy": "Bonni",
+    "dateLent": "01/09/2026"
+  },
+  {
+    "id": "L003",
+    "book": "La mia storia",
+    "lentBy": "Tommi",
+    "borrowedBy": "Gio Roca",
+    "dateLent": "01/09/2026"
+  },
+  {
+    "id": "L004",
+    "book": "L'origine del sublime",
+    "lentBy": "Tommi",
+    "borrowedBy": "Strizza",
+    "dateLent": "07/09/2026"
+  },
+  {
+    "id": "L005",
+    "book": "Harry Potter and the philosopher's stone",
+    "lentBy": "Tommi",
+    "borrowedBy": "Cate Zac",
+    "dateLent": "01/09/2026"
+  }
 ]
