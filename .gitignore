@@ -1,5 +1,6 @@
 js/config.js
 *.key.json
+*-key.json
 service-account*.json
 __pycache__/
 *.pyc
