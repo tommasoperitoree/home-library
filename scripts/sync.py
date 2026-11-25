@@ -22,6 +22,7 @@ import argparse
 import io
 import json
 import os
+import re
 import sys
 import tempfile
 
@@ -84,8 +85,14 @@ def normalize_language(raw):
     return LANGUAGE_MAP.get(raw.strip().lower(), raw.strip())
 
 
+def normalize_header_key(cell):
+    # Strips spaces/punctuation so header variants like "Library/Shelf",
+    # "Library" or "Lent By (family member)" all normalize predictably.
+    return re.sub(r'[^a-z0-9]', '', str(cell).strip().lower())
+
+
 def header_index(header_row):
-    return {str(cell).strip().lower(): i for i, cell in enumerate(header_row) if cell}
+    return {normalize_header_key(cell): i for i, cell in enumerate(header_row) if cell}
 
 
 def parse_books(workbook):
@@ -109,7 +116,7 @@ def parse_books(workbook):
 
         book = {'t': title, 'a': cell('author')}
 
-        shelf = cell('library/shelf')
+        shelf = cell('library')
         if shelf:
             book['l'] = shelf
 
@@ -140,9 +147,13 @@ def parse_loans(workbook):
             i = idx.get(name)
             return row[i] if i is not None else None
 
-        book = cell('book')
+        book = cell('booktitle')
         if not book:
             continue
+
+        date_returned = cell('datereturned')
+        if date_returned:
+            continue  # only active (unreturned) loans
 
         date_lent = cell('datelent')
         if hasattr(date_lent, 'strftime'):
@@ -153,10 +164,10 @@ def parse_loans(workbook):
             date_lent = ''
 
         loans.append({
-            'id': str(cell('id') or '').strip(),
+            'id': str(cell('loanid') or '').strip(),
             'book': str(book).strip(),
-            'lentBy': str(cell('lentby') or '').strip(),
-            'borrowedBy': str(cell('borrowedby') or '').strip(),
+            'lentBy': str(cell('lentbyfamilymember') or '').strip(),
+            'borrowedBy': str(cell('borrowedbyexternal') or '').strip(),
             'dateLent': date_lent,
         })
     return loans

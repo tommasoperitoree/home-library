@@ -1,8 +1,14 @@
 // Google Apps Script Web App source.
 // Deploy as: Web App, Execute as: Me, Access: Anyone.
 //
-// Spreadsheet "Books" sheet columns: Title, Author, Library/Shelf, Language, HeldBy
-// Spreadsheet "Loans" sheet columns:  ID, Book, LentBy, BorrowedBy, DateLent
+// Spreadsheet "Books" sheet columns (actual): Title, Author, Library, Copies,
+//   ISBN, Publisher, Year, Language, Held By, Status, Active Loans, Subjects,
+//   Notes, Cover URL, Scanned time, SeriesName, SeriesOrder, ReadBy
+//   (only Title, Author, Library, Language, Held By are used — see parseBooks)
+// Spreadsheet "Loans" sheet columns (actual): LoanID, Book Title, Library,
+//   Lent By (family member), Borrowed By (external), Date Lent,
+//   Expected Return, Date Returned, Notes
+//   (rows with a non-empty Date Returned are excluded — only active loans are returned)
 
 const SPREADSHEET_ID = '1HoeEFx_-alYJg6KtL9UUmmDZQZsMwSTY_biIoeSZoUw';
 
@@ -48,7 +54,7 @@ function parseBooks(sheet) {
   const idx = {
     title: header.indexOf('title'),
     author: header.indexOf('author'),
-    shelf: header.indexOf('libraryshelf'),
+    shelf: header.indexOf('library'),
     language: header.indexOf('language'),
     heldBy: header.indexOf('heldby'),
   };
@@ -84,17 +90,21 @@ function parseLoans(sheet) {
   const header = rows.shift().map(normalizeHeaderKey);
 
   const idx = {
-    id: header.indexOf('id'),
-    book: header.indexOf('book'),
-    lentBy: header.indexOf('lentby'),
-    borrowedBy: header.indexOf('borrowedby'),
+    id: header.indexOf('loanid'),
+    book: header.indexOf('booktitle'),
+    lentBy: header.indexOf('lentbyfamilymember'),
+    borrowedBy: header.indexOf('borrowedbyexternal'),
     dateLent: header.indexOf('datelent'),
+    dateReturned: header.indexOf('datereturned'),
   };
 
   const loans = [];
   for (const row of rows) {
     const book = String(row[idx.book] || '').trim();
     if (!book) continue;
+
+    const dateReturned = idx.dateReturned >= 0 ? row[idx.dateReturned] : '';
+    if (dateReturned) continue; // only active (unreturned) loans
 
     loans.push({
       id: String(row[idx.id] || '').trim(),
