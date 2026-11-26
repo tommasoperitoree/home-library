@@ -67,6 +67,7 @@ function selectMember(name) {
 }
 
 function switchTab(tab) {
+  stopActiveScanner();
   state.activeTab = tab;
   tabTitle.textContent = TAB_TITLES[tab];
   for (const [key, panel] of Object.entries(panels)) {
@@ -204,12 +205,95 @@ function renderTabCatalogo() {
 function renderAddBookToggle(container) {
   container.innerHTML = '';
   container.appendChild(
-    el('button', {
-      className: 'add-book-toggle',
-      text: '+ Aggiungi libro',
-      onClick: () => renderAddBookForm(container),
-    })
+    el('div', { className: 'catalogo-actions' }, [
+      el('button', {
+        className: 'add-book-toggle',
+        text: '+ Aggiungi libro',
+        onClick: () => renderAddBookForm(container),
+      }),
+      el('button', {
+        className: 'scan-isbn-btn',
+        text: '📷 Scansiona ISBN',
+        onClick: () => openIsbnScanner(),
+      }),
+    ])
   );
+}
+
+let activeScanner = null;
+
+function stopActiveScanner() {
+  if (!activeScanner) return;
+  const scanner = activeScanner;
+  activeScanner = null;
+  scanner.stop().catch(() => {});
+}
+
+// Scanned-only adds land with just an ISBN and a blank title; the Apps
+// Script time-driven trigger (runEnrichmentBatch in apps-script/enrich.gs)
+// fills in the rest within a minute or two, so books don't appear in
+// Catalogo immediately after a scan — that's expected, not a bug.
+function openIsbnScanner() {
+  let scanCount = 0;
+  let lastCode = '';
+  let lastTime = 0;
+
+  openBottomSheet(sheetBackdrop, bottomSheet, sheetContent, (container) => {
+    const status = el('div', { className: 'form-message', text: 'Inquadra il codice a barre del libro.' });
+    const counter = el('div', { className: 'scan-counter', text: '0 libri aggiunti in questa sessione' });
+    const readerDiv = el('div', { attrs: { id: 'isbn-reader' } });
+
+    const stopScanner = () => {
+      stopActiveScanner();
+      closeBottomSheet(sheetBackdrop, bottomSheet);
+    };
+
+    const onScan = async (decodedText) => {
+      const isbn = decodedText.replace(/[^0-9Xx]/g, '');
+      if (isbn.length !== 10 && isbn.length !== 13) return;
+
+      const now = Date.now();
+      if (isbn === lastCode && now - lastTime < 3000) return;
+      lastCode = isbn;
+      lastTime = now;
+
+      status.textContent = `Aggiungo ISBN ${isbn}…`;
+      try {
+        await addBook({ isbn });
+        scanCount += 1;
+        counter.textContent = `${scanCount} ${scanCount === 1 ? 'libro aggiunto' : 'libri aggiunti'} in questa sessione`;
+        status.textContent = `✅ ISBN ${isbn} in elaborazione (compare nel catalogo tra 1-2 minuti).`;
+      } catch (err) {
+        status.textContent = `Errore: ${err.message}`;
+      }
+    };
+
+    container.appendChild(el('h2', { text: '📷 Scansiona ISBN' }));
+    container.appendChild(readerDiv);
+    container.appendChild(status);
+    container.appendChild(counter);
+    container.appendChild(
+      el('div', { className: 'form-actions' }, [
+        el('button', { className: 'btn-secondary', text: 'Chiudi', onClick: stopScanner }),
+      ])
+    );
+
+    if (window.Html5Qrcode) {
+      const scanner = new window.Html5Qrcode('isbn-reader');
+      activeScanner = scanner;
+      scanner
+        .start(
+          { facingMode: 'environment' },
+          { fps: 10, qrbox: { width: 250, height: 150 } },
+          (decodedText) => onScan(decodedText)
+        )
+        .catch((err) => {
+          status.textContent = `Impossibile avviare la fotocamera: ${err}`;
+        });
+    } else {
+      status.textContent = 'Libreria di scansione non disponibile.';
+    }
+  });
 }
 
 function renderAddBookForm(container) {
@@ -412,7 +496,10 @@ function openMemberSheet(member) {
   });
 }
 
-sheetBackdrop.addEventListener('click', () => closeBottomSheet(sheetBackdrop, bottomSheet));
+sheetBackdrop.addEventListener('click', () => {
+  stopActiveScanner();
+  closeBottomSheet(sheetBackdrop, bottomSheet);
+});
 
 // ---------- Boot ----------
 

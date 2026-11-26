@@ -350,19 +350,51 @@ input {
   margin: 4px 0 10px;
 }
 
-.add-book-toggle {
+.catalogo-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.catalogo-actions .add-book-toggle,
+.catalogo-actions .scan-isbn-btn {
+  margin-bottom: 0;
+}
+
+.add-book-toggle,
+.scan-isbn-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  width: 100%;
+  flex: 1;
   justify-content: center;
   padding: 11px;
   margin-bottom: 12px;
   border-radius: var(--radius);
-  background: var(--brown);
   color: #fff;
   font-weight: 700;
   font-size: 14px;
+}
+
+.add-book-toggle {
+  background: var(--brown);
+}
+
+.scan-isbn-btn {
+  background: var(--gold);
+}
+
+.scan-counter {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+#isbn-reader {
+  margin: 10px 0;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .add-book-form {

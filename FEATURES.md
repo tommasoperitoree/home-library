@@ -13,15 +13,16 @@ Status: 💡 idea → 🚧 in progress → ✅ done → ⏸️ blocked
 
 | Item | Status | Notes |
 |---|---|---|
-| Apps Script write endpoint (`doPost`) | 🚧 in progress | Shared foundation for add-book, lending, and any future mutation. First action implemented: `addBook`. |
-| Write-endpoint auth | 💡 idea | Token check exists, but since the Apps Script source + the webapp's JS are both public (public repo, GitHub Pages), a token embedded in client code isn't a real secret — it only blocks casual/bot abuse of the bare URL, not a motivated visitor reading page source. Acceptable tradeoff for a family app; revisit if that changes. |
+| Apps Script write endpoint (`doPost`) | ✅ done | Shared foundation for add-book, lending, and any future mutation. `addBook` action live and tested against production (both via curl and the browser form). Accepts title-only, isbn-only, or both. |
+| Write-endpoint auth | ✅ done | Token check in place (`WRITE_TOKEN` script property). Since the Apps Script source + the webapp's JS are both public (public repo, GitHub Pages), a token embedded in client code isn't a real secret — it only blocks casual/bot abuse of the bare URL, not a motivated visitor reading page source. Acceptable tradeoff for a family app; revisit if that changes. |
 | Book row stable ID | 💡 idea | Books sheet has no equivalent of the Loans sheet's `LoanID`. Needed before any feature that edits an *existing* book row safely (vs. the loans flow, which already has `LoanID` to target). |
+| ISBN enrichment trigger | 🚧 in progress | `runEnrichmentBatch` in `apps-script/enrich.gs`, time-driven trigger (every 1 min, closest Apps Script allows to a 2-min buffer). Finds Books rows with an ISBN but blank Title (scan-only adds), looks up OPAC SBN → Open Library fallback → cover search (Open Library + Google Books), fills in Title/Author/Publisher/Year/Language/Subjects/Cover URL. Ported from the standalone `enrich_books_from_isbn.py` (which targeted a now-unused Airtable base) — Summary/Translator/Physical Description dropped since the sheet has no columns for them. Needs the one-time `installEnrichmentTrigger` run from the Apps Script editor to activate. Not yet live-tested against production (needs a real scanned ISBN to verify end to end). |
 
 ## Data-driven features (unused sheet columns)
 
 | Column | Status | Feature |
 |---|---|---|
-| **ISBN** | 💡 idea | Barcode-scan add-book flow; feeds `addBook` endpoint. Natural pairing with the iOS Shortcut idea below. |
+| **ISBN** | 🚧 in progress | Barcode-scan add-book flow (camera, `html5-qrcode` lib) in Catalogo → feeds `addBook` endpoint with isbn-only → `runEnrichmentBatch` fills in the rest within ~1-2 min. Natural pairing with the iOS Shortcut idea below (same endpoint, different entry point). |
 | **Cover URL** | 💡 idea | Real book cover thumbnails in Catalogo instead of the decorative color bar. Read-only, no backend change needed. |
 | **Subjects** | 💡 idea | Genre/topic filter chips alongside language/shelf in Catalogo. |
 | **SeriesName / SeriesOrder** | 💡 idea | Group a series together; show "Libro 3 di 5"; sort within series. |
@@ -37,8 +38,9 @@ Status: 💡 idea → 🚧 in progress → ✅ done → ⏸️ blocked
 
 | Feature | Status | Notes |
 |---|---|---|
-| **Add book endpoint** | 🚧 in progress | `doPost` action `addBook` in `apps-script/api.gs`, appends a row to the Books sheet. Header-mapped (robust to column reordering), minimal required field: Title. |
-| **Add book UI (webapp)** | 💡 idea | Small form in Catalogo calling the endpoint above. |
+| **Add book endpoint** | ✅ done | `doPost` action `addBook` in `apps-script/api.gs`, appends a row to the Books sheet. Header-mapped (robust to column reordering); accepts title and/or isbn. |
+| **Add book UI (webapp)** | ✅ done | "+ Aggiungi libro" form in Catalogo calling the endpoint above, with optimistic local update. |
+| **Scan ISBN UI (webapp)** | 🚧 in progress | "📷 Scansiona ISBN" button in Catalogo opens a camera barcode reader (bottom sheet), continuous-scan mode for adding a stack of books quickly. Each scan calls `addBook({isbn})` immediately; enrichment happens later (see infra table). Needs testing on an actual phone camera — not verifiable from a desktop browser session. |
 | **iOS Shortcut add-book flow** | 💡 idea | Camera → barcode → Google Books API lookup → POST to the same `addBook` endpoint. Webapp could offer a `shortcuts://run-shortcut?name=...` launcher button once the Shortcut exists and is shared to family devices. |
 | **Lending workflow (lend/return in-app)** | 💡 idea | `doPost` actions `lendBook` (append to Loans) / `returnBook` (set Date Returned on a LoanID). UI: "Presta" button on a book, "Segna restituito" on an active loan row in Io/Famiglia. |
 | **Book detail view** | 💡 idea | Tap-through screen for a book — prerequisite for showing Publisher/Year/Notes/Series/Subjects. |

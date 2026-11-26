@@ -85,7 +85,11 @@ function handleAddBook(ss, payload) {
   if (!sheet) return jsonResponse({ error: 'Books sheet not found' });
 
   const title = String(payload.title || '').trim();
-  if (!title) return jsonResponse({ error: 'title is required' });
+  const isbn = String(payload.isbn || '').trim();
+  // A scan-only add (just an ISBN, no title yet) is allowed: it lands with a
+  // blank Title, which runEnrichmentBatch (apps-script/enrich.gs) picks up
+  // and fills in on its next run.
+  if (!title && !isbn) return jsonResponse({ error: 'title or isbn is required' });
 
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);

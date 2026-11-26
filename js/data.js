@@ -14,7 +14,7 @@ export const APPS_SCRIPT_URL =
 // `js/config.js` (gitignored): window.WRITE_TOKEN = '...'. Note this only
 // deters casual abuse of the bare endpoint — it ships in the public client
 // bundle, so it is not real secrecy. See FEATURES.md.
-export const WRITE_TOKEN = window.WRITE_TOKEN || '';
+export const WRITE_TOKEN = window.WRITE_TOKEN || 'segretWriteHomeWebAppLibraryToken001';
 
 export const CACHE_KEY = 'hl_cache_v1';
 export const SELECTED_MEMBER_KEY = 'hl_selected_member';
