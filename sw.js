@@ -1,4 +1,4 @@
-const CACHE_NAME = 'home-library-v1';
+const CACHE_NAME = 'home-library-v2';
 
 const PRECACHE_URLS = [
   'index.html',

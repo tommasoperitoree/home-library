@@ -12,6 +12,7 @@ import {
   setHeldBy,
   lendBook,
   returnBook,
+  setLibrary,
 } from './data.js';
 import {
   renderMemberGrid,
@@ -610,13 +611,29 @@ function openMemberSheet(member) {
 // lending actions in one place. Three mutually-exclusive lending states,
 // same precedence as the sheet's own Status formula (In prestito > Con X >
 // available): an active Loans row always wins over the informal Held By
-// marker. Library is never written by anything here — only Held By or a
-// new/updated Loans row changes, per the project's lending design rule.
+// marker. Lending/holding never changes Library on its own; it's only
+// written when the user explicitly picks a shelf — "Cambia scaffale", or
+// confirming/choosing where the book goes when putting it back.
 const LANG_FULL_NAME = { IT: 'Italiano', EN: 'Inglese', ES: 'Spagnolo', DE: 'Tedesco' };
 
+// <select> of every known shelf, preselecting `current`. A current value not
+// in SHELVES (a shelf the sheet has but this app's list doesn't) is kept as
+// an option so it isn't silently lost.
+function shelfSelectEl(current, placeholder) {
+  const options = [el('option', { text: placeholder, attrs: { value: '' } })];
+  if (current && !SHELVES.some((s) => s.key === current)) {
+    options.push(el('option', { text: current, attrs: { value: current } }));
+  }
+  for (const s of SHELVES) options.push(el('option', { text: s.label, attrs: { value: s.key } }));
+  const select = el('select', { className: 'form-select' }, options);
+  select.value = current || '';
+  return select;
+}
+
 function openBookDetailSheet(book) {
-  let mode = 'main'; // 'main' | 'lend' | 'chooseUser'
+  let mode = 'main'; // 'main' | 'lend' | 'chooseUser' | 'changeShelf' | 'putBack' | 'putBackPick'
   let pendingAfterUser = null; // 'heldBy' | 'lend' — which action to resume once a member is picked
+  let putBackKind = null; // 'loan' | 'held' — which "put back" action the putBack modes complete
 
   function renderSheetBody(container) {
     container.innerHTML = '';
@@ -703,6 +720,120 @@ function openBookDetailSheet(book) {
       return;
     }
 
+    if (mode === 'changeShelf') {
+      const select = shelfSelectEl(book.l, 'Scegli scaffale…');
+      const saveBtn = el('button', { className: 'btn-primary', text: 'Salva' });
+      saveBtn.addEventListener('click', () => {
+        const library = select.value;
+        if (!library) {
+          message.textContent = 'Scegli uno scaffale.';
+          message.className = 'form-message error';
+          return;
+        }
+        if (library === (book.l || '')) {
+          mode = 'main';
+          renderSheetBody(container);
+          return;
+        }
+        saveBtn.disabled = true;
+        runAction(`Spostato in ${shelfLabel(library)}.`, async () => {
+          await setLibrary({ title: book.t, library });
+          book.l = library;
+        }).finally(() => {
+          saveBtn.disabled = false;
+        });
+      });
+      container.appendChild(el('div', { className: 'sheet-section-title', text: 'Cambia scaffale' }));
+      container.appendChild(el('div', { className: 'form-row' }, [select]));
+      container.appendChild(message);
+      container.appendChild(
+        el('div', { className: 'form-actions' }, [
+          saveBtn,
+          el('button', { className: 'btn-secondary', text: 'Annulla', onClick: () => { mode = 'main'; renderSheetBody(container); } }),
+        ])
+      );
+      return;
+    }
+
+    if (mode === 'putBack' || mode === 'putBackPick') {
+      // The shelf the book normally lives on. If the Books row's Library is
+      // blank (a known data gap, see FEATURES.md), fall back to the shelf the
+      // loan was recorded as coming from.
+      const home = book.l || (putBackKind === 'loan' && activeLoan ? activeLoan.library : '') || '';
+      const successMsg = putBackKind === 'loan' ? 'Restituito' : 'Rimesso a posto';
+
+      const doPutBack = (library) => {
+        // Only send `library` when it actually changes the Books row.
+        const libraryField = library !== (book.l || '') ? { library } : {};
+        return runAction(`${successMsg} in ${shelfLabel(library)}.`, async () => {
+          if (putBackKind === 'loan') {
+            await returnBook({ loanId: activeLoan.id, title: book.t, ...libraryField });
+            state.loans = state.loans.filter((l) => l.id !== activeLoan.id);
+          } else {
+            await setHeldBy({ title: book.t, heldBy: '', ...libraryField });
+            book.h = undefined;
+          }
+          book.l = library;
+          putBackKind = null;
+        });
+      };
+      const cancel = () => {
+        mode = 'main';
+        putBackKind = null;
+        renderSheetBody(container);
+      };
+
+      if (mode === 'putBack' && home) {
+        container.appendChild(el('div', { className: 'sheet-section-title', text: 'Dove lo rimetti?' }));
+        container.appendChild(el('div', { className: 'book-author', text: `Rimetterlo in ${shelfLabel(home)}?` }));
+        const yesBtn = el('button', { className: 'btn-primary', text: `✅ Sì, in ${shelfLabel(home)}` });
+        yesBtn.addEventListener('click', () => {
+          yesBtn.disabled = true;
+          doPutBack(home).finally(() => { yesBtn.disabled = false; });
+        });
+        container.appendChild(
+          el('div', { className: 'form-actions' }, [
+            yesBtn,
+            el('button', { className: 'btn-secondary', text: '🗂️ Altro scaffale', onClick: () => { mode = 'putBackPick'; renderSheetBody(container); } }),
+          ])
+        );
+        container.appendChild(message);
+        container.appendChild(
+          el('div', { className: 'form-actions' }, [
+            el('button', { className: 'btn-secondary', text: 'Annulla', onClick: cancel }),
+          ])
+        );
+        return;
+      }
+
+      // No known home shelf, or the user wants a different one: pick it.
+      const select = shelfSelectEl(mode === 'putBackPick' ? '' : home, 'Scegli scaffale…');
+      const confirmBtn = el('button', { className: 'btn-primary', text: 'Conferma' });
+      confirmBtn.addEventListener('click', () => {
+        const library = select.value;
+        if (!library) {
+          message.textContent = 'Scegli uno scaffale.';
+          message.className = 'form-message error';
+          return;
+        }
+        confirmBtn.disabled = true;
+        doPutBack(library).finally(() => { confirmBtn.disabled = false; });
+      });
+      container.appendChild(el('div', { className: 'sheet-section-title', text: 'In quale scaffale lo rimetti?' }));
+      if (!home) {
+        container.appendChild(el('div', { className: 'book-author', text: 'Questo libro non ha ancora uno scaffale.' }));
+      }
+      container.appendChild(el('div', { className: 'form-row' }, [select]));
+      container.appendChild(message);
+      container.appendChild(
+        el('div', { className: 'form-actions' }, [
+          confirmBtn,
+          el('button', { className: 'btn-secondary', text: 'Annulla', onClick: cancel }),
+        ])
+      );
+      return;
+    }
+
     if (mode === 'lend') {
       const borrowedByInput = el('input', {
         className: 'form-input',
@@ -765,11 +896,11 @@ function openBookDetailSheet(book) {
         el('button', {
           className: 'btn-primary',
           text: '✅ Segna restituito',
-          onClick: () =>
-            runAction('Restituito.', async () => {
-              await returnBook({ loanId: activeLoan.id });
-              state.loans = state.loans.filter((l) => l.id !== activeLoan.id);
-            }),
+          onClick: () => {
+            putBackKind = 'loan';
+            mode = 'putBack';
+            renderSheetBody(container);
+          },
         })
       );
     } else if (book.h) {
@@ -777,11 +908,11 @@ function openBookDetailSheet(book) {
         el('button', {
           className: 'btn-primary',
           text: '↩️ Rimetti a posto',
-          onClick: () =>
-            runAction('Rimesso a posto.', async () => {
-              await setHeldBy({ title: book.t, heldBy: '' });
-              book.h = undefined;
-            }),
+          onClick: () => {
+            putBackKind = 'held';
+            mode = 'putBack';
+            renderSheetBody(container);
+          },
         })
       );
     } else {
@@ -822,6 +953,18 @@ function openBookDetailSheet(book) {
     }
 
     container.appendChild(actions);
+    container.appendChild(
+      el('div', { className: 'form-actions' }, [
+        el('button', {
+          className: 'btn-secondary',
+          text: book.l ? '🗂️ Cambia scaffale' : '🗂️ Assegna scaffale',
+          onClick: () => {
+            mode = 'changeShelf';
+            renderSheetBody(container);
+          },
+        }),
+      ])
+    );
     container.appendChild(message);
   }
 
