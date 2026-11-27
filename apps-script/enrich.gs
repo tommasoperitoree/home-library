@@ -69,6 +69,15 @@ function runEnrichmentBatch() {
     const sheetRow = r + 1; // 1-indexed for getRange
     const info = lookupIsbn_(isbn);
 
+    if (info === undefined) {
+      // A fetch/parse error happened somewhere along the way (network blip,
+      // non-200, bad JSON) rather than both sources genuinely having no
+      // record. Leave the title blank so this row gets retried next run,
+      // instead of permanently stamping it as "not found".
+      Utilities.sleep(300);
+      continue;
+    }
+
     if (!info || !info.title) {
       sheet.getRange(sheetRow, idx.title + 1).setValue('⚠️ ISBN non trovato — inserisci manualmente');
       Utilities.sleep(300);
@@ -97,16 +106,35 @@ function runEnrichmentBatch() {
   }
 }
 
+// Each lookup_* function below returns one of three things:
+//   an info object  — found
+//   null             — confirmed: the source responded normally and has no
+//                      record for this ISBN
+//   undefined        — unknown: the request itself failed (network error,
+//                      non-200, unparseable body) — NOT the same as "no
+//                      record", and must not be treated as a final answer.
 function lookupIsbn_(isbn) {
+  let erred = false;
+
   let result = lookupSbn_(isbn);
+  if (result === undefined) { erred = true; result = null; }
+
   if (!result) {
     Utilities.sleep(300);
-    result = lookupOpenLibrary_(isbn);
+    const ol = lookupOpenLibrary_(isbn);
+    if (ol === undefined) erred = true;
+    else if (ol) result = ol;
   }
-  if (!result) return null;
 
-  result.coverUrl = findCoverUrl_(isbn);
-  return result;
+  if (result) {
+    result.coverUrl = findCoverUrl_(isbn);
+    return result;
+  }
+
+  // Neither source found it. If at least one of them failed to respond
+  // rather than cleanly answering "no match", the verdict is unknown —
+  // propagate that so the caller retries later instead of giving up.
+  return erred ? undefined : null;
 }
 
 function lookupSbn_(isbn) {
@@ -115,17 +143,18 @@ function lookupSbn_(isbn) {
   try {
     resp = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
   } catch (e) {
-    return null;
+    return undefined;
   }
-  if (resp.getResponseCode() !== 200) return null;
+  if (resp.getResponseCode() !== 200) return undefined;
 
   let data;
   try {
     data = JSON.parse(resp.getContentText());
   } catch (e) {
-    return null;
+    return undefined;
   }
-  if (!data || data.error || !data.briefRecords || !data.briefRecords.length) return null;
+  if (!data || data.error) return undefined;
+  if (!data.briefRecords || !data.briefRecords.length) return null;
 
   const record = data.briefRecords[0];
   let title = record.titolo;
@@ -176,15 +205,15 @@ function lookupOpenLibrary_(isbn) {
   try {
     resp = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
   } catch (e) {
-    return null;
+    return undefined;
   }
-  if (resp.getResponseCode() !== 200) return null;
+  if (resp.getResponseCode() !== 200) return undefined;
 
   let data;
   try {
     data = JSON.parse(resp.getContentText());
   } catch (e) {
-    return null;
+    return undefined;
   }
 
   const record = data['ISBN:' + isbn];
