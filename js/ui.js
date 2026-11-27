@@ -1,5 +1,5 @@
 // DOM helpers / rendering functions.
-import { SHELVES, LANGUAGES, bookLangCode, spineColor } from './data.js';
+import { SHELVES, LANGUAGES, bookLangCode, shelfColor } from './data.js';
 
 export function el(tag, opts = {}, children = []) {
   const node = document.createElement(tag);
@@ -60,12 +60,18 @@ export function renderMemberGrid(container, members, onSelect) {
 export function renderBookRow(book, index, { loanedTitles = new Set() } = {}) {
   const isLoaned = loanedTitles.has(book.t);
   const meta = [];
+  if (book.sn) {
+    const seriesText = book.so !== undefined && book.so !== null && book.so !== ''
+      ? `${book.sn} #${book.so}`
+      : book.sn;
+    meta.push(el('span', { className: 'book-series', text: seriesText }));
+  }
   if (book.l) meta.push(el('span', { className: 'book-shelf', text: shelfLabel(book.l) }));
   if (book.h) meta.push(el('span', { className: 'badge-held', text: `con ${book.h}` }));
   if (isLoaned) meta.push(el('span', { className: 'badge-loan', text: '📤 in prestito' }));
 
   return el('div', { className: 'book-row' }, [
-    el('div', { className: 'book-spine', attrs: { style: `background:${spineColor(index)}` } }),
+    el('div', { className: 'book-spine', attrs: { style: `background:${shelfColor(book.l)}` } }),
     el('div', { className: 'book-info' }, [
       el('div', { className: 'book-title', text: book.t }),
       el('div', { className: 'book-author', text: book.a || '—' }),
@@ -81,6 +87,27 @@ export function renderBookList(container, books, opts = {}) {
     return;
   }
   books.forEach((book, i) => container.appendChild(renderBookRow(book, i, opts)));
+}
+
+// Like renderBookList, but inserts a header divider whenever groupKeyFn(book)
+// changes from the previous book — used by Catalogo's alphabetical+letter-
+// header list. groupKeyFn is caller-supplied so this stays agnostic of any
+// particular grouping rule (e.g. Italian/English leading-article stripping).
+export function renderGroupedBookList(container, books, groupKeyFn, opts = {}) {
+  container.innerHTML = '';
+  if (!books.length) {
+    container.appendChild(el('div', { className: 'card-empty', text: 'Nessun libro trovato.' }));
+    return;
+  }
+  let lastGroup = null;
+  books.forEach((book, i) => {
+    const group = groupKeyFn(book);
+    if (group !== lastGroup) {
+      container.appendChild(el('div', { className: 'catalog-letter-header', text: group }));
+      lastGroup = group;
+    }
+    container.appendChild(renderBookRow(book, i, opts));
+  });
 }
 
 export function renderChipRow(container, items, activeKey, onSelect) {

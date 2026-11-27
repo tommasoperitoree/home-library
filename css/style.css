@@ -276,6 +276,15 @@ input {
   padding: 1px 8px;
 }
 
+.book-series {
+  font-size: 11px;
+  color: var(--brown);
+  background: var(--gold-lt);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-weight: 600;
+}
+
 .badge-held {
   font-size: 11px;
   background: var(--gold);
@@ -349,6 +358,150 @@ input {
   color: var(--muted);
   margin: 4px 0 10px;
 }
+
+.catalog-letter-header {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--brown);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin: 18px 0 4px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--gold-lt);
+}
+
+.catalog-letter-header:first-child {
+  margin-top: 4px;
+}
+
+.catalogo-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.catalogo-actions .add-book-toggle,
+.catalogo-actions .scan-isbn-btn {
+  margin-bottom: 0;
+}
+
+.add-book-toggle,
+.scan-isbn-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+  padding: 11px;
+  margin-bottom: 12px;
+  border-radius: var(--radius);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.add-book-toggle {
+  background: var(--brown);
+}
+
+.scan-isbn-btn {
+  background: var(--gold);
+}
+
+.scan-counter {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+#isbn-reader {
+  margin: 10px 0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.add-book-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.add-book-form h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: var(--brown);
+}
+
+.form-row {
+  margin-bottom: 10px;
+}
+
+.form-row label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 14px;
+  color: var(--text);
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: 2px solid var(--gold);
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: 1;
+  padding: 11px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: #fff;
+}
+
+.btn-primary:disabled {
+  opacity: .6;
+}
+
+.btn-secondary {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.form-message {
+  font-size: 13px;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.form-message.success { color: #4a7a3a; }
+.form-message.error { color: #a0423b; }
 
 .load-more-btn {
   display: block;

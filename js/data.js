@@ -9,6 +9,13 @@ export const APPS_SCRIPT_URL =
   window.APPS_SCRIPT_URL ||
   'https://script.google.com/macros/s/AKfycbwLQtleZ5vkGoxp9N_3UsejNOIAlzVv6Hw_9u5pY6t4vhKXIWVJ1BX-aZm1ygC-mcJz/exec';
 
+// WRITE_TOKEN gates write actions (addBook, …) and must match the
+// `WRITE_TOKEN` script property set in the Apps Script project. Set it via
+// `js/config.js` (gitignored): window.WRITE_TOKEN = '...'. Note this only
+// deters casual abuse of the bare endpoint — it ships in the public client
+// bundle, so it is not real secrecy. See FEATURES.md.
+export const WRITE_TOKEN = window.WRITE_TOKEN || 'segretWriteHomeWebAppLibraryToken001';
+
 export const CACHE_KEY = 'hl_cache_v1';
 export const SELECTED_MEMBER_KEY = 'hl_selected_member';
 
@@ -55,9 +62,25 @@ export function bookLangCode(book) {
   return code || book.lang.toUpperCase().slice(0, 2);
 }
 
-export function spineColor(index) {
-  const colors = ['#C4913A', '#7B9E6B', '#6B87A0', '#A06B6B', '#8A7BAE', '#5C3D2E'];
-  return colors[index % colors.length];
+// One color per known shelf (by its position in SHELVES), so the spine
+// color is a stable visual cue for "which shelf this book lives on" instead
+// of a meaningless per-row index. Falls back to a stable hash-based color
+// for any shelf name not in SHELVES (e.g. the sheet gained a new shelf this
+// hasn't been updated for yet), and a neutral gray when Library is blank.
+const SHELF_COLOR_PALETTE = [
+  '#C4913A', '#7B9E6B', '#6B87A0', '#A06B6B', '#8A7BAE',
+  '#5C3D2E', '#D98E5F', '#4F8A8B', '#9C6B5E',
+];
+const NO_SHELF_COLOR = '#B9AFA0';
+
+export function shelfColor(shelfKey) {
+  if (!shelfKey) return NO_SHELF_COLOR;
+  const idx = SHELVES.findIndex((s) => s.key === shelfKey);
+  if (idx >= 0) return SHELF_COLOR_PALETTE[idx % SHELF_COLOR_PALETTE.length];
+
+  let hash = 0;
+  for (let i = 0; i < shelfKey.length; i++) hash = (hash * 31 + shelfKey.charCodeAt(i)) >>> 0;
+  return SHELF_COLOR_PALETTE[hash % SHELF_COLOR_PALETTE.length];
 }
 
 async function fetchJson(url) {
@@ -104,6 +127,27 @@ export async function loadLibraryData() {
     if (cached) return cached;
     return fetchFromBundledFallback();
   }
+}
+
+/**
+ * Add a book via the Apps Script write endpoint.
+ * @param {{title: string, author?: string, shelf?: string, language?: string,
+ *   isbn?: string, publisher?: string, year?: string|number, coverUrl?: string,
+ *   subjects?: string, heldBy?: string}} fields
+ * @returns {Promise<{ok: true, row: number}>}
+ */
+export async function addBook(fields) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    // text/plain avoids a CORS preflight, which Apps Script web apps don't
+    // handle; the body itself is still JSON and parsed as such server-side.
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action: 'addBook', token: WRITE_TOKEN, ...fields }),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
 }
 
 export function getSelectedMember() {

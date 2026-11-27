@@ -1,13 +1,17 @@
 import {
   MEMBERS,
+  SHELVES,
+  LANGUAGES,
   loadLibraryData,
   getSelectedMember,
   setSelectedMember,
   bookLangCode,
+  addBook,
 } from './data.js';
 import {
   renderMemberGrid,
   renderBookList,
+  renderGroupedBookList,
   renderChipRow,
   languageChips,
   shelfChips,
@@ -17,6 +21,7 @@ import {
   renderStatsGrid,
   timeGreeting,
   formatDateDMY,
+  shelfLabel,
   el,
 } from './ui.js';
 
@@ -64,6 +69,7 @@ function selectMember(name) {
 }
 
 function switchTab(tab) {
+  stopActiveScanner();
   state.activeTab = tab;
   tabTitle.textContent = TAB_TITLES[tab];
   for (const [key, panel] of Object.entries(panels)) {
@@ -137,7 +143,7 @@ function renderTabIo() {
 function filteredCatalogBooks() {
   const { search, lang, shelf } = state.catalogo;
   const term = search.trim().toLowerCase();
-  return state.books.filter((b) => {
+  const filtered = state.books.filter((b) => {
     if (term && !(b.t.toLowerCase().includes(term) || (b.a || '').toLowerCase().includes(term))) {
       return false;
     }
@@ -145,11 +151,62 @@ function filteredCatalogBooks() {
     if (shelf !== 'Tutti' && b.l !== shelf) return false;
     return true;
   });
+  return sortCatalogBooks(filtered);
 }
+
+// Leading articles ignored when alphabetizing (and for the A/B/C.. letter
+// headers), so e.g. "Il senso religioso" files under S, not I — standard
+// library-catalog convention, since without it "I"/"L" would swallow a huge
+// share of the Italian titles here.
+const LEADING_ARTICLES = ["l'", 'il ', 'lo ', 'la ', 'gli ', 'le ', 'i ', 'un ', 'uno ', 'una ', 'the ', 'a ', 'an '];
+
+function titleSortKey(title) {
+  const t = (title || '').trim();
+  const lower = t.toLowerCase();
+  for (const art of LEADING_ARTICLES) {
+    if (lower.startsWith(art)) return t.slice(art.length).trimStart();
+  }
+  return t;
+}
+
+// Letter-header bucket for a title: first letter of its sort key, accents
+// folded to the base letter (so È/E group together), '#' for anything that
+// doesn't start with a letter.
+function groupLetter(title) {
+  const key = titleSortKey(title);
+  const first = key.charAt(0).toUpperCase();
+  const base = first.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return /[A-Z]/.test(base) ? base : '#';
+}
+
+// Primary: alphabetical letter bucket. Secondary (within a letter):
+// library/shelf, so each shelf's books cluster together and share a spine
+// color. Tertiary: title itself, for a stable order within a shelf cluster.
+// Books with no Library sort after every shelf within their letter.
+function sortCatalogBooks(books) {
+  return [...books].sort((a, b) => {
+    const la = groupLetter(a.t);
+    const lb = groupLetter(b.t);
+    if (la !== lb) return la.localeCompare(lb, 'it');
+
+    const libA = a.l ? shelfLabel(a.l) : '￿';
+    const libB = b.l ? shelfLabel(b.l) : '￿';
+    const libCompare = libA.localeCompare(libB, 'it');
+    if (libCompare !== 0) return libCompare;
+
+    return titleSortKey(a.t).localeCompare(titleSortKey(b.t), 'it');
+  });
+}
+
+const LANG_CODE_TO_NAME = { EN: 'English', ES: 'Spanish', DE: 'German' };
 
 function renderTabCatalogo() {
   const panel = panels.catalogo;
   panel.innerHTML = '';
+
+  const addBookSection = el('div');
+  panel.appendChild(addBookSection);
+  renderAddBookToggle(addBookSection);
 
   const searchBox = el('div', { className: 'search-box' });
   const searchInput = el('input', {
@@ -192,6 +249,188 @@ function renderTabCatalogo() {
   renderCatalogResults();
 }
 
+function renderAddBookToggle(container) {
+  container.innerHTML = '';
+  container.appendChild(
+    el('div', { className: 'catalogo-actions' }, [
+      el('button', {
+        className: 'add-book-toggle',
+        text: '+ Aggiungi libro',
+        onClick: () => renderAddBookForm(container),
+      }),
+      el('button', {
+        className: 'scan-isbn-btn',
+        text: '📷 Scansiona ISBN',
+        onClick: () => openIsbnScanner(),
+      }),
+    ])
+  );
+}
+
+let activeScanner = null;
+
+function stopActiveScanner() {
+  if (!activeScanner) return;
+  const scanner = activeScanner;
+  activeScanner = null;
+  scanner.stop().catch(() => {});
+}
+
+// Scanned-only adds land with just an ISBN and a blank title; the Apps
+// Script time-driven trigger (runEnrichmentBatch in apps-script/enrich.gs)
+// fills in the rest within a minute or two, so books don't appear in
+// Catalogo immediately after a scan — that's expected, not a bug.
+function openIsbnScanner() {
+  let scanCount = 0;
+  let lastCode = '';
+  let lastTime = 0;
+
+  openBottomSheet(sheetBackdrop, bottomSheet, sheetContent, (container) => {
+    const status = el('div', { className: 'form-message', text: 'Inquadra il codice a barre del libro.' });
+    const counter = el('div', { className: 'scan-counter', text: '0 libri aggiunti in questa sessione' });
+    const readerDiv = el('div', { attrs: { id: 'isbn-reader' } });
+
+    const stopScanner = () => {
+      stopActiveScanner();
+      closeBottomSheet(sheetBackdrop, bottomSheet);
+    };
+
+    const onScan = async (decodedText) => {
+      const isbn = decodedText.replace(/[^0-9Xx]/g, '');
+      if (isbn.length !== 10 && isbn.length !== 13) return;
+
+      const now = Date.now();
+      if (isbn === lastCode && now - lastTime < 3000) return;
+      lastCode = isbn;
+      lastTime = now;
+
+      status.textContent = `Aggiungo ISBN ${isbn}…`;
+      try {
+        await addBook({ isbn });
+        scanCount += 1;
+        counter.textContent = `${scanCount} ${scanCount === 1 ? 'libro aggiunto' : 'libri aggiunti'} in questa sessione`;
+        status.textContent = `✅ ISBN ${isbn} in elaborazione (compare nel catalogo tra 1-2 minuti).`;
+      } catch (err) {
+        status.textContent = `Errore: ${err.message}`;
+      }
+    };
+
+    container.appendChild(el('h2', { text: '📷 Scansiona ISBN' }));
+    container.appendChild(readerDiv);
+    container.appendChild(status);
+    container.appendChild(counter);
+    container.appendChild(
+      el('div', { className: 'form-actions' }, [
+        el('button', { className: 'btn-secondary', text: 'Chiudi', onClick: stopScanner }),
+      ])
+    );
+
+    if (window.Html5Qrcode) {
+      const scanner = new window.Html5Qrcode('isbn-reader');
+      activeScanner = scanner;
+      scanner
+        .start(
+          { facingMode: 'environment' },
+          { fps: 10, qrbox: { width: 250, height: 150 } },
+          (decodedText) => onScan(decodedText)
+        )
+        .catch((err) => {
+          status.textContent = `Impossibile avviare la fotocamera: ${err}`;
+        });
+    } else {
+      status.textContent = 'Libreria di scansione non disponibile.';
+    }
+  });
+}
+
+function renderAddBookForm(container) {
+  container.innerHTML = '';
+
+  const titleInput = el('input', { className: 'form-input', attrs: { type: 'text', placeholder: 'Titolo *' } });
+  const authorInput = el('input', { className: 'form-input', attrs: { type: 'text', placeholder: 'Autore' } });
+  const isbnInput = el('input', { className: 'form-input', attrs: { type: 'text', placeholder: 'ISBN (opzionale)' } });
+
+  const shelfSelect = el('select', { className: 'form-select' }, [
+    el('option', { text: 'Scaffale (opzionale)', attrs: { value: '' } }),
+    ...SHELVES.map((s) => el('option', { text: s.label, attrs: { value: s.key } })),
+  ]);
+
+  const langSelect = el('select', { className: 'form-select' }, [
+    el('option', { text: 'Italiano (default)', attrs: { value: '' } }),
+    ...LANGUAGES.filter((l) => l.key !== 'IT').map((l) => el('option', { text: l.label, attrs: { value: l.key } })),
+  ]);
+
+  const message = el('div', { className: 'form-message' });
+
+  const cancelBtn = el('button', {
+    className: 'btn-secondary',
+    text: 'Annulla',
+    onClick: () => renderAddBookToggle(container),
+  });
+
+  const submitBtn = el('button', { className: 'btn-primary', text: 'Aggiungi' });
+  submitBtn.addEventListener('click', async () => {
+    const title = titleInput.value.trim();
+    if (!title) {
+      message.textContent = 'Il titolo è obbligatorio.';
+      message.className = 'form-message error';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Aggiungo…';
+    message.textContent = '';
+
+    const author = authorInput.value.trim();
+    const shelf = shelfSelect.value;
+    const langCode = langSelect.value;
+    const langName = LANG_CODE_TO_NAME[langCode] || '';
+
+    try {
+      await addBook({
+        title,
+        author,
+        shelf,
+        language: langName,
+        isbn: isbnInput.value.trim(),
+      });
+
+      // Optimistic local update so it shows up in Catalogo immediately,
+      // ahead of the next full refetch from the sheet.
+      const newBook = { t: title, a: author };
+      if (shelf) newBook.l = shelf;
+      if (langName) newBook.lang = langName;
+      state.books.push(newBook);
+
+      message.textContent = `"${title}" aggiunto.`;
+      message.className = 'form-message success';
+      setTimeout(() => {
+        renderAddBookToggle(container);
+        renderCatalogResults();
+      }, 900);
+    } catch (err) {
+      message.textContent = `Errore: ${err.message}`;
+      message.className = 'form-message error';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Aggiungi';
+    }
+  });
+
+  container.appendChild(
+    el('div', { className: 'add-book-form' }, [
+      el('h3', { text: 'Nuovo libro' }),
+      el('div', { className: 'form-row' }, [titleInput]),
+      el('div', { className: 'form-row' }, [authorInput]),
+      el('div', { className: 'form-row' }, [shelfSelect]),
+      el('div', { className: 'form-row' }, [langSelect]),
+      el('div', { className: 'form-row' }, [isbnInput]),
+      message,
+      el('div', { className: 'form-actions' }, [submitBtn, cancelBtn]),
+    ])
+  );
+  titleInput.focus();
+}
+
 function renderCatalogResults() {
   const panel = panels.catalogo;
   const resultCount = panel.querySelector('#result-count');
@@ -203,7 +442,7 @@ function renderCatalogResults() {
   resultCount.textContent = `${results.length} ${results.length === 1 ? 'libro trovato' : 'libri trovati'}`;
 
   const visibleCount = Math.min(results.length, state.catalogo.page * state.catalogo.pageSize);
-  renderBookList(listEl, results.slice(0, visibleCount), { loanedTitles: loaned });
+  renderGroupedBookList(listEl, results.slice(0, visibleCount), (b) => groupLetter(b.t), { loanedTitles: loaned });
 
   loadMoreEl.innerHTML = '';
   if (visibleCount < results.length) {
@@ -304,7 +543,10 @@ function openMemberSheet(member) {
   });
 }
 
-sheetBackdrop.addEventListener('click', () => closeBottomSheet(sheetBackdrop, bottomSheet));
+sheetBackdrop.addEventListener('click', () => {
+  stopActiveScanner();
+  closeBottomSheet(sheetBackdrop, bottomSheet);
+});
 
 // ---------- Boot ----------
 

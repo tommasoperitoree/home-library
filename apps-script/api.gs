@@ -12,7 +12,29 @@
 
 const SPREADSHEET_ID = '1HoeEFx_-alYJg6KtL9UUmmDZQZsMwSTY_biIoeSZoUw';
 
+// Legacy iOS Shortcut auth — ported from the old WebAppEndpoint_v2.gs (which
+// used to own doPost/doGet before it was merged in here to avoid a duplicate
+// doPost/doGet collision between that file and this one). The Shortcut on
+// the family's phone(s) sends a `secret` param and expects the ToReview-
+// staging flow below — do not change the response shapes in
+// _routeShortcut/_handleAddBookShortcut/_handleEnrichShortcut without
+// updating the Shortcut itself.
+//
+// Unlike WEBAPP_SECRET's old home (a live-editor-only file, never committed
+// anywhere), this file is tracked in a public GitHub repo — so the actual
+// secret value lives in Project Settings → Script Properties → WEBAPP_SECRET
+// (same pattern as WRITE_TOKEN below), not hardcoded here. Set it once to
+// match whatever value the Shortcut already sends.
+function getWebappSecret_() {
+  return PropertiesService.getScriptProperties().getProperty('WEBAPP_SECRET');
+}
+
 function doGet(e) {
+  const params = _mergeParams(e);
+  if (params.secret) {
+    return _routeShortcut(params);
+  }
+
   const action = (e.parameter && e.parameter.action) || 'books';
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
@@ -46,6 +68,419 @@ function doGet(e) {
   return jsonResponse({ error: 'unknown action' });
 }
 
+// Write endpoint. Body must be JSON (sent as Content-Type: text/plain from
+// the browser to avoid a CORS preflight, which Apps Script web apps can't
+// handle) with shape { action, token, ...actionFields }.
+//
+// Set the shared token in Project Settings → Script Properties → WRITE_TOKEN.
+// Note: since this script's source and the webapp's client JS are both
+// public, this token only deters casual/bot abuse of the bare URL — it is
+// not a substitute for real per-user auth.
+function doPost(e) {
+  const params = _mergeParams(e);
+
+  if (params.secret) {
+    return _routeShortcut(params);
+  }
+
+  if (!checkToken(params.token)) {
+    return jsonResponse({ error: 'unauthorized' });
+  }
+
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+
+  if (params.action === 'addBook') {
+    return handleAddBook(ss, params);
+  }
+
+  if (params.action === 'setHeldBy') {
+    return handleSetHeldBy(ss, params);
+  }
+
+  if (params.action === 'lendBook') {
+    return handleLendBook(ss, params);
+  }
+
+  if (params.action === 'returnBook') {
+    return handleReturnBook(ss, params);
+  }
+
+  return jsonResponse({ error: 'unknown action' });
+}
+
+// Merges query-string params with a JSON body, whichever are present.
+// Used by both doGet and doPost so the iOS Shortcut's request — whatever
+// shape it actually sends (query params, form body, or JSON body) — and
+// this app's own JSON-body POSTs both resolve to one flat object.
+function _mergeParams(e) {
+  let params = (e && e.parameter) || {};
+  if (e && e.postData && e.postData.contents) {
+    try {
+      params = Object.assign({}, params, JSON.parse(e.postData.contents));
+    } catch (err) {
+      // Not JSON (or empty) — fall back to whatever e.parameter gave us.
+    }
+  }
+  return params;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// LEGACY iOS SHORTCUT ROUTE — ported from WebAppEndpoint_v2.gs
+// ─────────────────────────────────────────────────────────────────────────
+// Secret-gated (not token-gated like the webapp's addBook above). Writes a
+// stub row to ToReview and enriches it inline in the same request (via
+// enrichSingleRow in EnrichISBNBooks_v2.gs), rather than the webapp's
+// scan flow, which writes straight to Books and enriches later on a timer.
+// These are two intentionally separate pipelines feeding two different
+// staging areas — do not merge them without updating the Shortcut.
+
+function _routeShortcut(params) {
+  const expected = getWebappSecret_();
+  if (!expected || params.secret !== expected) {
+    return jsonResponse({ ok: false, message: 'Failed: secret non valido.' });
+  }
+  try {
+    if (params.action === 'enrich') return _handleEnrichShortcut();
+    return _handleAddBookShortcut(params);
+  } catch (err) {
+    return jsonResponse({ ok: false, message: 'Failed: ' + err.toString() });
+  }
+}
+
+function _handleEnrichShortcut() {
+  const result = runEnrichment(); // lives in EnrichISBNBooks_v2.gs
+  if (result.error) return jsonResponse({ ok: false, message: 'Failed: ' + result.error });
+  const message =
+    'Arricchiti: ' + result.enriched +
+    (result.notFound.length ? ', non trovati: ' + result.notFound.length : '') +
+    (result.remaining ? ', rimasti: ' + result.remaining + ' (riesegui)' : '');
+  return jsonResponse({
+    ok: true, enriched: result.enriched,
+    notFound: result.notFound, remaining: result.remaining || 0, message,
+  });
+}
+
+/**
+ * Receives an ISBN scan from the iOS Shortcut.
+ * Params: isbn (required), secret (required), library (optional shelf name).
+ */
+function _handleAddBookShortcut(params) {
+  const isbn = (params.isbn || '').toString().replace(/[^0-9Xx]/g, '').trim();
+  if (!isbn) return jsonResponse({ ok: false, message: 'Failed: nessun ISBN fornito.' });
+  const library = String(params.library || '').trim();
+
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+
+  // Same ISBN scanned again:
+  //  - at the SAME shelf -> it's another physical copy of what's already
+  //    catalogued there, not a duplicate entry: bump Copies on that Books
+  //    row directly, skipping ToReview entirely.
+  //  - at a DIFFERENT shelf -> a legitimately different physical copy
+  //    living somewhere else: let it through as its own row, same as if
+  //    the ISBN had never been seen before.
+  //  - pending (still sitting in ToReview, not yet confirmed) at the SAME
+  //    shelf -> block it; we can't safely merge into a row that isn't
+  //    final yet.
+  const match = _findExistingIsbnShortcut(isbn, ss);
+  if (match && match.library === library) {
+    if (match.sheet === 'Books') {
+      return _incrementCopiesShortcut_(ss, match.row, library);
+    }
+    return jsonResponse({
+      ok: false, duplicate: true,
+      message: `⚠️ ISBN già in ToReview per "${library}" — in attesa di revisione, non aggiunto di nuovo.`,
+    });
+  }
+
+  const reviewSheet = ss.getSheetByName('ToReview');
+  if (!reviewSheet) {
+    return jsonResponse({ ok: false, message: 'Failed: foglio ToReview non trovato. Hai eseguito il Setup?' });
+  }
+
+  const headerRow = reviewSheet.getRange(1, 1, 1, reviewSheet.getLastColumn()).getValues()[0];
+  const col = _buildColMapShortcut(headerRow);
+
+  const numCols = headerRow.length;
+  const newRow = new Array(numCols).fill('');
+  if (col['ReviewStatus']) newRow[col['ReviewStatus'] - 1] = 'Cercando...';
+  if (col['ScanNote'])     newRow[col['ScanNote']     - 1] = 'Scansionato via Shortcut';
+  if (col['ISBN'])         newRow[col['ISBN']         - 1] = isbn;
+  if (col['Library'])      newRow[col['Library']      - 1] = (params.library || '').trim();
+  if (col['Copies'])       newRow[col['Copies']       - 1] = 1;
+  if (col['Scanned time']) newRow[col['Scanned time'] - 1] = new Date();
+
+  reviewSheet.appendRow(newRow);
+  const row = reviewSheet.getLastRow();
+
+  // enrichSingleRow lives in EnrichISBNBooks_v2.gs (same Apps Script project)
+  const found  = enrichSingleRow(reviewSheet, row, col, isbn);
+  const title  = String(col['Title']  ? reviewSheet.getRange(row, col['Title']).getValue()        : '');
+  const status = String(col['ReviewStatus'] ? reviewSheet.getRange(row, col['ReviewStatus']).getValue() : '');
+
+  const message = found
+    ? `✓ "${title}" aggiunto a ToReview — ${status}`
+    : `ISBN ${isbn} in ToReview — titolo non trovato, controlla manualmente`;
+
+  return jsonResponse({ ok: true, row, isbn, title, status, message });
+}
+
+/**
+ * Checks both Books and ToReview for a row with this ISBN. Returns the
+ * first match's sheet name, 1-based row number, and trimmed Library value
+ * (not just whether a match exists) so the caller can decide same-shelf
+ * (= another copy) vs different-shelf (= not a duplicate at all).
+ */
+function _findExistingIsbnShortcut(isbn, ss) {
+  for (const sheetName of ['Books', 'ToReview']) {
+    const sh = ss.getSheetByName(sheetName);
+    if (!sh || sh.getLastRow() < 2) continue;
+
+    const data  = sh.getDataRange().getValues();
+    const isbnC = data[0].indexOf('ISBN');
+    const libC  = data[0].indexOf('Library');
+    if (isbnC < 0) continue;
+
+    for (let i = 1; i < data.length; i++) {
+      const existing = String(data[i][isbnC]).replace(/[^0-9Xx]/g, '');
+      if (existing && existing === isbn) {
+        return {
+          sheet: sheetName,
+          row: i + 1,
+          library: libC >= 0 ? String(data[i][libC] || '').trim() : '',
+        };
+      }
+    }
+  }
+  return null;
+}
+
+/** Bumps Copies by 1 on an existing Books row — same ISBN, same shelf. */
+function _incrementCopiesShortcut_(ss, rowNum, library) {
+  const sheet = ss.getSheetByName('Books');
+  const header = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(normalizeHeaderKey);
+  const copiesCol = header.indexOf('copies');
+
+  if (copiesCol < 0) {
+    return jsonResponse({ ok: true, incrementedCopies: true, message: '✓ Copia aggiuntiva registrata (colonna Copie non trovata).' });
+  }
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const cell = sheet.getRange(rowNum, copiesCol + 1);
+    const newCount = (Number(cell.getValue()) || 1) + 1;
+    cell.setValue(newCount);
+    return jsonResponse({
+      ok: true, incrementedCopies: true, copies: newCount,
+      message: `✓ Copia aggiuntiva — "${library}" ora ha ${newCount} copie di questo ISBN.`,
+    });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function _buildColMapShortcut(headerRow) {
+  const m = {};
+  headerRow.forEach((name, i) => { if (name) m[String(name).trim()] = i + 1; });
+  return m;
+}
+
+function checkToken(token) {
+  const expected = PropertiesService.getScriptProperties().getProperty('WRITE_TOKEN');
+  return !!expected && token === expected;
+}
+
+function handleAddBook(ss, payload) {
+  const sheet = ss.getSheetByName('Books');
+  if (!sheet) return jsonResponse({ error: 'Books sheet not found' });
+
+  const title = String(payload.title || '').trim();
+  const isbn = String(payload.isbn || '').trim();
+  // A scan-only add (just an ISBN, no title yet) is allowed: it lands with a
+  // blank Title, which runEnrichmentBatch (apps-script/enrich.gs) picks up
+  // and fills in on its next run.
+  if (!title && !isbn) return jsonResponse({ error: 'title or isbn is required' });
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const headerRaw = sheet.getDataRange().getValues()[0];
+    const header = headerRaw.map(normalizeHeaderKey);
+    const row = new Array(headerRaw.length).fill('');
+
+    const setByKey = (key, value) => {
+      const i = header.indexOf(key);
+      if (i >= 0 && value !== undefined && value !== null && value !== '') row[i] = value;
+    };
+
+    setByKey('title', title);
+    setByKey('author', payload.author || '');
+    setByKey('library', payload.shelf || '');
+    setByKey('language', payload.language || '');
+    setByKey('isbn', payload.isbn || '');
+    setByKey('publisher', payload.publisher || '');
+    setByKey('year', payload.year || '');
+    setByKey('coverurl', payload.coverUrl || '');
+    setByKey('subjects', payload.subjects || '');
+    setByKey('heldby', payload.heldBy || '');
+    setByKey('scannedtime', new Date());
+
+    sheet.appendRow(row);
+    const newRowNum = sheet.getLastRow();
+    _setComputedStatusFormulas_(sheet, header, newRowNum);
+    return jsonResponse({ ok: true, row: newRowNum });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Column letter for a 1-based column index (1 -> A, 2 -> B, ... 27 -> AA).
+function columnLetter_(oneBasedIndex) {
+  let n = oneBasedIndex;
+  let s = '';
+  while (n > 0) {
+    const rem = (n - 1) % 26;
+    s = String.fromCharCode(65 + rem) + s;
+    n = Math.floor((n - 1) / 26);
+  }
+  return s;
+}
+
+// Gives a Books row live Status/Active Loans formulas, the same shape
+// _restructureBooks (HomeLibrary_v2.gs) sets for existing rows — so a book
+// added through any path (webapp, Shortcut-via-ToReview-move, or the
+// original menu-driven restructure) shows "In prestito"/"Con X" the same
+// way. `header` is the already-normalizeHeaderKey'd header array.
+function _setComputedStatusFormulas_(sheet, header, rowNum) {
+  const titleCol = header.indexOf('title');
+  const heldByCol = header.indexOf('heldby');
+  const statusCol = header.indexOf('status');
+  const activeLoansCol = header.indexOf('activeloans');
+  if (titleCol < 0 || statusCol < 0 || activeLoansCol < 0) return;
+
+  const titleL = columnLetter_(titleCol + 1);
+  const activeLoansL = columnLetter_(activeLoansCol + 1);
+
+  // Loans!B = Book Title, Loans!H = Date Returned — fixed by that sheet's
+  // own schema (see the file header comment), not re-derived per row.
+  sheet.getRange(rowNum, activeLoansCol + 1).setFormula(
+    `=IFERROR(SUMPRODUCT((Loans!B$2:B$2000=${titleL}${rowNum})*(Loans!H$2:H$2000="")),0)`
+  );
+
+  const heldByExpr = heldByCol >= 0
+    ? `IF(${columnLetter_(heldByCol + 1)}${rowNum}<>"","Con "&${columnLetter_(heldByCol + 1)}${rowNum},"")`
+    : '""';
+  sheet.getRange(rowNum, statusCol + 1).setFormula(
+    `=IF(${activeLoansL}${rowNum}>0,"In prestito",${heldByExpr})`
+  );
+}
+
+// Sets (or clears, if heldBy is empty) who currently has a book physically —
+// an informal "it's on someone's nightstand" marker, distinct from a formal
+// Loans entry. Matches the first Books row with an exact Title match (same
+// limitation as the rest of this codebase until books get a stable row ID —
+// see FEATURES.md). Library is never touched: it's always the book's
+// permanent home shelf, independent of who currently has it.
+function handleSetHeldBy(ss, payload) {
+  const sheet = ss.getSheetByName('Books');
+  if (!sheet) return jsonResponse({ error: 'Books sheet not found' });
+
+  const title = String(payload.title || '').trim();
+  if (!title) return jsonResponse({ error: 'title is required' });
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const values = sheet.getDataRange().getValues();
+    const header = values[0].map(normalizeHeaderKey);
+    const titleCol = header.indexOf('title');
+    const heldByCol = header.indexOf('heldby');
+    if (titleCol < 0 || heldByCol < 0) return jsonResponse({ error: 'Books sheet missing Title/Held By columns' });
+
+    for (let r = 1; r < values.length; r++) {
+      if (String(values[r][titleCol] || '').trim() === title) {
+        const rowNum = r + 1;
+        sheet.getRange(rowNum, heldByCol + 1).setValue(String(payload.heldBy || '').trim());
+        _setComputedStatusFormulas_(sheet, header, rowNum);
+        return jsonResponse({ ok: true, row: rowNum });
+      }
+    }
+    return jsonResponse({ error: 'book not found: ' + title });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Appends a formal Loans entry. `library` here is only a record of which
+// shelf the copy came from at the time of lending — it is NOT written back
+// to the Books row. Books.Library stays untouched; a book's Status/Active
+// Loans formulas (see _setComputedStatusFormulas_ above) pick up the new
+// Loans row on their own via the existing SUMPRODUCT/IF formulas.
+function handleLendBook(ss, payload) {
+  const sheet = ss.getSheetByName('Loans');
+  if (!sheet) return jsonResponse({ error: 'Loans sheet not found' });
+
+  const title = String(payload.title || '').trim();
+  if (!title) return jsonResponse({ error: 'title is required' });
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    // Matches addLoanEntry's existing convention (HomeLibrary_v2.gs):
+    // LoanID is derived from the sheet's row count *before* appending.
+    const id = 'L' + String(sheet.getLastRow()).padStart(3, '0');
+    const dateLent = payload.dateLent ? new Date(payload.dateLent) : new Date();
+    const expectedReturn = payload.expectedReturn ? new Date(payload.expectedReturn) : '';
+
+    sheet.appendRow([
+      id,
+      title,
+      payload.library || '',
+      payload.lentBy || '',
+      payload.borrowedBy || '',
+      dateLent,
+      expectedReturn,
+      '',
+      payload.notes || '',
+    ]);
+    return jsonResponse({ ok: true, loanId: id, row: sheet.getLastRow() });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Marks a Loans row returned by LoanID. Books.Library is never touched —
+// same reasoning as handleLendBook above.
+function handleReturnBook(ss, payload) {
+  const sheet = ss.getSheetByName('Loans');
+  if (!sheet) return jsonResponse({ error: 'Loans sheet not found' });
+
+  const loanId = String(payload.loanId || '').trim();
+  if (!loanId) return jsonResponse({ error: 'loanId is required' });
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const values = sheet.getDataRange().getValues();
+    const header = values[0].map(normalizeHeaderKey);
+    const idCol = header.indexOf('loanid');
+    const returnedCol = header.indexOf('datereturned');
+    if (idCol < 0 || returnedCol < 0) return jsonResponse({ error: 'Loans sheet missing LoanID/Date Returned columns' });
+
+    for (let r = 1; r < values.length; r++) {
+      if (String(values[r][idCol] || '').trim() === loanId) {
+        const rowNum = r + 1;
+        const dateReturned = payload.dateReturned ? new Date(payload.dateReturned) : new Date();
+        sheet.getRange(rowNum, returnedCol + 1).setValue(dateReturned);
+        return jsonResponse({ ok: true, row: rowNum });
+      }
+    }
+    return jsonResponse({ error: 'loan not found: ' + loanId });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
 function parseBooks(sheet) {
   if (!sheet) return [];
   const rows = sheet.getDataRange().getValues();
@@ -57,6 +492,8 @@ function parseBooks(sheet) {
     shelf: header.indexOf('library'),
     language: header.indexOf('language'),
     heldBy: header.indexOf('heldby'),
+    seriesName: header.indexOf('seriesname'),
+    seriesOrder: header.indexOf('seriesorder'),
   };
 
   const books = [];
@@ -78,6 +515,12 @@ function parseBooks(sheet) {
 
     const heldBy = idx.heldBy >= 0 ? String(row[idx.heldBy] || '').trim() : '';
     if (heldBy) book.h = heldBy;
+
+    const seriesName = idx.seriesName >= 0 ? String(row[idx.seriesName] || '').trim() : '';
+    if (seriesName) book.sn = seriesName;
+
+    const seriesOrder = idx.seriesOrder >= 0 ? row[idx.seriesOrder] : '';
+    if (seriesOrder !== '' && seriesOrder !== null && seriesOrder !== undefined) book.so = seriesOrder;
 
     books.push(book);
   }
