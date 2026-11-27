@@ -9,6 +9,14 @@
 // Translator, and Physical Description from the original script are dropped:
 // this sheet has no columns for them.
 //
+// A row whose ISBN is confirmed genuinely not found (both sources responded,
+// neither has a record) is moved to ToReview rather than left in Books with
+// a placeholder title — Books is the live, family-facing catalog, and a
+// "⚠️ ISBN non trovato" title sitting there (visible in the webapp's
+// Catalogo) is just clutter. ToReview is exactly the staging area that
+// already exists for "needs a human" rows (same sheet the legacy iOS
+// Shortcut flow uses) — see moveNotFoundRowsToToReview_ below.
+//
 // One-time setup (run once from the Apps Script editor, function picker):
 //   installEnrichmentTrigger
 // This registers a trigger that calls runEnrichmentBatch() every minute.
@@ -55,10 +63,15 @@ function runEnrichmentBatch() {
     language: header.indexOf('language'),
     subjects: header.indexOf('subjects'),
     coverUrl: header.indexOf('coverurl'),
+    library: header.indexOf('library'),
+    copies: header.indexOf('copies'),
+    scannedTime: header.indexOf('scannedtime'),
   };
   if (idx.title < 0 || idx.isbn < 0) return;
 
   let processed = 0;
+  const notFound = []; // {sheetRow, isbn, row} — handled after the loop, see below
+
   for (let r = 1; r < values.length && processed < ENRICH_MAX_PER_RUN; r++) {
     const row = values[r];
     const title = String(row[idx.title] || '').trim();
@@ -73,13 +86,17 @@ function runEnrichmentBatch() {
       // A fetch/parse error happened somewhere along the way (network blip,
       // non-200, bad JSON) rather than both sources genuinely having no
       // record. Leave the title blank so this row gets retried next run,
-      // instead of permanently stamping it as "not found".
+      // instead of treating it as a confirmed miss.
       Utilities.sleep(300);
       continue;
     }
 
     if (!info || !info.title) {
-      sheet.getRange(sheetRow, idx.title + 1).setValue('⚠️ ISBN non trovato — inserisci manualmente');
+      // Confirmed miss — queue for move-to-ToReview. Don't touch the sheet
+      // yet: deleting Books rows mid-loop would shift the row numbers this
+      // loop's remaining iterations rely on (they were all computed from
+      // the single getDataRange() snapshot taken above).
+      notFound.push({ sheetRow, isbn, row });
       Utilities.sleep(300);
       continue;
     }
@@ -103,6 +120,46 @@ function runEnrichmentBatch() {
     if (idx.coverUrl >= 0 && info.coverUrl) sheet.getRange(sheetRow, idx.coverUrl + 1).setValue(info.coverUrl);
 
     Utilities.sleep(300);
+  }
+
+  if (notFound.length) moveNotFoundRowsToToReview_(ss, idx, notFound);
+}
+
+// Moves confirmed-not-found rows out of Books and into ToReview, carrying
+// over whatever Books already had for them (ISBN, Library, Copies, Scanned
+// time), with ReviewStatus "Manca Titolo" so they show up for a human to
+// fill in manually — same staging sheet and ReviewStatus values the legacy
+// iOS Shortcut flow already uses (apps-script/api.gs's _handleAddBookShortcut).
+// Deletes from Books in descending row order so each deletion doesn't shift
+// the row numbers of the others still queued in this same call.
+function moveNotFoundRowsToToReview_(ss, booksIdx, entries) {
+  const reviewSheet = ss.getSheetByName('ToReview');
+  if (!reviewSheet) return; // no staging sheet to move to — leave as-is
+
+  const booksSheet = ss.getSheetByName('Books');
+  const reviewHeaderRaw = reviewSheet.getRange(1, 1, 1, reviewSheet.getLastColumn()).getValues()[0];
+  const reviewCol = {};
+  reviewHeaderRaw.forEach((name, i) => { if (name) reviewCol[String(name).trim()] = i + 1; });
+
+  const sorted = entries.slice().sort((a, b) => b.sheetRow - a.sheetRow);
+
+  for (const entry of sorted) {
+    const row = entry.row;
+    const newRow = new Array(reviewHeaderRaw.length).fill('');
+    const set = (name, value) => {
+      const col = reviewCol[name];
+      if (col && value !== undefined && value !== null && value !== '') newRow[col - 1] = value;
+    };
+
+    set('ReviewStatus', 'Manca Titolo');
+    set('ScanNote', 'ISBN non trovato su SBN né OpenLibrary');
+    set('ISBN', entry.isbn);
+    if (booksIdx.library >= 0) set('Library', row[booksIdx.library]);
+    if (booksIdx.copies >= 0) set('Copies', row[booksIdx.copies] || 1);
+    if (booksIdx.scannedTime >= 0) set('Scanned time', row[booksIdx.scannedTime]);
+
+    reviewSheet.appendRow(newRow);
+    booksSheet.deleteRow(entry.sheetRow);
   }
 }
 
@@ -341,4 +398,34 @@ function parsePubblicazione_(value) {
 
 function cleanIsbn_(raw) {
   return String(raw || '').replace(/[^0-9Xx]/g, '');
+}
+
+// ONE-OFF MIGRATION — run once manually from the Apps Script editor's
+// function picker. Handles rows left stuck in Books with the old sentinel
+// title from before moveNotFoundRowsToToReview_ existed: clears their Title
+// back to blank (restoring the normal "pending enrichment" state) and runs
+// runEnrichmentBatch() immediately, which re-confirms the miss and moves
+// them to ToReview via the current logic — no separate move code needed
+// here. Safe to re-run; a no-op once no sentinel rows remain.
+function migrateStuckNotFoundRows_oneOff() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName('Books');
+  if (!sheet) return;
+
+  const values = sheet.getDataRange().getValues();
+  const header = values[0].map(normalizeHeaderKey);
+  const titleCol = header.indexOf('title');
+  if (titleCol < 0) return;
+
+  const SENTINEL = '⚠️ ISBN non trovato — inserisci manualmente';
+  let cleared = 0;
+  for (let r = 1; r < values.length; r++) {
+    if (String(values[r][titleCol] || '').trim() === SENTINEL) {
+      sheet.getRange(r + 1, titleCol + 1).setValue('');
+      cleared++;
+    }
+  }
+
+  Logger.log('Cleared ' + cleared + ' stuck "not found" row(s).');
+  if (cleared > 0) runEnrichmentBatch();
 }
