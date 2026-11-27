@@ -618,6 +618,34 @@ input {
   margin: 0 auto 12px;
 }
 
+.detail-cover {
+  display: block;
+  max-width: 120px;
+  max-height: 170px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  margin: 4px auto 14px;
+}
+
+.detail-meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 10px;
+  row-gap: 6px;
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+.detail-meta-label {
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.detail-meta-value {
+  color: var(--text);
+}
+
 .sheet-content h2 {
   margin: 4px 0 14px;
   color: var(--brown);
