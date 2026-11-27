@@ -12,7 +12,29 @@
 
 const SPREADSHEET_ID = '1HoeEFx_-alYJg6KtL9UUmmDZQZsMwSTY_biIoeSZoUw';
 
+// Legacy iOS Shortcut auth — ported from the old WebAppEndpoint_v2.gs (which
+// used to own doPost/doGet before it was merged in here to avoid a duplicate
+// doPost/doGet collision between that file and this one). The Shortcut on
+// the family's phone(s) sends a `secret` param and expects the ToReview-
+// staging flow below — do not change the response shapes in
+// _routeShortcut/_handleAddBookShortcut/_handleEnrichShortcut without
+// updating the Shortcut itself.
+//
+// Unlike WEBAPP_SECRET's old home (a live-editor-only file, never committed
+// anywhere), this file is tracked in a public GitHub repo — so the actual
+// secret value lives in Project Settings → Script Properties → WEBAPP_SECRET
+// (same pattern as WRITE_TOKEN below), not hardcoded here. Set it once to
+// match whatever value the Shortcut already sends.
+function getWebappSecret_() {
+  return PropertiesService.getScriptProperties().getProperty('WEBAPP_SECRET');
+}
+
 function doGet(e) {
+  const params = _mergeParams(e);
+  if (params.secret) {
+    return _routeShortcut(params);
+  }
+
   const action = (e.parameter && e.parameter.action) || 'books';
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
@@ -55,24 +77,153 @@ function doGet(e) {
 // public, this token only deters casual/bot abuse of the bare URL — it is
 // not a substitute for real per-user auth.
 function doPost(e) {
-  let payload;
-  try {
-    payload = JSON.parse(e.postData.contents);
-  } catch (err) {
-    return jsonResponse({ error: 'invalid JSON body' });
+  const params = _mergeParams(e);
+
+  if (params.secret) {
+    return _routeShortcut(params);
   }
 
-  if (!checkToken(payload.token)) {
+  if (!checkToken(params.token)) {
     return jsonResponse({ error: 'unauthorized' });
   }
 
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
-  if (payload.action === 'addBook') {
-    return handleAddBook(ss, payload);
+  if (params.action === 'addBook') {
+    return handleAddBook(ss, params);
   }
 
   return jsonResponse({ error: 'unknown action' });
+}
+
+// Merges query-string params with a JSON body, whichever are present.
+// Used by both doGet and doPost so the iOS Shortcut's request — whatever
+// shape it actually sends (query params, form body, or JSON body) — and
+// this app's own JSON-body POSTs both resolve to one flat object.
+function _mergeParams(e) {
+  let params = (e && e.parameter) || {};
+  if (e && e.postData && e.postData.contents) {
+    try {
+      params = Object.assign({}, params, JSON.parse(e.postData.contents));
+    } catch (err) {
+      // Not JSON (or empty) — fall back to whatever e.parameter gave us.
+    }
+  }
+  return params;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// LEGACY iOS SHORTCUT ROUTE — ported from WebAppEndpoint_v2.gs
+// ─────────────────────────────────────────────────────────────────────────
+// Secret-gated (not token-gated like the webapp's addBook above). Writes a
+// stub row to ToReview and enriches it inline in the same request (via
+// enrichSingleRow in EnrichISBNBooks_v2.gs), rather than the webapp's
+// scan flow, which writes straight to Books and enriches later on a timer.
+// These are two intentionally separate pipelines feeding two different
+// staging areas — do not merge them without updating the Shortcut.
+
+function _routeShortcut(params) {
+  const expected = getWebappSecret_();
+  if (!expected || params.secret !== expected) {
+    return jsonResponse({ ok: false, message: 'Failed: secret non valido.' });
+  }
+  try {
+    if (params.action === 'enrich') return _handleEnrichShortcut();
+    return _handleAddBookShortcut(params);
+  } catch (err) {
+    return jsonResponse({ ok: false, message: 'Failed: ' + err.toString() });
+  }
+}
+
+function _handleEnrichShortcut() {
+  const result = runEnrichment(); // lives in EnrichISBNBooks_v2.gs
+  if (result.error) return jsonResponse({ ok: false, message: 'Failed: ' + result.error });
+  const message =
+    'Arricchiti: ' + result.enriched +
+    (result.notFound.length ? ', non trovati: ' + result.notFound.length : '') +
+    (result.remaining ? ', rimasti: ' + result.remaining + ' (riesegui)' : '');
+  return jsonResponse({
+    ok: true, enriched: result.enriched,
+    notFound: result.notFound, remaining: result.remaining || 0, message,
+  });
+}
+
+/**
+ * Receives an ISBN scan from the iOS Shortcut.
+ * Params: isbn (required), secret (required), library (optional shelf name).
+ */
+function _handleAddBookShortcut(params) {
+  const isbn = (params.isbn || '').toString().replace(/[^0-9Xx]/g, '').trim();
+  if (!isbn) return jsonResponse({ ok: false, message: 'Failed: nessun ISBN fornito.' });
+
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+
+  const dup = _findExistingIsbnShortcut(isbn, ss);
+  if (dup) {
+    const loc = dup.library ? ` (${dup.library})` : '';
+    return jsonResponse({
+      ok: false, duplicate: true,
+      message: `⚠️ ISBN già presente in ${dup.sheet}${loc} — non aggiunto.`,
+    });
+  }
+
+  const reviewSheet = ss.getSheetByName('ToReview');
+  if (!reviewSheet) {
+    return jsonResponse({ ok: false, message: 'Failed: foglio ToReview non trovato. Hai eseguito il Setup?' });
+  }
+
+  const headerRow = reviewSheet.getRange(1, 1, 1, reviewSheet.getLastColumn()).getValues()[0];
+  const col = _buildColMapShortcut(headerRow);
+
+  const numCols = headerRow.length;
+  const newRow = new Array(numCols).fill('');
+  if (col['ReviewStatus']) newRow[col['ReviewStatus'] - 1] = 'Cercando...';
+  if (col['ScanNote'])     newRow[col['ScanNote']     - 1] = 'Scansionato via Shortcut';
+  if (col['ISBN'])         newRow[col['ISBN']         - 1] = isbn;
+  if (col['Library'])      newRow[col['Library']      - 1] = (params.library || '').trim();
+  if (col['Copies'])       newRow[col['Copies']       - 1] = 1;
+  if (col['Scanned time']) newRow[col['Scanned time'] - 1] = new Date();
+
+  reviewSheet.appendRow(newRow);
+  const row = reviewSheet.getLastRow();
+
+  // enrichSingleRow lives in EnrichISBNBooks_v2.gs (same Apps Script project)
+  const found  = enrichSingleRow(reviewSheet, row, col, isbn);
+  const title  = String(col['Title']  ? reviewSheet.getRange(row, col['Title']).getValue()        : '');
+  const status = String(col['ReviewStatus'] ? reviewSheet.getRange(row, col['ReviewStatus']).getValue() : '');
+
+  const message = found
+    ? `✓ "${title}" aggiunto a ToReview — ${status}`
+    : `ISBN ${isbn} in ToReview — titolo non trovato, controlla manualmente`;
+
+  return jsonResponse({ ok: true, row, isbn, title, status, message });
+}
+
+/** Checks both Books and ToReview for a row with this ISBN. */
+function _findExistingIsbnShortcut(isbn, ss) {
+  for (const sheetName of ['Books', 'ToReview']) {
+    const sh = ss.getSheetByName(sheetName);
+    if (!sh || sh.getLastRow() < 2) continue;
+
+    const data  = sh.getDataRange().getValues();
+    const isbnC = data[0].indexOf('ISBN');
+    const libC  = data[0].indexOf('Library');
+    if (isbnC < 0) continue;
+
+    for (let i = 1; i < data.length; i++) {
+      const existing = String(data[i][isbnC]).replace(/[^0-9Xx]/g, '');
+      if (existing && existing === isbn) {
+        return { sheet: sheetName, library: libC >= 0 ? String(data[i][libC]) : '' };
+      }
+    }
+  }
+  return null;
+}
+
+function _buildColMapShortcut(headerRow) {
+  const m = {};
+  headerRow.forEach((name, i) => { if (name) m[String(name).trim()] = i + 1; });
+  return m;
 }
 
 function checkToken(token) {
