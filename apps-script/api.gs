@@ -105,6 +105,10 @@ function doPost(e) {
     return handleReturnBook(ss, params);
   }
 
+  if (params.action === 'setLibrary') {
+    return handleSetLibrary(ss, params);
+  }
+
   return jsonResponse({ error: 'unknown action' });
 }
 
@@ -379,8 +383,10 @@ function _setComputedStatusFormulas_(sheet, header, rowNum) {
 // an informal "it's on someone's nightstand" marker, distinct from a formal
 // Loans entry. Matches the first Books row with an exact Title match (same
 // limitation as the rest of this codebase until books get a stable row ID —
-// see FEATURES.md). Library is never touched: it's always the book's
-// permanent home shelf, independent of who currently has it.
+// see FEATURES.md). Library is only touched when the caller explicitly
+// passes `library` (the "Rimetti a posto" flow, where the user confirmed or
+// picked the shelf the book goes back to) — never as a side effect of
+// lending/holding by itself.
 function handleSetHeldBy(ss, payload) {
   const sheet = ss.getSheetByName('Books');
   if (!sheet) return jsonResponse({ error: 'Books sheet not found' });
@@ -401,6 +407,10 @@ function handleSetHeldBy(ss, payload) {
       if (String(values[r][titleCol] || '').trim() === title) {
         const rowNum = r + 1;
         sheet.getRange(rowNum, heldByCol + 1).setValue(String(payload.heldBy || '').trim());
+        if (payload.library !== undefined && payload.library !== null) {
+          const libraryCol = header.indexOf('library');
+          if (libraryCol >= 0) sheet.getRange(rowNum, libraryCol + 1).setValue(String(payload.library).trim());
+        }
         _setComputedStatusFormulas_(sheet, header, rowNum);
         return jsonResponse({ ok: true, row: rowNum });
       }
@@ -449,8 +459,9 @@ function handleLendBook(ss, payload) {
   }
 }
 
-// Marks a Loans row returned by LoanID. Books.Library is never touched —
-// same reasoning as handleLendBook above.
+// Marks a Loans row returned by LoanID. If the caller also passes `title`
+// + `library` (the user confirmed or picked which shelf the book goes back
+// to), the Books row's Library is updated too; otherwise it's left alone.
 function handleReturnBook(ss, payload) {
   const sheet = ss.getSheetByName('Loans');
   if (!sheet) return jsonResponse({ error: 'Loans sheet not found' });
@@ -472,6 +483,10 @@ function handleReturnBook(ss, payload) {
         const rowNum = r + 1;
         const dateReturned = payload.dateReturned ? new Date(payload.dateReturned) : new Date();
         sheet.getRange(rowNum, returnedCol + 1).setValue(dateReturned);
+        if (payload.library !== undefined && payload.library !== null && payload.title) {
+          const libRes = _writeBooksLibrary_(ss, payload.title, payload.library);
+          if (libRes.error) return jsonResponse({ ok: true, row: rowNum, libraryError: libRes.error });
+        }
         return jsonResponse({ ok: true, row: rowNum });
       }
     }
@@ -479,6 +494,42 @@ function handleReturnBook(ss, payload) {
   } finally {
     lock.releaseLock();
   }
+}
+
+// Explicitly moves a book to a different home shelf (Books.Library). This is
+// the only path besides the "put back" flows above that writes Library, and
+// it's always a deliberate user action ("Cambia scaffale" in the webapp).
+function handleSetLibrary(ss, payload) {
+  const title = String(payload.title || '').trim();
+  if (!title) return jsonResponse({ error: 'title is required' });
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const res = _writeBooksLibrary_(ss, title, payload.library);
+    return jsonResponse(res.error ? { error: res.error } : { ok: true, row: res.row });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Sets Library on the first Books row whose Title exactly matches (same
+// first-match limitation as handleSetHeldBy). Caller holds the lock.
+function _writeBooksLibrary_(ss, title, library) {
+  const sheet = ss.getSheetByName('Books');
+  if (!sheet) return { error: 'Books sheet not found' };
+  const wanted = String(title || '').trim();
+  const values = sheet.getDataRange().getValues();
+  const header = values[0].map(normalizeHeaderKey);
+  const titleCol = header.indexOf('title');
+  const libraryCol = header.indexOf('library');
+  if (titleCol < 0 || libraryCol < 0) return { error: 'Books sheet missing Title/Library columns' };
+  for (let r = 1; r < values.length; r++) {
+    if (String(values[r][titleCol] || '').trim() === wanted) {
+      sheet.getRange(r + 1, libraryCol + 1).setValue(String(library || '').trim());
+      return { row: r + 1 };
+    }
+  }
+  return { error: 'book not found: ' + wanted };
 }
 
 function parseBooks(sheet) {

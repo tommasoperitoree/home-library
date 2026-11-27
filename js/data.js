@@ -158,8 +158,8 @@ export function addBook(fields) {
 /**
  * Sets (or clears, if heldBy is '') who's informally holding a book right
  * now. Matches the first Books row with an exact Title match server-side.
- * Never touches Library.
- * @param {{title: string, heldBy: string}} fields
+ * Only touches Library if `library` is passed (the "Rimetti a posto" flow).
+ * @param {{title: string, heldBy: string, library?: string}} fields
  */
 export function setHeldBy(fields) {
   return postAction('setHeldBy', fields);
@@ -177,11 +177,21 @@ export function lendBook(fields) {
 }
 
 /**
- * Marks a Loans row returned by LoanID.
- * @param {{loanId: string, dateReturned?: string}} fields
+ * Marks a Loans row returned by LoanID. Pass `title` + `library` to also set
+ * the book's home shelf (Books.Library) in the same request.
+ * @param {{loanId: string, dateReturned?: string, title?: string, library?: string}} fields
  */
 export function returnBook(fields) {
   return postAction('returnBook', fields);
+}
+
+/**
+ * Moves a book to a different home shelf (Books.Library), matched by exact
+ * Title server-side.
+ * @param {{title: string, library: string}} fields
+ */
+export function setLibrary(fields) {
+  return postAction('setLibrary', fields);
 }
 
 export function getSelectedMember() {
