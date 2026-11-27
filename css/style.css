@@ -230,6 +230,14 @@ input {
   border-bottom: none;
 }
 
+.book-row-clickable {
+  cursor: pointer;
+}
+
+.book-row-clickable:active {
+  background: var(--bg);
+}
+
 .book-spine {
   width: 6px;
   align-self: stretch;

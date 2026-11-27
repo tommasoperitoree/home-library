@@ -7,6 +7,9 @@ import {
   setSelectedMember,
   bookLangCode,
   addBook,
+  setHeldBy,
+  lendBook,
+  returnBook,
 } from './data.js';
 import {
   renderMemberGrid,
@@ -103,7 +106,7 @@ function renderTabIo() {
       heldBooks.length,
       (body) => {
         const list = el('div');
-        renderBookList(list, heldBooks, { loanedTitles: loaned });
+        renderBookList(list, heldBooks, { loanedTitles: loaned, onOpen: openBookActionsSheet });
         body.appendChild(list);
       },
       { autoOpen: true }
@@ -442,7 +445,7 @@ function renderCatalogResults() {
   resultCount.textContent = `${results.length} ${results.length === 1 ? 'libro trovato' : 'libri trovati'}`;
 
   const visibleCount = Math.min(results.length, state.catalogo.page * state.catalogo.pageSize);
-  renderGroupedBookList(listEl, results.slice(0, visibleCount), (b) => groupLetter(b.t), { loanedTitles: loaned });
+  renderGroupedBookList(listEl, results.slice(0, visibleCount), (b) => groupLetter(b.t), { loanedTitles: loaned, onOpen: openBookActionsSheet });
 
   loadMoreEl.innerHTML = '';
   if (visibleCount < results.length) {
@@ -519,7 +522,7 @@ function openMemberSheet(member) {
 
     container.appendChild(el('div', { className: 'sheet-section-title', text: `Libri (${heldBooks.length})` }));
     const bookList = el('div');
-    renderBookList(bookList, heldBooks, { loanedTitles: loanedTitlesSet() });
+    renderBookList(bookList, heldBooks, { loanedTitles: loanedTitlesSet(), onOpen: openBookActionsSheet });
     container.appendChild(bookList);
 
     container.appendChild(el('div', { className: 'sheet-section-title', text: `Prestiti (${memberLoans.length})` }));
@@ -541,6 +544,169 @@ function openMemberSheet(member) {
       }
     }
   });
+}
+
+// ---------- Lending actions sheet ----------
+//
+// Opened by tapping any book row (Catalogo, Io's "I tuoi libri", or a
+// member's book list in Famiglia). Three mutually-exclusive states, same
+// precedence as the sheet's own Status formula (In prestito > Con X >
+// available): an active Loans row always wins over the informal Held By
+// marker. Library is never written by anything here — only Held By or a
+// new/updated Loans row changes, per the project's lending design rule.
+function openBookActionsSheet(book) {
+  let mode = 'main'; // 'main' | 'lend'
+
+  function renderSheetBody(container) {
+    container.innerHTML = '';
+    container.appendChild(el('h2', { text: book.t }));
+    if (book.a) container.appendChild(el('div', { className: 'book-author', text: book.a }));
+
+    const activeLoan = state.loans.find((l) => l.book === book.t);
+
+    container.appendChild(el('div', { className: 'sheet-section-title', text: 'Stato' }));
+    const statusLines = [];
+    if (book.l) statusLines.push(`Scaffale: ${shelfLabel(book.l)}`);
+    if (activeLoan) {
+      statusLines.push(`In prestito a ${activeLoan.borrowedBy} · dal ${formatDateDMY(activeLoan.dateLent)}`);
+      if (activeLoan.expectedReturn) statusLines.push(`Rientro previsto: ${activeLoan.expectedReturn}`);
+    } else if (book.h) {
+      statusLines.push(`Con: ${book.h}`);
+    } else {
+      statusLines.push('Disponibile');
+    }
+    container.appendChild(el('div', { className: 'book-author', html: statusLines.join('<br>') }));
+
+    const message = el('div', { className: 'form-message' });
+
+    const runAction = (successMsg, fn) => {
+      message.textContent = '';
+      return fn()
+        .then(() => {
+          message.textContent = successMsg;
+          message.className = 'form-message success';
+          setTimeout(() => {
+            mode = 'main';
+            renderSheetBody(container);
+            renderActiveTab();
+          }, 700);
+        })
+        .catch((err) => {
+          message.textContent = `Errore: ${err.message}`;
+          message.className = 'form-message error';
+        });
+    };
+
+    if (mode === 'lend') {
+      const borrowedByInput = el('input', {
+        className: 'form-input',
+        attrs: { type: 'text', placeholder: 'A chi presti? *' },
+      });
+      const expectedReturnInput = el('input', { className: 'form-input', attrs: { type: 'date' } });
+      const submitBtn = el('button', { className: 'btn-primary', text: 'Registra prestito' });
+
+      submitBtn.addEventListener('click', () => {
+        const borrowedBy = borrowedByInput.value.trim();
+        if (!borrowedBy) {
+          message.textContent = 'Indica a chi presti il libro.';
+          message.className = 'form-message error';
+          return;
+        }
+        submitBtn.disabled = true;
+        runAction('Prestito registrato.', async () => {
+          const res = await lendBook({
+            title: book.t,
+            library: book.l || '',
+            lentBy: state.user,
+            borrowedBy,
+            expectedReturn: expectedReturnInput.value || undefined,
+          });
+          state.loans.push({
+            id: res.loanId,
+            book: book.t,
+            library: book.l || '',
+            lentBy: state.user,
+            borrowedBy,
+            dateLent: formatDateDMY(new Date().toISOString()),
+            expectedReturn: expectedReturnInput.value ? formatDateDMY(expectedReturnInput.value) : '',
+            notes: '',
+          });
+        }).finally(() => {
+          submitBtn.disabled = false;
+        });
+      });
+
+      const cancelBtn = el('button', {
+        className: 'btn-secondary',
+        text: 'Annulla',
+        onClick: () => {
+          mode = 'main';
+          renderSheetBody(container);
+        },
+      });
+
+      container.appendChild(el('div', { className: 'form-row' }, [borrowedByInput]));
+      container.appendChild(el('div', { className: 'form-row' }, [expectedReturnInput]));
+      container.appendChild(message);
+      container.appendChild(el('div', { className: 'form-actions' }, [submitBtn, cancelBtn]));
+      return;
+    }
+
+    const actions = el('div', { className: 'form-actions' });
+
+    if (activeLoan) {
+      actions.appendChild(
+        el('button', {
+          className: 'btn-primary',
+          text: '✅ Segna restituito',
+          onClick: () =>
+            runAction('Restituito.', async () => {
+              await returnBook({ loanId: activeLoan.id });
+              state.loans = state.loans.filter((l) => l.id !== activeLoan.id);
+            }),
+        })
+      );
+    } else if (book.h) {
+      actions.appendChild(
+        el('button', {
+          className: 'btn-primary',
+          text: '↩️ Rimetti a posto',
+          onClick: () =>
+            runAction('Rimesso a posto.', async () => {
+              await setHeldBy({ title: book.t, heldBy: '' });
+              book.h = undefined;
+            }),
+        })
+      );
+    } else {
+      actions.appendChild(
+        el('button', {
+          className: 'btn-primary',
+          text: `📍 Tieni tu (${state.user})`,
+          onClick: () =>
+            runAction('Segnato: lo tieni tu.', async () => {
+              await setHeldBy({ title: book.t, heldBy: state.user });
+              book.h = state.user;
+            }),
+        })
+      );
+      actions.appendChild(
+        el('button', {
+          className: 'btn-secondary',
+          text: '📤 Presta a qualcuno',
+          onClick: () => {
+            mode = 'lend';
+            renderSheetBody(container);
+          },
+        })
+      );
+    }
+
+    container.appendChild(actions);
+    container.appendChild(message);
+  }
+
+  openBottomSheet(sheetBackdrop, bottomSheet, sheetContent, renderSheetBody);
 }
 
 sheetBackdrop.addEventListener('click', () => {
