@@ -106,7 +106,7 @@ function renderTabIo() {
       heldBooks.length,
       (body) => {
         const list = el('div');
-        renderBookList(list, heldBooks, { loanedTitles: loaned, onOpen: openBookActionsSheet });
+        renderBookList(list, heldBooks, { loanedTitles: loaned, onOpen: openBookDetailSheet });
         body.appendChild(list);
       },
       { autoOpen: true }
@@ -445,7 +445,7 @@ function renderCatalogResults() {
   resultCount.textContent = `${results.length} ${results.length === 1 ? 'libro trovato' : 'libri trovati'}`;
 
   const visibleCount = Math.min(results.length, state.catalogo.page * state.catalogo.pageSize);
-  renderGroupedBookList(listEl, results.slice(0, visibleCount), (b) => groupLetter(b.t), { loanedTitles: loaned, onOpen: openBookActionsSheet });
+  renderGroupedBookList(listEl, results.slice(0, visibleCount), (b) => groupLetter(b.t), { loanedTitles: loaned, onOpen: openBookDetailSheet });
 
   loadMoreEl.innerHTML = '';
   if (visibleCount < results.length) {
@@ -522,7 +522,7 @@ function openMemberSheet(member) {
 
     container.appendChild(el('div', { className: 'sheet-section-title', text: `Libri (${heldBooks.length})` }));
     const bookList = el('div');
-    renderBookList(bookList, heldBooks, { loanedTitles: loanedTitlesSet(), onOpen: openBookActionsSheet });
+    renderBookList(bookList, heldBooks, { loanedTitles: loanedTitlesSet(), onOpen: openBookDetailSheet });
     container.appendChild(bookList);
 
     container.appendChild(el('div', { className: 'sheet-section-title', text: `Prestiti (${memberLoans.length})` }));
@@ -546,27 +546,59 @@ function openMemberSheet(member) {
   });
 }
 
-// ---------- Lending actions sheet ----------
+// ---------- Book detail sheet ----------
 //
 // Opened by tapping any book row (Catalogo, Io's "I tuoi libri", or a
-// member's book list in Famiglia). Three mutually-exclusive states, same
-// precedence as the sheet's own Status formula (In prestito > Con X >
+// member's book list in Famiglia). Shows everything known about the book
+// (cover, series, shelf, publisher/year/ISBN, subjects, notes) plus the
+// lending actions in one place. Three mutually-exclusive lending states,
+// same precedence as the sheet's own Status formula (In prestito > Con X >
 // available): an active Loans row always wins over the informal Held By
 // marker. Library is never written by anything here — only Held By or a
 // new/updated Loans row changes, per the project's lending design rule.
-function openBookActionsSheet(book) {
+const LANG_FULL_NAME = { IT: 'Italiano', EN: 'Inglese', ES: 'Spagnolo', DE: 'Tedesco' };
+
+function openBookDetailSheet(book) {
   let mode = 'main'; // 'main' | 'lend'
 
   function renderSheetBody(container) {
     container.innerHTML = '';
+    if (book.cover) {
+      container.appendChild(el('img', { className: 'detail-cover', attrs: { src: book.cover, alt: book.t } }));
+    }
     container.appendChild(el('h2', { text: book.t }));
     if (book.a) container.appendChild(el('div', { className: 'book-author', text: book.a }));
 
     const activeLoan = state.loans.find((l) => l.book === book.t);
 
+    const metaRows = [];
+    if (book.sn) {
+      const seriesText = book.so !== undefined && book.so !== null && book.so !== ''
+        ? `${book.sn} #${book.so}`
+        : book.sn;
+      metaRows.push(['Serie', seriesText]);
+    }
+    if (book.l) metaRows.push(['Scaffale', shelfLabel(book.l)]);
+    metaRows.push(['Lingua', LANG_FULL_NAME[bookLangCode(book)] || bookLangCode(book)]);
+    if (book.pub) metaRows.push(['Editore', book.pub]);
+    if (book.year) metaRows.push(['Anno', String(book.year)]);
+    if (book.isbn) metaRows.push(['ISBN', book.isbn]);
+    if (book.subjects) metaRows.push(['Argomenti', book.subjects]);
+
+    const metaGrid = el('div', { className: 'detail-meta' });
+    for (const [label, value] of metaRows) {
+      metaGrid.appendChild(el('div', { className: 'detail-meta-label', text: label }));
+      metaGrid.appendChild(el('div', { className: 'detail-meta-value', text: value }));
+    }
+    container.appendChild(metaGrid);
+
+    if (book.notes) {
+      container.appendChild(el('div', { className: 'sheet-section-title', text: 'Note' }));
+      container.appendChild(el('div', { className: 'book-author', text: book.notes }));
+    }
+
     container.appendChild(el('div', { className: 'sheet-section-title', text: 'Stato' }));
     const statusLines = [];
-    if (book.l) statusLines.push(`Scaffale: ${shelfLabel(book.l)}`);
     if (activeLoan) {
       statusLines.push(`In prestito a ${activeLoan.borrowedBy} · dal ${formatDateDMY(activeLoan.dateLent)}`);
       if (activeLoan.expectedReturn) statusLines.push(`Rientro previsto: ${activeLoan.expectedReturn}`);

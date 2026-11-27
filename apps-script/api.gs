@@ -494,6 +494,12 @@ function parseBooks(sheet) {
     heldBy: header.indexOf('heldby'),
     seriesName: header.indexOf('seriesname'),
     seriesOrder: header.indexOf('seriesorder'),
+    isbn: header.indexOf('isbn'),
+    publisher: header.indexOf('publisher'),
+    year: header.indexOf('year'),
+    coverUrl: header.indexOf('coverurl'),
+    subjects: header.indexOf('subjects'),
+    notes: header.indexOf('notes'),
   };
 
   const books = [];
@@ -521,6 +527,24 @@ function parseBooks(sheet) {
 
     const seriesOrder = idx.seriesOrder >= 0 ? row[idx.seriesOrder] : '';
     if (seriesOrder !== '' && seriesOrder !== null && seriesOrder !== undefined) book.so = seriesOrder;
+
+    const isbn = idx.isbn >= 0 ? String(row[idx.isbn] || '').trim() : '';
+    if (isbn) book.isbn = isbn;
+
+    const publisher = idx.publisher >= 0 ? String(row[idx.publisher] || '').trim() : '';
+    if (publisher) book.pub = publisher;
+
+    const year = idx.year >= 0 ? row[idx.year] : '';
+    if (year !== '' && year !== null && year !== undefined) book.year = year;
+
+    const coverUrl = idx.coverUrl >= 0 ? String(row[idx.coverUrl] || '').trim() : '';
+    if (coverUrl) book.cover = coverUrl;
+
+    const subjects = idx.subjects >= 0 ? String(row[idx.subjects] || '').trim() : '';
+    if (subjects) book.subjects = subjects;
+
+    const notes = idx.notes >= 0 ? String(row[idx.notes] || '').trim() : '';
+    if (notes) book.notes = notes;
 
     books.push(book);
   }
