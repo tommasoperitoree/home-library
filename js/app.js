@@ -11,6 +11,7 @@ import {
 import {
   renderMemberGrid,
   renderBookList,
+  renderGroupedBookList,
   renderChipRow,
   languageChips,
   shelfChips,
@@ -20,6 +21,7 @@ import {
   renderStatsGrid,
   timeGreeting,
   formatDateDMY,
+  shelfLabel,
   el,
 } from './ui.js';
 
@@ -141,13 +143,58 @@ function renderTabIo() {
 function filteredCatalogBooks() {
   const { search, lang, shelf } = state.catalogo;
   const term = search.trim().toLowerCase();
-  return state.books.filter((b) => {
+  const filtered = state.books.filter((b) => {
     if (term && !(b.t.toLowerCase().includes(term) || (b.a || '').toLowerCase().includes(term))) {
       return false;
     }
     if (lang !== 'Tutti' && bookLangCode(b) !== lang) return false;
     if (shelf !== 'Tutti' && b.l !== shelf) return false;
     return true;
+  });
+  return sortCatalogBooks(filtered);
+}
+
+// Leading articles ignored when alphabetizing (and for the A/B/C.. letter
+// headers), so e.g. "Il senso religioso" files under S, not I — standard
+// library-catalog convention, since without it "I"/"L" would swallow a huge
+// share of the Italian titles here.
+const LEADING_ARTICLES = ["l'", 'il ', 'lo ', 'la ', 'gli ', 'le ', 'i ', 'un ', 'uno ', 'una ', 'the ', 'a ', 'an '];
+
+function titleSortKey(title) {
+  const t = (title || '').trim();
+  const lower = t.toLowerCase();
+  for (const art of LEADING_ARTICLES) {
+    if (lower.startsWith(art)) return t.slice(art.length).trimStart();
+  }
+  return t;
+}
+
+// Letter-header bucket for a title: first letter of its sort key, accents
+// folded to the base letter (so È/E group together), '#' for anything that
+// doesn't start with a letter.
+function groupLetter(title) {
+  const key = titleSortKey(title);
+  const first = key.charAt(0).toUpperCase();
+  const base = first.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return /[A-Z]/.test(base) ? base : '#';
+}
+
+// Primary: alphabetical letter bucket. Secondary (within a letter):
+// library/shelf, so each shelf's books cluster together and share a spine
+// color. Tertiary: title itself, for a stable order within a shelf cluster.
+// Books with no Library sort after every shelf within their letter.
+function sortCatalogBooks(books) {
+  return [...books].sort((a, b) => {
+    const la = groupLetter(a.t);
+    const lb = groupLetter(b.t);
+    if (la !== lb) return la.localeCompare(lb, 'it');
+
+    const libA = a.l ? shelfLabel(a.l) : '￿';
+    const libB = b.l ? shelfLabel(b.l) : '￿';
+    const libCompare = libA.localeCompare(libB, 'it');
+    if (libCompare !== 0) return libCompare;
+
+    return titleSortKey(a.t).localeCompare(titleSortKey(b.t), 'it');
   });
 }
 
@@ -395,7 +442,7 @@ function renderCatalogResults() {
   resultCount.textContent = `${results.length} ${results.length === 1 ? 'libro trovato' : 'libri trovati'}`;
 
   const visibleCount = Math.min(results.length, state.catalogo.page * state.catalogo.pageSize);
-  renderBookList(listEl, results.slice(0, visibleCount), { loanedTitles: loaned });
+  renderGroupedBookList(listEl, results.slice(0, visibleCount), (b) => groupLetter(b.t), { loanedTitles: loaned });
 
   loadMoreEl.innerHTML = '';
   if (visibleCount < results.length) {

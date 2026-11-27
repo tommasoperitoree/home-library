@@ -27,7 +27,7 @@ Status: 💡 idea → 🚧 in progress → ✅ done → ⏸️ blocked
 | **ISBN** | 🚧 in progress | Barcode-scan add-book flow (camera, `html5-qrcode` lib) in Catalogo → feeds `addBook` endpoint with isbn-only → `runEnrichmentBatch` fills in the rest within ~1-2 min. Natural pairing with the iOS Shortcut idea below (same endpoint, different entry point). |
 | **Cover URL** | 💡 idea | Real book cover thumbnails in Catalogo instead of the decorative color bar. Read-only, no backend change needed. |
 | **Subjects** | 💡 idea | Genre/topic filter chips alongside language/shelf in Catalogo. |
-| **SeriesName / SeriesOrder** | 💡 idea | Group a series together; show "Libro 3 di 5"; sort within series. |
+| **SeriesName / SeriesOrder** | 🚧 in progress | Exposed by `parseBooks` (`sn`/`so` compact fields) and shown as a gold pill badge next to the shelf badge in Catalogo/Io/Famiglia (`.book-series` in `css/style.css`, rendered in `renderBookRow`, `js/ui.js`). Data itself populated by `apps-script/one_off_series_mapping.gs` (not yet run against production) — see that file for which series were identified and why some were deliberately left out. |
 | **ReadBy** | 💡 idea | "Chi l'ha letto" badge/stat — distinct from `Held By` (who has it physically right now). |
 | **Publisher / Year** | 💡 idea | Needs a book detail screen (books currently have no tap-through view) to have somewhere to show these. |
 | **Copies** | 🚧 in progress | Data-model rule now settled: same ISBN scanned at the **same** shelf = another physical copy → `Copies` is bumped by 1 on the existing Books row (no new row, no ToReview trip). Same ISBN at a **different** shelf = a genuinely distinct copy living elsewhere → its own row, not a duplicate. Implemented in the legacy Shortcut's `_handleAddBookShortcut`/`_incrementCopiesShortcut_` (`apps-script/api.gs`). Not yet applied to the webapp's own scan flow, since that scanner doesn't currently ask which shelf you're scanning into before each ISBN — would need that UI first. Catalogo display still doesn't reflect `Copies > 1` specially (e.g. "2 copie disponibili").  |
@@ -54,3 +54,5 @@ Status: 💡 idea → 🚧 in progress → ✅ done → ⏸️ blocked
 - Core PWA: selector screen, Io/Catalogo/Famiglia tabs, bottom sheet, offline cache (`sw.js`).
 - Live data via Apps Script (`doGet`), with shelf/heldBy/active-loans column mapping fixed to match the real sheet headers.
 - Daily GitHub Action sync (`scripts/sync.py`) as the bundled offline fallback.
+- Catalogo: alphabetical list with letter-section headers (leading Italian/English articles ignored for sorting, e.g. "Il senso religioso" files under S), sub-sorted by shelf within each letter so same-shelf books cluster together (`sortCatalogBooks`/`groupLetter` in `js/app.js`, `renderGroupedBookList` in `js/ui.js`).
+- Book spine color is now a stable per-shelf color (`shelfColor` in `js/data.js`), replacing the old purely-decorative per-row-index color cycle.

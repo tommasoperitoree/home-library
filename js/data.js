@@ -62,9 +62,25 @@ export function bookLangCode(book) {
   return code || book.lang.toUpperCase().slice(0, 2);
 }
 
-export function spineColor(index) {
-  const colors = ['#C4913A', '#7B9E6B', '#6B87A0', '#A06B6B', '#8A7BAE', '#5C3D2E'];
-  return colors[index % colors.length];
+// One color per known shelf (by its position in SHELVES), so the spine
+// color is a stable visual cue for "which shelf this book lives on" instead
+// of a meaningless per-row index. Falls back to a stable hash-based color
+// for any shelf name not in SHELVES (e.g. the sheet gained a new shelf this
+// hasn't been updated for yet), and a neutral gray when Library is blank.
+const SHELF_COLOR_PALETTE = [
+  '#C4913A', '#7B9E6B', '#6B87A0', '#A06B6B', '#8A7BAE',
+  '#5C3D2E', '#D98E5F', '#4F8A8B', '#9C6B5E',
+];
+const NO_SHELF_COLOR = '#B9AFA0';
+
+export function shelfColor(shelfKey) {
+  if (!shelfKey) return NO_SHELF_COLOR;
+  const idx = SHELVES.findIndex((s) => s.key === shelfKey);
+  if (idx >= 0) return SHELF_COLOR_PALETTE[idx % SHELF_COLOR_PALETTE.length];
+
+  let hash = 0;
+  for (let i = 0; i < shelfKey.length; i++) hash = (hash * 31 + shelfKey.charCodeAt(i)) >>> 0;
+  return SHELF_COLOR_PALETTE[hash % SHELF_COLOR_PALETTE.length];
 }
 
 async function fetchJson(url) {

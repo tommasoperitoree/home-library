@@ -276,6 +276,15 @@ input {
   padding: 1px 8px;
 }
 
+.book-series {
+  font-size: 11px;
+  color: var(--brown);
+  background: var(--gold-lt);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-weight: 600;
+}
+
 .badge-held {
   font-size: 11px;
   background: var(--gold);
@@ -348,6 +357,21 @@ input {
   font-size: 13px;
   color: var(--muted);
   margin: 4px 0 10px;
+}
+
+.catalog-letter-header {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--brown);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin: 18px 0 4px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--gold-lt);
+}
+
+.catalog-letter-header:first-child {
+  margin-top: 4px;
 }
 
 .catalogo-actions {

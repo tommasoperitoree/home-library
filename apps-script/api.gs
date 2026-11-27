@@ -492,6 +492,8 @@ function parseBooks(sheet) {
     shelf: header.indexOf('library'),
     language: header.indexOf('language'),
     heldBy: header.indexOf('heldby'),
+    seriesName: header.indexOf('seriesname'),
+    seriesOrder: header.indexOf('seriesorder'),
   };
 
   const books = [];
@@ -513,6 +515,12 @@ function parseBooks(sheet) {
 
     const heldBy = idx.heldBy >= 0 ? String(row[idx.heldBy] || '').trim() : '';
     if (heldBy) book.h = heldBy;
+
+    const seriesName = idx.seriesName >= 0 ? String(row[idx.seriesName] || '').trim() : '';
+    if (seriesName) book.sn = seriesName;
+
+    const seriesOrder = idx.seriesOrder >= 0 ? row[idx.seriesOrder] : '';
+    if (seriesOrder !== '' && seriesOrder !== null && seriesOrder !== undefined) book.so = seriesOrder;
 
     books.push(book);
   }

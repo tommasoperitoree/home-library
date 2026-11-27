@@ -25,6 +25,17 @@
 // the same way, so each stays its own SeriesName, consistent with "same
 // book, different language -> different series" from this project's
 // earlier discussion).
+//
+// Entries with `newTitle` also rewrite the Title cell, stripping the number
+// that's now redundant with SeriesOrder (e.g. "1: Harry Potter e la pietra
+// filosofale" -> "Harry Potter e la pietra filosofale"). Where the number
+// sits mid-title rather than as a clean leading prefix, it's replaced with
+// this sheet's own " : " subtitle-separator convention (already used
+// elsewhere, e.g. "Il senso religioso : volume primo del PerCorso") rather
+// than left as an awkward run-on, e.g. "Eroi dell'Olimpo 1: L'eroe perduto"
+// -> "Eroi dell'Olimpo : L'eroe perduto". Everything else about the title
+// (including the series name appearing in it) is left untouched — only the
+// number itself was asked to go.
 
 function applySeriesMapping_oneOff() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -53,15 +64,15 @@ function applySeriesMapping_oneOff() {
     'Harry Potter and the deathly hallows': { series: 'Harry Potter (EN)', order: 7 },
 
     // --- Harry Potter (Italian) — numbers already in your own titles ---
-    "1: Harry Potter e la pietra filosofale": { series: 'Harry Potter (IT)', order: 1 },
+    "1: Harry Potter e la pietra filosofale": { series: 'Harry Potter (IT)', order: 1, newTitle: 'Harry Potter e la pietra filosofale' },
     "Harry Potter e la pietra filosofale : romanzo": { series: 'Harry Potter (IT)', order: 1 },
-    '2: Harry Potter e la camera dei segreti': { series: 'Harry Potter (IT)', order: 2 },
-    '3: Harry Potter e il prigioniero di Azkaban': { series: 'Harry Potter (IT)', order: 3 },
-    '4: Harry Potter e il Calice di Fuoco': { series: 'Harry Potter (IT)', order: 4 },
-    "5: Harry Potter e l'Ordine della Fenice": { series: 'Harry Potter (IT)', order: 5 },
-    '6: Harry Potter e il Principe Mezzosangue': { series: 'Harry Potter (IT)', order: 6 },
+    '2: Harry Potter e la camera dei segreti': { series: 'Harry Potter (IT)', order: 2, newTitle: 'Harry Potter e la camera dei segreti' },
+    '3: Harry Potter e il prigioniero di Azkaban': { series: 'Harry Potter (IT)', order: 3, newTitle: 'Harry Potter e il prigioniero di Azkaban' },
+    '4: Harry Potter e il Calice di Fuoco': { series: 'Harry Potter (IT)', order: 4, newTitle: 'Harry Potter e il Calice di Fuoco' },
+    "5: Harry Potter e l'Ordine della Fenice": { series: 'Harry Potter (IT)', order: 5, newTitle: "Harry Potter e l'Ordine della Fenice" },
+    '6: Harry Potter e il Principe Mezzosangue': { series: 'Harry Potter (IT)', order: 6, newTitle: 'Harry Potter e il Principe Mezzosangue' },
     'Harry Potter e il principe mezzosangue : romanzo': { series: 'Harry Potter (IT)', order: 6 },
-    '7: Harry Potter e i doni della morte': { series: 'Harry Potter (IT)', order: 7 },
+    '7: Harry Potter e i doni della morte': { series: 'Harry Potter (IT)', order: 7, newTitle: 'Harry Potter e i doni della morte' },
 
     // --- Il Signore degli Anelli ---
     "Il Signore degli Anelli I. La compagnia dell'anello": { series: 'Il Signore degli Anelli', order: 1 },
@@ -81,10 +92,10 @@ function applySeriesMapping_oneOff() {
     'Storia militare della Seconda Guerra Mondiale - Volume Secondo': { series: 'Storia militare della Seconda Guerra Mondiale', order: 2 },
 
     // --- Eroi dell'Olimpo (Italian) — kept separate from Percy Jackson below ---
-    "Eroi dell'Olimpo 1: L' eroe perduto": { series: "Eroi dell'Olimpo", order: 1 },
-    "Eroi dell'Olimpo 2: Il figlio di Nettuno": { series: "Eroi dell'Olimpo", order: 2 },
-    "Eroi dell'Olimpo 3: Il marchio di Atena": { series: "Eroi dell'Olimpo", order: 3 },
-    "Eroi dell'Olimpo 5: Il sangue dell'Olimpo": { series: "Eroi dell'Olimpo", order: 5 },
+    "Eroi dell'Olimpo 1: L' eroe perduto": { series: "Eroi dell'Olimpo", order: 1, newTitle: "Eroi dell'Olimpo : L' eroe perduto" },
+    "Eroi dell'Olimpo 2: Il figlio di Nettuno": { series: "Eroi dell'Olimpo", order: 2, newTitle: "Eroi dell'Olimpo : Il figlio di Nettuno" },
+    "Eroi dell'Olimpo 3: Il marchio di Atena": { series: "Eroi dell'Olimpo", order: 3, newTitle: "Eroi dell'Olimpo : Il marchio di Atena" },
+    "Eroi dell'Olimpo 5: Il sangue dell'Olimpo": { series: "Eroi dell'Olimpo", order: 5, newTitle: "Eroi dell'Olimpo : Il sangue dell'Olimpo" },
     // (volume 4 missing from the catalog -- Series Tracker's Missing column
     // should show this once TotalVolumes is filled in manually)
 
@@ -93,10 +104,10 @@ function applySeriesMapping_oneOff() {
     // storie segrete" are unnumbered companion volumes ---
     "Percy Jackson e gli dei dell'Olimpo : il ladro di fulmini": { series: "Percy Jackson e gli Dei dell'Olimpo", order: 1 },
     "Percy Jackson & gli dei dell'Olimpo : Il mare dei mostri": { series: "Percy Jackson e gli Dei dell'Olimpo", order: 2 },
-    "Percy Jackson e gli dei dell'Olimpo 3: la maledizione del Titano": { series: "Percy Jackson e gli Dei dell'Olimpo", order: 3 },
-    "Percy Jackson e gli Dei dell'Olimpo 4: La battaglia del labirinto": { series: "Percy Jackson e gli Dei dell'Olimpo", order: 4 },
-    "Percy Jackson e gli Dei dell'Olimpo5: Lo scontro finale": { series: "Percy Jackson e gli Dei dell'Olimpo", order: 5 },
-    "Percy Jackson e gli Dei dell'Olimpo 6:Il calice degli dei": { series: "Percy Jackson e gli Dei dell'Olimpo", order: 6 },
+    "Percy Jackson e gli dei dell'Olimpo 3: la maledizione del Titano": { series: "Percy Jackson e gli Dei dell'Olimpo", order: 3, newTitle: "Percy Jackson e gli dei dell'Olimpo : la maledizione del Titano" },
+    "Percy Jackson e gli Dei dell'Olimpo 4: La battaglia del labirinto": { series: "Percy Jackson e gli Dei dell'Olimpo", order: 4, newTitle: "Percy Jackson e gli Dei dell'Olimpo : La battaglia del labirinto" },
+    "Percy Jackson e gli Dei dell'Olimpo5: Lo scontro finale": { series: "Percy Jackson e gli Dei dell'Olimpo", order: 5, newTitle: "Percy Jackson e gli Dei dell'Olimpo : Lo scontro finale" },
+    "Percy Jackson e gli Dei dell'Olimpo 6:Il calice degli dei": { series: "Percy Jackson e gli Dei dell'Olimpo", order: 6, newTitle: "Percy Jackson e gli Dei dell'Olimpo : Il calice degli dei" },
     "Percy Jackson e gli dei dell'Olimpo : il libro segreto": { series: "Percy Jackson e gli Dei dell'Olimpo", order: null },
     "Percy Jackson & gli dei dell'Olimpo : le storie segrete": { series: "Percy Jackson e gli Dei dell'Olimpo", order: null },
 
@@ -106,21 +117,23 @@ function applySeriesMapping_oneOff() {
 
     // --- Wings of Fire (English) / I Regni del Fuoco (Italian) — kept
     // separate per language; both missing some volumes from the catalog ---
-    'Wings of Fire 5: The Brightest Night': { series: 'Wings of Fire', order: 5 },
-    'Wings of Fire 6: Moon Rising': { series: 'Wings of Fire', order: 6 },
-    'Wings of Fire 8: Escaping Peril': { series: 'Wings of Fire', order: 8 },
+    'Wings of Fire 5: The Brightest Night': { series: 'Wings of Fire', order: 5, newTitle: 'Wings of Fire : The Brightest Night' },
+    'Wings of Fire 6: Moon Rising': { series: 'Wings of Fire', order: 6, newTitle: 'Wings of Fire : Moon Rising' },
+    'Wings of Fire 8: Escaping Peril': { series: 'Wings of Fire', order: 8, newTitle: 'Wings of Fire : Escaping Peril' },
 
-    'I Regni del Fuoco. 2 La principessa perduta': { series: 'I Regni del Fuoco', order: 2 },
-    'I Regni del Fuoco. 3 Nel cuore della foresta': { series: 'I Regni del Fuoco', order: 3 },
-    "I Regni del Fuoco. 4 L' oscuro segreto": { series: 'I Regni del Fuoco', order: 4 },
+    'I Regni del Fuoco. 2 La principessa perduta': { series: 'I Regni del Fuoco', order: 2, newTitle: 'I Regni del Fuoco. La principessa perduta' },
+    'I Regni del Fuoco. 3 Nel cuore della foresta': { series: 'I Regni del Fuoco', order: 3, newTitle: 'I Regni del Fuoco. Nel cuore della foresta' },
+    "I Regni del Fuoco. 4 L' oscuro segreto": { series: 'I Regni del Fuoco', order: 4, newTitle: "I Regni del Fuoco. L' oscuro segreto" },
 
-    // --- Dante Alighieri, commentato da Franco Nembrini — 2 editions each ---
+    // --- Dante Alighieri, commentato da Franco Nembrini — 2 editions each;
+    // the "Vol.N:" titles become just the cantica name, which stands fine
+    // on its own (Inferno/Purgatorio/Paradiso) ---
     "Dante Alighieri. Inferno. Commentato da Franco Nembrini. Illustrato da Gabriele Dell'Otto.": { series: 'Dante Alighieri (comm. Nembrini)', order: 1 },
-    'Vol.1: Inferno': { series: 'Dante Alighieri (comm. Nembrini)', order: 1 },
+    'Vol.1: Inferno': { series: 'Dante Alighieri (comm. Nembrini)', order: 1, newTitle: 'Inferno' },
     "Dante Alighieri. Purgatorio. Commentato da Franco Nembrini. Illustrato da Gabriele Dell'Otto.": { series: 'Dante Alighieri (comm. Nembrini)', order: 2 },
-    'Vol. 2: Purgatorio': { series: 'Dante Alighieri (comm. Nembrini)', order: 2 },
+    'Vol. 2: Purgatorio': { series: 'Dante Alighieri (comm. Nembrini)', order: 2, newTitle: 'Purgatorio' },
     "Dante Alighieri. Paradiso. Commentato da Franco Nembrini. Illustrato da Gabriele Dell'Otto.": { series: 'Dante Alighieri (comm. Nembrini)', order: 3 },
-    'Vol. 3: Paradiso': { series: 'Dante Alighieri (comm. Nembrini)', order: 3 },
+    'Vol. 3: Paradiso': { series: 'Dante Alighieri (comm. Nembrini)', order: 3, newTitle: 'Paradiso' },
 
     // --- La famiglia orsetti — no numbering in any title ---
     'La famiglia orsetti. Facciamo pace!': { series: 'La famiglia orsetti', order: null },
@@ -129,10 +142,12 @@ function applySeriesMapping_oneOff() {
     'La famiglia orsetti. Troppi impegni': { series: 'La famiglia orsetti', order: null },
     'La famiglia orsetti. Una sorellina in arrivo!': { series: 'La famiglia orsetti', order: null },
 
-    // --- Barzellette super-top-compilation ---
-    'Barzellette super-top-compilation 1': { series: 'Barzellette super-top-compilation', order: 1 },
-    'Barzellette super-top-compilation 2': { series: 'Barzellette super-top-compilation', order: 2 },
-    'Barzellette super-top-compilation 3': { series: 'Barzellette super-top-compilation', order: 3 },
+    // --- Barzellette super-top-compilation — all 3 share the same title
+    // once the number is stripped (nothing else distinguishes them); that's
+    // fine, SeriesOrder is what tells them apart ---
+    'Barzellette super-top-compilation 1': { series: 'Barzellette super-top-compilation', order: 1, newTitle: 'Barzellette super-top-compilation' },
+    'Barzellette super-top-compilation 2': { series: 'Barzellette super-top-compilation', order: 2, newTitle: 'Barzellette super-top-compilation' },
+    'Barzellette super-top-compilation 3': { series: 'Barzellette super-top-compilation', order: 3, newTitle: 'Barzellette super-top-compilation' },
 
     // --- Comunione e Liberazione (storia), Camisasca — the plain-title
     // copy is deliberately excluded (unclear if same series) ---
@@ -141,18 +156,18 @@ function applySeriesMapping_oneOff() {
 
     // --- PerCorso, Giussani — your own titles already say "volume
     // primo/secondo del PerCorso"; my first clustering pass missed this ---
-    '1: Il senso religioso': { series: 'PerCorso', order: 1 },
+    '1: Il senso religioso': { series: 'PerCorso', order: 1, newTitle: 'Il senso religioso' },
     'Il senso religioso : volume primo del PerCorso': { series: 'PerCorso', order: 1 },
-    "2: All'origine della pretesa cristiana": { series: 'PerCorso', order: 2 },
-    "2: All'origine della pretesa cristiana : volume secondo del perCorso": { series: 'PerCorso', order: 2 },
+    "2: All'origine della pretesa cristiana": { series: 'PerCorso', order: 2, newTitle: "All'origine della pretesa cristiana" },
+    "2: All'origine della pretesa cristiana : volume secondo del perCorso": { series: 'PerCorso', order: 2, newTitle: "All'origine della pretesa cristiana : volume secondo del perCorso" },
     "All'origine della pretesa cristiana. Volume secondo del PerCorso": { series: 'PerCorso', order: 2 },
 
     // --- Diario di una Schiappa (Italian) — 5 numbered, rest unclear ---
-    'Diario di una Schiappa. 1 Come resistere a una famiglia imbarazzante': { series: 'Diario di una Schiappa', order: 1 },
-    'Diario di una Schiappa. 2 Come resistere alle vacanze catastrofiche': { series: 'Diario di una Schiappa', order: 2 },
-    'Diario di una Schiappa. 3 Come resistere a una scuola disastrosa': { series: 'Diario di una Schiappa', order: 3 },
-    'Diario di una Schiappa. 4 Come resistere ai cuccioli di casa': { series: 'Diario di una Schiappa', order: 4 },
-    'Diario di una Schiappa. 5 Come resistere agli amici più strambi': { series: 'Diario di una Schiappa', order: 5 },
+    'Diario di una Schiappa. 1 Come resistere a una famiglia imbarazzante': { series: 'Diario di una Schiappa', order: 1, newTitle: 'Diario di una Schiappa. Come resistere a una famiglia imbarazzante' },
+    'Diario di una Schiappa. 2 Come resistere alle vacanze catastrofiche': { series: 'Diario di una Schiappa', order: 2, newTitle: 'Diario di una Schiappa. Come resistere alle vacanze catastrofiche' },
+    'Diario di una Schiappa. 3 Come resistere a una scuola disastrosa': { series: 'Diario di una Schiappa', order: 3, newTitle: 'Diario di una Schiappa. Come resistere a una scuola disastrosa' },
+    'Diario di una Schiappa. 4 Come resistere ai cuccioli di casa': { series: 'Diario di una Schiappa', order: 4, newTitle: 'Diario di una Schiappa. Come resistere ai cuccioli di casa' },
+    'Diario di una Schiappa. 5 Come resistere agli amici più strambi': { series: 'Diario di una Schiappa', order: 5, newTitle: 'Diario di una Schiappa. Come resistere agli amici più strambi' },
     'Diario di una Schiappa: COME RESISTERE ai passatempi più strani': { series: 'Diario di una Schiappa', order: null },
     'Diario di una schiappa : Vita da cani': { series: 'Diario di una Schiappa', order: null },
     'Diario di una schiappa : disastro totale': { series: 'Diario di una Schiappa', order: null },
@@ -168,6 +183,7 @@ function applySeriesMapping_oneOff() {
 
   const matchedTitles = {};
   let applied = 0;
+  let retitled = 0;
 
   for (let r = 1; r < values.length; r++) {
     const title = String(values[r][idx.title] || '').trim();
@@ -178,19 +194,24 @@ function applySeriesMapping_oneOff() {
     if (spec.order !== null && spec.order !== undefined) {
       sheet.getRange(r + 1, idx.seriesOrder + 1).setValue(spec.order);
     }
+    if (spec.newTitle) {
+      sheet.getRange(r + 1, idx.title + 1).setValue(spec.newTitle);
+      retitled++;
+    }
     matchedTitles[title] = true;
     applied++;
   }
 
   const unmatched = Object.keys(MAPPING).filter((t) => !matchedTitles[t]);
-  Logger.log('Applied SeriesName/SeriesOrder to ' + applied + ' rows.');
+  Logger.log('Applied SeriesName/SeriesOrder to ' + applied + ' rows (' + retitled + ' also retitled).');
   if (unmatched.length) {
     Logger.log('NOT FOUND in Books (title text differs from what this mapping expects): ' + JSON.stringify(unmatched));
   }
 
   refreshSeriesSheet(); // lives in HomeLibrary_v2.gs
+  refreshAuthorsSheet(); // titles changed; Authors.Books lists the old strings otherwise
 
-  const msg = 'Applied to ' + applied + ' rows.' +
+  const msg = 'Applied to ' + applied + ' rows (' + retitled + ' retitled to drop the redundant number).' +
     (unmatched.length ? '\n\n' + unmatched.length + ' titles in the mapping were not found exactly — see View > Logs (Executions) for the list.' : '\n\nAll titles matched.');
   SpreadsheetApp.getUi().alert(msg);
 }
