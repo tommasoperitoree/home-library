@@ -121,6 +121,10 @@ function doPost(e) {
     return handleAddCopyToShelf(ss, params);
   }
 
+  if (params.action === 'setRead') {
+    return handleSetRead(ss, params);
+  }
+
   return jsonResponse({ error: 'unknown action' });
 }
 
@@ -352,7 +356,10 @@ function handleAddBook(ss, payload) {
     setByKey('title', title);
     setByKey('author', payload.author || '');
     setByKey('library', payload.shelf || '');
-    setByKey('language', payload.language || '');
+    // A manual add (has a title) defaults to Italian, like the form says; a
+    // scan-only add is left blank for the enrichment to fill in.
+    setByKey('language', payload.language || (title ? 'Italian' : ''));
+    setByKey('copies', Number(payload.copies) || 1);
     setByKey('isbn', payload.isbn || '');
     setByKey('publisher', payload.publisher || '');
     setByKey('year', payload.year || '');
@@ -388,27 +395,38 @@ function columnLetter_(oneBasedIndex) {
 // original menu-driven restructure) shows "In prestito"/"Con X" the same
 // way. `header` is the already-normalizeHeaderKey'd header array.
 function _setComputedStatusFormulas_(sheet, header, rowNum) {
+  const f = _statusFormulaBuilders_(header);
+  if (!f) return;
+  sheet.getRange(rowNum, f.activeLoansCol + 1).setFormula(f.activeLoans(rowNum));
+  sheet.getRange(rowNum, f.statusCol + 1).setFormula(f.status(rowNum));
+}
+
+// Status: "In prestito" (active Loans row) > "Con <Held By>" > "In libreria".
+// Active Loans: count of unreturned Loans rows for this title, "-" when 0.
+// Status reads it through N(), since "-" is text and text > 0 is TRUE in
+// Sheets. Loans!B = Book Title, Loans!H = Date Returned (that sheet's fixed
+// schema). Returns null if Books lacks the needed columns.
+function _statusFormulaBuilders_(header) {
   const titleCol = header.indexOf('title');
   const heldByCol = header.indexOf('heldby');
   const statusCol = header.indexOf('status');
   const activeLoansCol = header.indexOf('activeloans');
-  if (titleCol < 0 || statusCol < 0 || activeLoansCol < 0) return;
+  if (titleCol < 0 || statusCol < 0 || activeLoansCol < 0) return null;
 
   const titleL = columnLetter_(titleCol + 1);
-  const activeLoansL = columnLetter_(activeLoansCol + 1);
+  const activeL = columnLetter_(activeLoansCol + 1);
+  const heldL = heldByCol >= 0 ? columnLetter_(heldByCol + 1) : null;
 
-  // Loans!B = Book Title, Loans!H = Date Returned — fixed by that sheet's
-  // own schema (see the file header comment), not re-derived per row.
-  sheet.getRange(rowNum, activeLoansCol + 1).setFormula(
-    `=IFERROR(SUMPRODUCT((Loans!B$2:B$2000=${titleL}${rowNum})*(Loans!H$2:H$2000="")),0)`
-  );
-
-  const heldByExpr = heldByCol >= 0
-    ? `IF(${columnLetter_(heldByCol + 1)}${rowNum}<>"","Con "&${columnLetter_(heldByCol + 1)}${rowNum},"")`
-    : '""';
-  sheet.getRange(rowNum, statusCol + 1).setFormula(
-    `=IF(${activeLoansL}${rowNum}>0,"In prestito",${heldByExpr})`
-  );
+  return {
+    statusCol,
+    activeLoansCol,
+    activeLoans: (r) =>
+      `=LET(n,IFERROR(SUMPRODUCT((Loans!B$2:B$2000=${titleL}${r})*(Loans!H$2:H$2000="")),0),IF(n>0,n,"-"))`,
+    status: (r) =>
+      heldL
+        ? `=IF(N(${activeL}${r})>0,"In prestito",IF(${heldL}${r}<>"","Con "&${heldL}${r},"In libreria"))`
+        : `=IF(N(${activeL}${r})>0,"In prestito","In libreria")`,
+  };
 }
 
 // Sets (or clears, if heldBy is empty) who currently has a book physically —
@@ -494,6 +512,8 @@ function handleLendBook(ss, payload) {
 // Marks a Loans row returned by LoanID. If the caller also passes `title`
 // + `library` (the user confirmed or picked which shelf the book goes back
 // to), the Books row's Library is updated too; otherwise it's left alone.
+// A lent book with no Books row at all (loan entered for a title that was
+// never catalogued) gets one, on that shelf — returnedBook says which.
 function handleReturnBook(ss, payload) {
   const sheet = ss.getSheetByName('Loans');
   if (!sheet) return jsonResponse({ error: 'Loans sheet not found' });
@@ -517,6 +537,14 @@ function handleReturnBook(ss, payload) {
         sheet.getRange(rowNum, returnedCol + 1).setValue(dateReturned);
         if (payload.library !== undefined && payload.library !== null && payload.title) {
           const libRes = _writeBooksLibrary_(ss, payload.title, payload.library);
+          if (libRes.notFound) {
+            const bookRow = _appendBooksRow_(ss, {
+              title: String(payload.title).trim(),
+              library: String(payload.library).trim(),
+              copies: 1,
+            });
+            return jsonResponse({ ok: true, row: rowNum, addedToBooks: true, bookRow });
+          }
           if (libRes.error) return jsonResponse({ ok: true, row: rowNum, libraryError: libRes.error });
         }
         return jsonResponse({ ok: true, row: rowNum });
@@ -561,7 +589,7 @@ function _writeBooksLibrary_(ss, title, library) {
       return { row: r + 1 };
     }
   }
-  return { error: 'book not found: ' + wanted };
+  return { error: 'book not found: ' + wanted, notFound: true };
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -645,6 +673,7 @@ function _findToReviewByIsbn_(ss, isbn) {
 // the Status/Active Loans formulas, and returns its row number. Caller holds
 // the script lock.
 function _appendBooksRow_(ss, fields) {
+  if (!(Number(fields.copies) >= 1)) fields = Object.assign({}, fields, { copies: 1 });
   const t = _booksTable_(ss);
   const row = new Array(t.header.length).fill('');
   for (const key in fields) {
@@ -827,6 +856,128 @@ function handleAddCopyToShelf(ss, payload) {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// READ BY
+// ─────────────────────────────────────────────────────────────────────────
+// Books.ReadBy holds the family members who've read the book, as
+// "Papà, Tommi" (comma + space — the same format a Sheets multi-select
+// dropdown uses), kept in FAMILY_MEMBERS order. Must match MEMBERS in
+// js/data.js.
+const FAMILY_MEMBERS = ['Papà', 'Mamma', 'Tommi', 'Vitto', 'Checco', 'Giachi', 'Gio', 'Ale'];
+
+function parseReadBy_(value) {
+  return String(value || '')
+    .split(/\s*[,;]\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function formatReadBy_(names) {
+  const unique = Array.from(new Set(names));
+  const rank = (n) => (FAMILY_MEMBERS.indexOf(n) >= 0 ? FAMILY_MEMBERS.indexOf(n) : FAMILY_MEMBERS.length);
+  unique.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+  return unique.join(', ');
+}
+
+// Adds (read: true) or removes (read: false) `member` from a book's ReadBy.
+// First exact Title match, like the other title-keyed actions.
+function handleSetRead(ss, payload) {
+  const title = String(payload.title || '').trim();
+  const member = String(payload.member || '').trim();
+  if (!title || !member) return jsonResponse({ error: 'title and member are required' });
+  const read = payload.read !== false;
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const t = _booksTable_(ss);
+    const titleC = t.col('title');
+    const readC = t.col('readby');
+    if (titleC < 0 || readC < 0) return jsonResponse({ error: 'Books sheet missing Title/ReadBy columns' });
+    for (let r = 1; r < t.values.length; r++) {
+      if (String(t.values[r][titleC] || '').trim() !== title) continue;
+      let names = parseReadBy_(t.values[r][readC]).filter((n) => n !== member);
+      if (read) names.push(member);
+      const value = formatReadBy_(names);
+      t.sheet.getRange(r + 1, readC + 1).setValue(value);
+      return jsonResponse({ ok: true, row: r + 1, readBy: parseReadBy_(value) });
+    }
+    return jsonResponse({ error: 'book not found: ' + title });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// ONE-OFF: bring every existing Books row up to the current rules
+// ─────────────────────────────────────────────────────────────────────────
+// Run once from the Apps Script editor (function picker). Safe to re-run.
+//   - Status / Active Loans formulas -> "In libreria" / "Con X" / "In
+//     prestito", and "-" instead of 0 (see _statusFormulaBuilders_)
+//   - blank Copies -> 1
+//   - Language codes like "ita"/"eng" -> "Italian"/"English"; blank Language
+//     guessed from the ISBN's language group when it has one (see
+//     languageFromIsbn_ in enrich.gs)
+//   - ReadBy reformatted ("Papà, Tommi") and given a family-member dropdown.
+//     Then, by hand: Data → Data validation → that rule → tick "Allow
+//     multiple selections" (Apps Script can't set that option itself).
+function migrateBooksSheet_oneOff() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const t = _booksTable_(ss);
+    const n = t.values.length - 1;
+    if (n < 1) return;
+    const rows = t.values.slice(1);
+    const hasData = (row) =>
+      String(row[t.col('title')] || '').trim() !== '' || (t.col('isbn') >= 0 && String(row[t.col('isbn')] || '').trim() !== '');
+
+    const f = _statusFormulaBuilders_(t.header);
+    if (f) {
+      const status = [];
+      const active = [];
+      for (let i = 0; i < n; i++) {
+        status.push([f.status(i + 2)]);
+        active.push([f.activeLoans(i + 2)]);
+      }
+      t.sheet.getRange(2, f.statusCol + 1, n, 1).setFormulas(status);
+      t.sheet.getRange(2, f.activeLoansCol + 1, n, 1).setFormulas(active);
+    }
+
+    const copiesC = t.col('copies');
+    if (copiesC >= 0) {
+      const out = rows.map((row) => [hasData(row) && !(Number(row[copiesC]) >= 1) ? 1 : row[copiesC]]);
+      t.sheet.getRange(2, copiesC + 1, n, 1).setValues(out);
+    }
+
+    const langC = t.col('language');
+    if (langC >= 0) {
+      const isbnC = t.col('isbn');
+      const out = rows.map((row) => {
+        const raw = String(row[langC] || '').trim();
+        if (raw) return [normalizeLanguage(raw)];
+        const guess = hasData(row) && isbnC >= 0 ? languageFromIsbn_(row[isbnC]) : null;
+        return [guess || ''];
+      });
+      t.sheet.getRange(2, langC + 1, n, 1).setValues(out);
+    }
+
+    const readC = t.col('readby');
+    if (readC >= 0) {
+      const out = rows.map((row) => [formatReadBy_(parseReadBy_(row[readC]))]);
+      t.sheet.getRange(2, readC + 1, n, 1).setValues(out);
+      const rule = SpreadsheetApp.newDataValidation()
+        .requireValueInList(FAMILY_MEMBERS, true)
+        .setAllowInvalid(true) // multi-member values until "Allow multiple selections" is ticked
+        .build();
+      t.sheet.getRange(2, readC + 1, t.sheet.getMaxRows() - 1, 1).setDataValidation(rule);
+    }
+  } finally {
+    lock.releaseLock();
+  }
+}
+
 function parseBooks(sheet) {
   if (!sheet) return [];
   const rows = sheet.getDataRange().getValues();
@@ -847,6 +998,7 @@ function parseBooks(sheet) {
     subjects: header.indexOf('subjects'),
     notes: header.indexOf('notes'),
     copies: header.indexOf('copies'),
+    readBy: header.indexOf('readby'),
   };
 
   const books = [];
@@ -895,6 +1047,9 @@ function parseBooks(sheet) {
 
     const copies = idx.copies >= 0 ? Number(row[idx.copies]) || 1 : 1;
     if (copies > 1) book.copies = copies;
+
+    const readBy = idx.readBy >= 0 ? parseReadBy_(row[idx.readBy]) : [];
+    if (readBy.length) book.rb = readBy;
 
     books.push(book);
   }
@@ -948,13 +1103,19 @@ function normalizeHeaderKey(h) {
 
 function normalizeLanguage(raw) {
   if (!raw) return '';
+  // Includes the ISO 639-2 codes OPAC SBN returns (ita, eng, ger, ...), which
+  // used to fall through unmapped and land in the sheet as "ita".
   const map = {
-    italiano: 'Italian', italian: 'Italian', it: 'Italian',
-    inglese: 'English', english: 'English', en: 'English',
-    spagnolo: 'Spanish', spanish: 'Spanish', es: 'Spanish',
-    tedesco: 'German', german: 'German', de: 'German',
+    italiano: 'Italian', italian: 'Italian', it: 'Italian', ita: 'Italian',
+    inglese: 'English', english: 'English', en: 'English', eng: 'English',
+    spagnolo: 'Spanish', spanish: 'Spanish', es: 'Spanish', spa: 'Spanish',
+    tedesco: 'German', german: 'German', de: 'German', ger: 'German', deu: 'German',
+    francese: 'French', french: 'French', fr: 'French', fre: 'French', fra: 'French',
+    latino: 'Latin', latin: 'Latin', la: 'Latin', lat: 'Latin',
+    portoghese: 'Portuguese', portuguese: 'Portuguese', pt: 'Portuguese', por: 'Portuguese',
+    svedese: 'Swedish', swedish: 'Swedish', sv: 'Swedish', swe: 'Swedish',
   };
-  const key = raw.toLowerCase();
+  const key = String(raw).trim().toLowerCase();
   return map[key] || raw;
 }
 

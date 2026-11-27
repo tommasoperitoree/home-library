@@ -32,10 +32,11 @@ DEFAULT_FILE_ID = '1HoeEFx_-alYJg6KtL9UUmmDZQZsMwSTY_biIoeSZoUw'
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
 
 LANGUAGE_MAP = {
-    'italiano': None, 'italian': None, 'it': None,  # Italian is the default, omit it
-    'inglese': 'English', 'english': 'English', 'en': 'English',
-    'spagnolo': 'Spanish', 'spanish': 'Spanish', 'es': 'Spanish',
-    'tedesco': 'German', 'german': 'German', 'de': 'German',
+    'italiano': None, 'italian': None, 'it': None, 'ita': None,  # Italian is the default, omit it
+    'inglese': 'English', 'english': 'English', 'en': 'English', 'eng': 'English',
+    'spagnolo': 'Spanish', 'spanish': 'Spanish', 'es': 'Spanish', 'spa': 'Spanish',
+    'tedesco': 'German', 'german': 'German', 'de': 'German', 'ger': 'German', 'deu': 'German',
+    'francese': 'French', 'french': 'French', 'fr': 'French', 'fre': 'French', 'fra': 'French',
 }
 
 

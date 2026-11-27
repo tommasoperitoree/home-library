@@ -19,6 +19,7 @@ import {
   isbnKey,
   getScanShelf,
   setScanShelf,
+  setRead,
 } from './data.js';
 import {
   renderMemberGrid,
@@ -45,6 +46,9 @@ const state = {
   loans: [],
   updatedAt: null,
   activeTab: 'catalogo',
+  prestiti: {
+    lender: 'Tutti',
+  },
   catalogo: {
     search: '',
     lang: 'Tutti',
@@ -58,6 +62,7 @@ const tabTitle = document.getElementById('tab-title');
 const panels = {
   io: document.getElementById('tab-io'),
   catalogo: document.getElementById('tab-catalogo'),
+  prestiti: document.getElementById('tab-prestiti'),
   famiglia: document.getElementById('tab-famiglia'),
 };
 const navButtons = document.querySelectorAll('.nav-btn');
@@ -65,7 +70,7 @@ const sheetBackdrop = document.getElementById('sheet-backdrop');
 const bottomSheet = document.getElementById('bottom-sheet');
 const sheetContent = document.getElementById('sheet-content');
 
-const TAB_TITLES = { io: 'Io', catalogo: 'Catalogo', famiglia: 'Famiglia' };
+const TAB_TITLES = { io: 'Io', catalogo: 'Catalogo', prestiti: 'Prestiti', famiglia: 'Famiglia' };
 
 function loanedTitlesSet() {
   return new Set(state.loans.map((l) => l.book));
@@ -128,6 +133,7 @@ function renderChooser(container, onPicked) {
 function renderActiveTab() {
   if (state.activeTab === 'io') renderTabIo();
   if (state.activeTab === 'catalogo') renderTabCatalogo();
+  if (state.activeTab === 'prestiti') renderTabPrestiti();
   if (state.activeTab === 'famiglia') renderTabFamiglia();
 }
 
@@ -865,6 +871,131 @@ function renderCatalogResults() {
   }
 }
 
+// ---------- Tab: Prestiti ----------
+//
+// Every active loan in the house (not just the current user's): which book,
+// which family member lent it, who has it, since when, and whether it's past
+// its expected return date. Filterable by who lent it; tapping a loan opens
+// the usual book detail sheet (where "Segna restituito" lives).
+
+// 'dd/mm/yyyy' (as parseLoans sends dates) -> Date at local midnight, or null.
+function parseDMY(value) {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(value || '').trim());
+  if (!m) return null;
+  const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+  return isNaN(d) ? null : d;
+}
+
+// Whole days a loan is past its expected return (0 if not overdue / no date).
+function daysOverdue(loan) {
+  const due = parseDMY(loan.expectedReturn);
+  if (!due) return 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.max(0, Math.round((today - due) / 86400000));
+}
+
+function renderTabPrestiti() {
+  const panel = panels.prestiti;
+  panel.innerHTML = '';
+
+  panel.appendChild(
+    el('button', { className: 'new-loan-btn', text: '+ Nuovo prestito', onClick: openNewLoanPicker })
+  );
+
+  const loans = state.loans;
+  const overdueCount = loans.filter((l) => daysOverdue(l) > 0).length;
+
+  panel.appendChild(
+    el('div', { className: 'loans-summary' }, [
+      el('div', { className: 'loans-summary-count', text: String(loans.length) }),
+      el('div', {}, [
+        el('div', { className: 'loans-summary-label', text: loans.length === 1 ? 'libro in prestito' : 'libri in prestito' }),
+        overdueCount
+          ? el('div', { className: 'loans-summary-overdue', text: `${overdueCount} in ritardo` })
+          : null,
+      ]),
+    ])
+  );
+
+  if (!loans.length) {
+    panel.appendChild(el('div', { className: 'card-empty', text: 'Nessun libro in prestito al momento.' }));
+    return;
+  }
+
+  // Lender chips: family members who currently have something lent out (in
+  // MEMBERS order), then any other lender name the sheet has.
+  const lenders = new Set(loans.map((l) => l.lentBy || ''));
+  if (state.prestiti.lender !== 'Tutti' && !lenders.has(state.prestiti.lender)) state.prestiti.lender = 'Tutti';
+  const chips = [{ key: 'Tutti', label: 'Tutti' }];
+  for (const m of MEMBERS) if (lenders.has(m.name)) chips.push({ key: m.name, label: m.name });
+  for (const name of lenders) {
+    if (!MEMBERS.some((m) => m.name === name)) chips.push({ key: name, label: name || 'Sconosciuto' });
+  }
+
+  const chipRow = el('div', { className: 'chip-row' });
+  panel.appendChild(chipRow);
+  const list = el('div', { className: 'card' });
+  panel.appendChild(list);
+
+  const renderList = () => {
+    renderChipRow(chipRow, chips, state.prestiti.lender, (key) => {
+      state.prestiti.lender = key;
+      renderList();
+    });
+
+    // Overdue first (most overdue on top), then oldest loan first.
+    const visible = loans
+      .filter((l) => state.prestiti.lender === 'Tutti' || (l.lentBy || '') === state.prestiti.lender)
+      .map((l) => ({ loan: l, overdue: daysOverdue(l), lent: parseDMY(l.dateLent) }))
+      .sort((a, b) => b.overdue - a.overdue || (a.lent || 0) - (b.lent || 0));
+
+    list.innerHTML = '';
+    for (const { loan, overdue } of visible) {
+      const book = state.books.find((b) => b.t === loan.book);
+      const lender = MEMBERS.find((m) => m.name === loan.lentBy);
+      const dates = [`dal ${formatDateDMY(loan.dateLent)}`];
+      if (loan.expectedReturn) dates.push(`rientro ${loan.expectedReturn}`);
+
+      const badges = [];
+      if (overdue > 0) {
+        badges.push(el('span', { className: 'badge-overdue', text: `in ritardo da ${overdue} ${overdue === 1 ? 'giorno' : 'giorni'}` }));
+      }
+      const shelf = loan.library || (book && book.l);
+      if (shelf) badges.push(el('span', { className: 'book-shelf', text: shelfLabel(shelf) }));
+
+      list.appendChild(
+        el(
+          'div',
+          {
+            className: 'book-row loan-row book-row-clickable',
+            // A loan whose title isn't in Books still opens, with a stub
+            // book, so it can be marked returned (and get a shelf).
+            onClick: () => openBookDetailSheet(book || { t: loan.book, notInCatalog: true }),
+          },
+          [
+            lender
+              ? memberFaceEl(lender, 'loan-row-face')
+              : el('span', { className: 'loan-row-face loan-row-face-empty', text: '👤' }),
+            el('div', { className: 'book-info' }, [
+              el('div', { className: 'book-title', text: loan.book }),
+              el('div', { className: 'loan-who' }, [
+                el('strong', { text: loan.lentBy || 'Sconosciuto' }),
+                el('span', { className: 'loan-arrow', text: ' → ' }),
+                el('strong', { text: loan.borrowedBy || '—' }),
+              ]),
+              el('div', { className: 'book-author', text: dates.join(' · ') }),
+              loan.notes ? el('div', { className: 'book-author', text: loan.notes }) : null,
+              badges.length ? el('div', { className: 'book-meta' }, badges) : null,
+            ]),
+          ]
+        )
+      );
+    }
+  };
+  renderList();
+}
+
 // ---------- Tab: Famiglia ----------
 
 function renderTabFamiglia() {
@@ -979,9 +1110,65 @@ function shelfSelectEl(current, placeholder) {
   return select;
 }
 
-function openBookDetailSheet(book) {
+// Date -> 'YYYY-MM-DD' in local time (what <input type="date"> uses).
+function isoDateLocal(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// 'YYYY-MM-DD' -> 'dd/mm/yyyy' without going through Date (no timezone shift).
+function isoToDMY(iso) {
+  const [y, m, d] = String(iso).split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// "+ Nuovo prestito": pick the book from the catalog (search just filters
+// the list — no free-typed titles, so the loan always matches a real Books
+// row), then the book's detail sheet opens straight on the lend form.
+// Books already on loan aren't offered.
+function openNewLoanPicker() {
+  openBottomSheet(sheetBackdrop, bottomSheet, sheetContent, (container) => {
+    const LIMIT = 50;
+    const search = el('input', {
+      className: 'search-input',
+      attrs: { type: 'search', placeholder: 'Filtra per titolo o autore…' },
+    });
+    const count = el('div', { className: 'result-count' });
+    const list = el('div');
+
+    const render = () => {
+      const term = search.value.trim().toLowerCase();
+      const loaned = loanedTitlesSet();
+      const available = sortCatalogBooks(
+        state.books.filter(
+          (b) => !loaned.has(b.t) && (!term || b.t.toLowerCase().includes(term) || (b.a || '').toLowerCase().includes(term))
+        )
+      );
+      count.textContent = available.length > LIMIT
+        ? `${available.length} libri disponibili — mostrati i primi ${LIMIT}, filtra per trovarne altri`
+        : `${available.length} ${available.length === 1 ? 'libro disponibile' : 'libri disponibili'}`;
+      renderBookList(list, available.slice(0, LIMIT), {
+        onOpen: (book) => openBookDetailSheet(book, { startMode: 'lend' }),
+      });
+    };
+    search.addEventListener('input', render);
+
+    container.appendChild(el('h2', { text: '📤 Nuovo prestito' }));
+    container.appendChild(el('div', { className: 'book-author', text: 'Scegli il libro da prestare.' }));
+    container.appendChild(el('div', { className: 'search-box new-loan-search' }, [search]));
+    container.appendChild(count);
+    container.appendChild(list);
+    render();
+  });
+}
+
+function openBookDetailSheet(book, { startMode } = {}) {
   let mode = 'main'; // 'main' | 'lend' | 'chooseUser' | 'changeShelf' | 'putBack' | 'putBackPick'
-  let pendingAfterUser = null; // 'heldBy' | 'lend' — which action to resume once a member is picked
+  let pendingAfterUser = null; // 'heldBy' | 'lend' | 'read' — which action to resume once a member is picked
+  if (startMode === 'lend') {
+    // Lending needs to know who's lending: ask first if nobody's picked yet.
+    mode = state.user ? 'lend' : 'chooseUser';
+    if (!state.user) pendingAfterUser = 'lend';
+  }
   let putBackKind = null; // 'loan' | 'held' — which "put back" action the putBack modes complete
 
   function renderSheetBody(container) {
@@ -991,6 +1178,14 @@ function openBookDetailSheet(book) {
     }
     container.appendChild(el('h2', { text: book.t }));
     if (book.a) container.appendChild(el('div', { className: 'book-author', text: book.a }));
+    if (book.notInCatalog) {
+      container.appendChild(
+        el('div', {
+          className: 'detail-warning',
+          text: 'Questo libro non è nel catalogo. Quando lo segni restituito verrà aggiunto nello scaffale che scegli.',
+        })
+      );
+    }
 
     const activeLoan = state.loans.find((l) => l.book === book.t);
 
@@ -1003,11 +1198,12 @@ function openBookDetailSheet(book) {
     }
     if (book.l) metaRows.push(['Scaffale', shelfName(book.l)]);
     if (book.copies > 1) metaRows.push(['Copie', String(book.copies)]);
-    metaRows.push(['Lingua', LANG_FULL_NAME[bookLangCode(book)] || bookLangCode(book)]);
+    if (!book.notInCatalog) metaRows.push(['Lingua', LANG_FULL_NAME[bookLangCode(book)] || bookLangCode(book)]);
     if (book.pub) metaRows.push(['Editore', book.pub]);
     if (book.year) metaRows.push(['Anno', String(book.year)]);
     if (book.isbn) metaRows.push(['ISBN', book.isbn]);
     if (book.subjects) metaRows.push(['Argomenti', book.subjects]);
+    if (book.rb && book.rb.length) metaRows.push(['Letto da', book.rb.join(', ')]);
 
     const metaGrid = el('div', { className: 'detail-meta' });
     for (const [label, value] of metaRows) {
@@ -1029,7 +1225,7 @@ function openBookDetailSheet(book) {
     } else if (book.h) {
       statusLines.push(`Con: ${book.h}`);
     } else {
-      statusLines.push('Disponibile');
+      statusLines.push(book.l ? `In libreria · ${shelfName(book.l)}` : 'In libreria');
     }
     container.appendChild(el('div', { className: 'book-author', html: statusLines.join('<br>') }));
 
@@ -1117,8 +1313,15 @@ function openBookDetailSheet(book) {
         const libraryField = library !== (book.l || '') ? { library } : {};
         return runAction(`${successMsg} in ${shelfName(library)}.`, async () => {
           if (putBackKind === 'loan') {
-            await returnBook({ loanId: activeLoan.id, title: book.t, ...libraryField });
+            // A book not in the catalog always sends its shelf, so the
+            // server creates its Books row there.
+            const field = book.notInCatalog ? { library } : libraryField;
+            await returnBook({ loanId: activeLoan.id, title: book.t, ...field });
             state.loans = state.loans.filter((l) => l.id !== activeLoan.id);
+            if (book.notInCatalog) {
+              delete book.notInCatalog;
+              state.books.push(book);
+            }
           } else {
             await setHeldBy({ title: book.t, heldBy: '', ...libraryField });
             book.h = undefined;
@@ -1189,16 +1392,30 @@ function openBookDetailSheet(book) {
         className: 'form-input',
         attrs: { type: 'text', placeholder: 'A chi presti? *' },
       });
-      const expectedReturnInput = el('input', { className: 'form-input', attrs: { type: 'date' } });
+      // Both dates as <input type="date"> values (YYYY-MM-DD, local). "Prestato
+      // il" defaults to today but can be backdated for a loan registered late;
+      // it can't be in the future, and the return can't be before it.
+      const today = isoDateLocal(new Date());
+      const dateLentInput = el('input', { className: 'form-input', attrs: { type: 'date', max: today } });
+      dateLentInput.value = today;
+      const expectedReturnInput = el('input', { className: 'form-input', attrs: { type: 'date', min: today } });
+      dateLentInput.addEventListener('change', () => {
+        expectedReturnInput.min = dateLentInput.value || today;
+      });
       const submitBtn = el('button', { className: 'btn-primary', text: 'Registra prestito' });
 
       submitBtn.addEventListener('click', () => {
         const borrowedBy = borrowedByInput.value.trim();
-        if (!borrowedBy) {
-          message.textContent = 'Indica a chi presti il libro.';
+        const dateLent = dateLentInput.value;
+        const expectedReturn = expectedReturnInput.value;
+        const fail = (text) => {
+          message.textContent = text;
           message.className = 'form-message error';
-          return;
-        }
+        };
+        if (!borrowedBy) return fail('Indica a chi presti il libro.');
+        if (!dateLent) return fail('Indica quando l\'hai prestato.');
+        if (dateLent > today) return fail('La data del prestito non può essere nel futuro.');
+        if (expectedReturn && expectedReturn < dateLent) return fail('Il rientro previsto non può essere prima del prestito.');
         submitBtn.disabled = true;
         runAction('Prestito registrato.', async () => {
           const res = await lendBook({
@@ -1206,7 +1423,8 @@ function openBookDetailSheet(book) {
             library: book.l || '',
             lentBy: state.user,
             borrowedBy,
-            expectedReturn: expectedReturnInput.value || undefined,
+            dateLent,
+            expectedReturn: expectedReturn || undefined,
           });
           state.loans.push({
             id: res.loanId,
@@ -1214,8 +1432,8 @@ function openBookDetailSheet(book) {
             library: book.l || '',
             lentBy: state.user,
             borrowedBy,
-            dateLent: formatDateDMY(new Date().toISOString()),
-            expectedReturn: expectedReturnInput.value ? formatDateDMY(expectedReturnInput.value) : '',
+            dateLent: isoToDMY(dateLent),
+            expectedReturn: expectedReturn ? isoToDMY(expectedReturn) : '',
             notes: '',
           });
         }).finally(() => {
@@ -1232,8 +1450,14 @@ function openBookDetailSheet(book) {
         },
       });
 
+      container.appendChild(el('div', { className: 'sheet-section-title', text: 'Nuovo prestito' }));
       container.appendChild(el('div', { className: 'form-row' }, [borrowedByInput]));
-      container.appendChild(el('div', { className: 'form-row' }, [expectedReturnInput]));
+      container.appendChild(
+        el('div', { className: 'form-row-pair' }, [
+          el('div', { className: 'form-row' }, [el('label', { text: 'Prestato il *' }), dateLentInput]),
+          el('div', { className: 'form-row' }, [el('label', { text: 'Rientro previsto' }), expectedReturnInput]),
+        ])
+      );
       container.appendChild(message);
       container.appendChild(el('div', { className: 'form-actions' }, [submitBtn, cancelBtn]));
       return;
@@ -1303,18 +1527,45 @@ function openBookDetailSheet(book) {
     }
 
     container.appendChild(actions);
-    container.appendChild(
-      el('div', { className: 'form-actions' }, [
-        el('button', {
-          className: 'btn-secondary',
-          text: book.l ? '🗂️ Cambia scaffale' : '🗂️ Assegna scaffale',
-          onClick: () => {
-            mode = 'changeShelf';
-            renderSheetBody(container);
-          },
-        }),
-      ])
-    );
+    if (!book.notInCatalog) {
+      // "Segna come letto" adds the current member to ReadBy; tapping again
+      // ("Letto ✓") takes them off.
+      const readByMe = !!(state.user && book.rb && book.rb.includes(state.user));
+      const readBtn = el('button', {
+        className: readByMe ? 'btn-secondary btn-read-done' : 'btn-secondary',
+        text: readByMe ? '✓ Letto — togli' : '📖 Segna come letto',
+      });
+      readBtn.addEventListener('click', () => {
+        if (!state.user) {
+          pendingAfterUser = 'read';
+          mode = 'chooseUser';
+          renderSheetBody(container);
+          return;
+        }
+        readBtn.disabled = true;
+        const member = state.user;
+        runAction(readByMe ? 'Tolto dai letti.' : `Segnato come letto da ${member}.`, async () => {
+          const res = await setRead({ title: book.t, member, read: !readByMe });
+          book.rb = res.readBy && res.readBy.length ? res.readBy : undefined;
+        }).finally(() => {
+          readBtn.disabled = false;
+        });
+      });
+
+      container.appendChild(
+        el('div', { className: 'form-actions' }, [
+          readBtn,
+          el('button', {
+            className: 'btn-secondary',
+            text: book.l ? '🗂️ Cambia scaffale' : '🗂️ Assegna scaffale',
+            onClick: () => {
+              mode = 'changeShelf';
+              renderSheetBody(container);
+            },
+          }),
+        ])
+      );
+    }
     container.appendChild(message);
   }
 

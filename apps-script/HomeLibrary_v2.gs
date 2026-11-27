@@ -247,11 +247,12 @@ function _restructureBooks() {
     const statusF = [];
     const loansF  = [];
     for (let r = 2; r <= lastRow; r++) {
+      // Same formulas as _statusFormulaBuilders_ in api.gs.
       loansF.push([
-        `=IFERROR(SUMPRODUCT((Loans!B$2:B$2000=A${r})*(Loans!H$2:H$2000="")),0)`,
+        `=LET(n,IFERROR(SUMPRODUCT((Loans!B$2:B$2000=A${r})*(Loans!H$2:H$2000="")),0),IF(n>0,n,"-"))`,
       ]);
       statusF.push([
-        `=IF(K${r}>0,"In prestito",IF(I${r}<>"","Con "&I${r},""))`,
+        `=IF(N(K${r})>0,"In prestito",IF(I${r}<>"","Con "&I${r},"In libreria"))`,
       ]);
     }
     sh.getRange(2, BC.STATUS       + 1, lastRow - 1, 1).setFormulas(statusF);
@@ -723,10 +724,8 @@ function moveReviewedBookToLibrary() {
 
   bSh.appendRow(newBookRow);
   const newRow = bSh.getLastRow();
-  bSh.getRange(newRow, BC.ACTIVE_LOANS + 1)
-     .setFormula(`=IFERROR(SUMPRODUCT((Loans!B$2:B$2000=A${newRow})*(Loans!H$2:H$2000="")),0)`);
-  bSh.getRange(newRow, BC.STATUS + 1)
-     .setFormula(`=IF(K${newRow}>0,"In prestito",IF(I${newRow}<>"","Con "&I${newRow},""))`);
+  // Same formulas as every other path that adds a Books row (api.gs).
+  _setComputedStatusFormulas_(bSh, bSh.getRange(1, 1, 1, bSh.getLastColumn()).getValues()[0].map(normalizeHeaderKey), newRow);
 
   rSh.deleteRow(row);
   ui.alert('✓ Libro aggiunto a Books!');
