@@ -93,6 +93,18 @@ function doPost(e) {
     return handleAddBook(ss, params);
   }
 
+  if (params.action === 'setHeldBy') {
+    return handleSetHeldBy(ss, params);
+  }
+
+  if (params.action === 'lendBook') {
+    return handleLendBook(ss, params);
+  }
+
+  if (params.action === 'returnBook') {
+    return handleReturnBook(ss, params);
+  }
+
   return jsonResponse({ error: 'unknown action' });
 }
 
@@ -155,15 +167,28 @@ function _handleEnrichShortcut() {
 function _handleAddBookShortcut(params) {
   const isbn = (params.isbn || '').toString().replace(/[^0-9Xx]/g, '').trim();
   if (!isbn) return jsonResponse({ ok: false, message: 'Failed: nessun ISBN fornito.' });
+  const library = String(params.library || '').trim();
 
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
-  const dup = _findExistingIsbnShortcut(isbn, ss);
-  if (dup) {
-    const loc = dup.library ? ` (${dup.library})` : '';
+  // Same ISBN scanned again:
+  //  - at the SAME shelf -> it's another physical copy of what's already
+  //    catalogued there, not a duplicate entry: bump Copies on that Books
+  //    row directly, skipping ToReview entirely.
+  //  - at a DIFFERENT shelf -> a legitimately different physical copy
+  //    living somewhere else: let it through as its own row, same as if
+  //    the ISBN had never been seen before.
+  //  - pending (still sitting in ToReview, not yet confirmed) at the SAME
+  //    shelf -> block it; we can't safely merge into a row that isn't
+  //    final yet.
+  const match = _findExistingIsbnShortcut(isbn, ss);
+  if (match && match.library === library) {
+    if (match.sheet === 'Books') {
+      return _incrementCopiesShortcut_(ss, match.row, library);
+    }
     return jsonResponse({
       ok: false, duplicate: true,
-      message: `⚠️ ISBN già presente in ${dup.sheet}${loc} — non aggiunto.`,
+      message: `⚠️ ISBN già in ToReview per "${library}" — in attesa di revisione, non aggiunto di nuovo.`,
     });
   }
 
@@ -199,7 +224,12 @@ function _handleAddBookShortcut(params) {
   return jsonResponse({ ok: true, row, isbn, title, status, message });
 }
 
-/** Checks both Books and ToReview for a row with this ISBN. */
+/**
+ * Checks both Books and ToReview for a row with this ISBN. Returns the
+ * first match's sheet name, 1-based row number, and trimmed Library value
+ * (not just whether a match exists) so the caller can decide same-shelf
+ * (= another copy) vs different-shelf (= not a duplicate at all).
+ */
 function _findExistingIsbnShortcut(isbn, ss) {
   for (const sheetName of ['Books', 'ToReview']) {
     const sh = ss.getSheetByName(sheetName);
@@ -213,11 +243,40 @@ function _findExistingIsbnShortcut(isbn, ss) {
     for (let i = 1; i < data.length; i++) {
       const existing = String(data[i][isbnC]).replace(/[^0-9Xx]/g, '');
       if (existing && existing === isbn) {
-        return { sheet: sheetName, library: libC >= 0 ? String(data[i][libC]) : '' };
+        return {
+          sheet: sheetName,
+          row: i + 1,
+          library: libC >= 0 ? String(data[i][libC] || '').trim() : '',
+        };
       }
     }
   }
   return null;
+}
+
+/** Bumps Copies by 1 on an existing Books row — same ISBN, same shelf. */
+function _incrementCopiesShortcut_(ss, rowNum, library) {
+  const sheet = ss.getSheetByName('Books');
+  const header = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(normalizeHeaderKey);
+  const copiesCol = header.indexOf('copies');
+
+  if (copiesCol < 0) {
+    return jsonResponse({ ok: true, incrementedCopies: true, message: '✓ Copia aggiuntiva registrata (colonna Copie non trovata).' });
+  }
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const cell = sheet.getRange(rowNum, copiesCol + 1);
+    const newCount = (Number(cell.getValue()) || 1) + 1;
+    cell.setValue(newCount);
+    return jsonResponse({
+      ok: true, incrementedCopies: true, copies: newCount,
+      message: `✓ Copia aggiuntiva — "${library}" ora ha ${newCount} copie di questo ISBN.`,
+    });
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function _buildColMapShortcut(headerRow) {
@@ -267,7 +326,156 @@ function handleAddBook(ss, payload) {
     setByKey('scannedtime', new Date());
 
     sheet.appendRow(row);
-    return jsonResponse({ ok: true, row: sheet.getLastRow() });
+    const newRowNum = sheet.getLastRow();
+    _setComputedStatusFormulas_(sheet, header, newRowNum);
+    return jsonResponse({ ok: true, row: newRowNum });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Column letter for a 1-based column index (1 -> A, 2 -> B, ... 27 -> AA).
+function columnLetter_(oneBasedIndex) {
+  let n = oneBasedIndex;
+  let s = '';
+  while (n > 0) {
+    const rem = (n - 1) % 26;
+    s = String.fromCharCode(65 + rem) + s;
+    n = Math.floor((n - 1) / 26);
+  }
+  return s;
+}
+
+// Gives a Books row live Status/Active Loans formulas, the same shape
+// _restructureBooks (HomeLibrary_v2.gs) sets for existing rows — so a book
+// added through any path (webapp, Shortcut-via-ToReview-move, or the
+// original menu-driven restructure) shows "In prestito"/"Con X" the same
+// way. `header` is the already-normalizeHeaderKey'd header array.
+function _setComputedStatusFormulas_(sheet, header, rowNum) {
+  const titleCol = header.indexOf('title');
+  const heldByCol = header.indexOf('heldby');
+  const statusCol = header.indexOf('status');
+  const activeLoansCol = header.indexOf('activeloans');
+  if (titleCol < 0 || statusCol < 0 || activeLoansCol < 0) return;
+
+  const titleL = columnLetter_(titleCol + 1);
+  const activeLoansL = columnLetter_(activeLoansCol + 1);
+
+  // Loans!B = Book Title, Loans!H = Date Returned — fixed by that sheet's
+  // own schema (see the file header comment), not re-derived per row.
+  sheet.getRange(rowNum, activeLoansCol + 1).setFormula(
+    `=IFERROR(SUMPRODUCT((Loans!B$2:B$2000=${titleL}${rowNum})*(Loans!H$2:H$2000="")),0)`
+  );
+
+  const heldByExpr = heldByCol >= 0
+    ? `IF(${columnLetter_(heldByCol + 1)}${rowNum}<>"","Con "&${columnLetter_(heldByCol + 1)}${rowNum},"")`
+    : '""';
+  sheet.getRange(rowNum, statusCol + 1).setFormula(
+    `=IF(${activeLoansL}${rowNum}>0,"In prestito",${heldByExpr})`
+  );
+}
+
+// Sets (or clears, if heldBy is empty) who currently has a book physically —
+// an informal "it's on someone's nightstand" marker, distinct from a formal
+// Loans entry. Matches the first Books row with an exact Title match (same
+// limitation as the rest of this codebase until books get a stable row ID —
+// see FEATURES.md). Library is never touched: it's always the book's
+// permanent home shelf, independent of who currently has it.
+function handleSetHeldBy(ss, payload) {
+  const sheet = ss.getSheetByName('Books');
+  if (!sheet) return jsonResponse({ error: 'Books sheet not found' });
+
+  const title = String(payload.title || '').trim();
+  if (!title) return jsonResponse({ error: 'title is required' });
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const values = sheet.getDataRange().getValues();
+    const header = values[0].map(normalizeHeaderKey);
+    const titleCol = header.indexOf('title');
+    const heldByCol = header.indexOf('heldby');
+    if (titleCol < 0 || heldByCol < 0) return jsonResponse({ error: 'Books sheet missing Title/Held By columns' });
+
+    for (let r = 1; r < values.length; r++) {
+      if (String(values[r][titleCol] || '').trim() === title) {
+        const rowNum = r + 1;
+        sheet.getRange(rowNum, heldByCol + 1).setValue(String(payload.heldBy || '').trim());
+        _setComputedStatusFormulas_(sheet, header, rowNum);
+        return jsonResponse({ ok: true, row: rowNum });
+      }
+    }
+    return jsonResponse({ error: 'book not found: ' + title });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Appends a formal Loans entry. `library` here is only a record of which
+// shelf the copy came from at the time of lending — it is NOT written back
+// to the Books row. Books.Library stays untouched; a book's Status/Active
+// Loans formulas (see _setComputedStatusFormulas_ above) pick up the new
+// Loans row on their own via the existing SUMPRODUCT/IF formulas.
+function handleLendBook(ss, payload) {
+  const sheet = ss.getSheetByName('Loans');
+  if (!sheet) return jsonResponse({ error: 'Loans sheet not found' });
+
+  const title = String(payload.title || '').trim();
+  if (!title) return jsonResponse({ error: 'title is required' });
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    // Matches addLoanEntry's existing convention (HomeLibrary_v2.gs):
+    // LoanID is derived from the sheet's row count *before* appending.
+    const id = 'L' + String(sheet.getLastRow()).padStart(3, '0');
+    const dateLent = payload.dateLent ? new Date(payload.dateLent) : new Date();
+    const expectedReturn = payload.expectedReturn ? new Date(payload.expectedReturn) : '';
+
+    sheet.appendRow([
+      id,
+      title,
+      payload.library || '',
+      payload.lentBy || '',
+      payload.borrowedBy || '',
+      dateLent,
+      expectedReturn,
+      '',
+      payload.notes || '',
+    ]);
+    return jsonResponse({ ok: true, loanId: id, row: sheet.getLastRow() });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Marks a Loans row returned by LoanID. Books.Library is never touched —
+// same reasoning as handleLendBook above.
+function handleReturnBook(ss, payload) {
+  const sheet = ss.getSheetByName('Loans');
+  if (!sheet) return jsonResponse({ error: 'Loans sheet not found' });
+
+  const loanId = String(payload.loanId || '').trim();
+  if (!loanId) return jsonResponse({ error: 'loanId is required' });
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const values = sheet.getDataRange().getValues();
+    const header = values[0].map(normalizeHeaderKey);
+    const idCol = header.indexOf('loanid');
+    const returnedCol = header.indexOf('datereturned');
+    if (idCol < 0 || returnedCol < 0) return jsonResponse({ error: 'Loans sheet missing LoanID/Date Returned columns' });
+
+    for (let r = 1; r < values.length; r++) {
+      if (String(values[r][idCol] || '').trim() === loanId) {
+        const rowNum = r + 1;
+        const dateReturned = payload.dateReturned ? new Date(payload.dateReturned) : new Date();
+        sheet.getRange(rowNum, returnedCol + 1).setValue(dateReturned);
+        return jsonResponse({ ok: true, row: rowNum });
+      }
+    }
+    return jsonResponse({ error: 'loan not found: ' + loanId });
   } finally {
     lock.releaseLock();
   }
