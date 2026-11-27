@@ -458,6 +458,119 @@ input {
   overflow: hidden;
 }
 
+.scan-setup-select { margin-top: 12px; }
+
+.scan-shelf-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: var(--muted);
+  margin: 4px 0 6px;
+}
+.scan-shelf-bar strong { color: var(--brown); }
+.scan-shelf-bar .form-select { flex: 1; min-width: 0; width: auto; }
+.scan-shelf-change {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brown);
+}
+
+.scan-banner {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.scan-banner.success { background: #e6f1df; border-color: #b9d4a8; color: #35602a; }
+.scan-banner.warn    { background: #fbf0d9; border-color: #e8cf96; color: #7a5a17; }
+.scan-banner.error   { background: #f7e1de; border-color: #e0b0aa; color: #8a352e; }
+
+.scan-log {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.scan-log-entry {
+  font-size: 13px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--surface);
+  border-left: 3px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.scan-log-entry.pending { color: var(--muted); }
+.scan-log-entry.success { border-left-color: #6f9c5a; }
+.scan-log-entry.warn    { border-left-color: var(--gold); }
+.scan-log-entry.error   { border-left-color: #a0423b; color: #8a352e; }
+.scan-log-entry.info    { border-left-color: #6B87A0; }
+
+.scan-dup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(44, 26, 14, .45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.scan-dup-card {
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.scan-dup-header { display: flex; gap: 12px; align-items: flex-start; }
+.scan-dup-cover { width: 56px; height: auto; border-radius: 6px; flex-shrink: 0; }
+.scan-dup-kicker { font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 2px; }
+.scan-dup-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.scan-dup-where { flex: 1; min-width: 0; }
+.scan-dup-shelf { font-weight: 700; color: var(--brown); font-size: 14px; }
+.scan-dup-stepper { display: flex; align-items: center; gap: 6px; }
+.scan-dup-step {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--brown);
+}
+.scan-dup-count { min-width: 22px; text-align: center; font-weight: 700; }
+.scan-dup-save {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--gold);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+}
+.scan-dup-add { display: flex; gap: 8px; }
+.scan-dup-add .form-select { flex: 1; min-width: 0; width: auto; }
+.scan-dup-add .btn-secondary { flex: 0 0 auto; padding: 10px 14px; }
+
 .add-book-form {
   background: var(--surface);
   border: 1px solid var(--border);

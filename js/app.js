@@ -13,6 +13,12 @@ import {
   lendBook,
   returnBook,
   setLibrary,
+  scanIsbn,
+  setCopies,
+  addCopyToShelf,
+  isbnKey,
+  getScanShelf,
+  setScanShelf,
 } from './data.js';
 import {
   renderMemberGrid,
@@ -325,79 +331,409 @@ function renderAddBookToggle(container) {
 }
 
 let activeScanner = null;
+let activeScanCleanup = null;
 
 function stopActiveScanner() {
+  if (activeScanCleanup) {
+    const cleanup = activeScanCleanup;
+    activeScanCleanup = null;
+    cleanup();
+  }
   if (!activeScanner) return;
   const scanner = activeScanner;
   activeScanner = null;
   scanner.stop().catch(() => {});
 }
 
-// Scanned-only adds land with just an ISBN and a blank title; the Apps
-// Script time-driven trigger (runEnrichmentBatch in apps-script/enrich.gs)
-// fills in the rest within a minute or two, so books don't appear in
-// Catalogo immediately after a scan — that's expected, not a bug.
+// Beep + vibration on each scan, so it's obvious a barcode was read even
+// without looking at the screen. The AudioContext has to be created from a
+// tap (iOS), hence unlockScanAudio() on the "Inizia" button.
+let scanAudioCtx = null;
+
+function unlockScanAudio() {
+  try {
+    scanAudioCtx = scanAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (scanAudioCtx.state === 'suspended') scanAudioCtx.resume();
+  } catch {
+    scanAudioCtx = null;
+  }
+}
+
+function scanFeedback(ok) {
+  try {
+    if (navigator.vibrate) navigator.vibrate(ok ? 60 : [60, 60, 60]);
+  } catch { /* ignore */ }
+  if (!scanAudioCtx) return;
+  try {
+    const osc = scanAudioCtx.createOscillator();
+    const gain = scanAudioCtx.createGain();
+    osc.frequency.value = ok ? 880 : 300;
+    gain.gain.value = 0.06;
+    osc.connect(gain).connect(scanAudioCtx.destination);
+    osc.start();
+    osc.stop(scanAudioCtx.currentTime + 0.12);
+  } catch { /* ignore */ }
+}
+
+// Scanner flow: pick the shelf first (remembered for next time), then scan.
+// Each barcode calls scanIsbn, which looks the book up and files it straight
+// on that shelf in Books (or in ToReview if the ISBN isn't found anywhere).
+// An ISBN that's already catalogued opens a popup instead (see
+// showDuplicate) — scanning pauses until it's closed.
 function openIsbnScanner() {
-  let scanCount = 0;
-  let lastCode = '';
-  let lastTime = 0;
+  openBottomSheet(sheetBackdrop, bottomSheet, sheetContent, renderScanSetup);
+}
 
-  openBottomSheet(sheetBackdrop, bottomSheet, sheetContent, (container) => {
-    const status = el('div', { className: 'form-message', text: 'Inquadra il codice a barre del libro.' });
-    const counter = el('div', { className: 'scan-counter', text: '0 libri aggiunti in questa sessione' });
-    const readerDiv = el('div', { attrs: { id: 'isbn-reader' } });
-
-    const stopScanner = () => {
-      stopActiveScanner();
-      closeBottomSheet(sheetBackdrop, bottomSheet);
-    };
-
-    const onScan = async (decodedText) => {
-      const isbn = decodedText.replace(/[^0-9Xx]/g, '');
-      if (isbn.length !== 10 && isbn.length !== 13) return;
-
-      const now = Date.now();
-      if (isbn === lastCode && now - lastTime < 3000) return;
-      lastCode = isbn;
-      lastTime = now;
-
-      status.textContent = `Aggiungo ISBN ${isbn}…`;
-      try {
-        await addBook({ isbn });
-        scanCount += 1;
-        counter.textContent = `${scanCount} ${scanCount === 1 ? 'libro aggiunto' : 'libri aggiunti'} in questa sessione`;
-        status.textContent = `✅ ISBN ${isbn} in elaborazione (compare nel catalogo tra 1-2 minuti).`;
-      } catch (err) {
-        status.textContent = `Errore: ${err.message}`;
-      }
-    };
-
-    container.appendChild(el('h2', { text: '📷 Scansiona ISBN' }));
-    container.appendChild(readerDiv);
-    container.appendChild(status);
-    container.appendChild(counter);
-    container.appendChild(
-      el('div', { className: 'form-actions' }, [
-        el('button', { className: 'btn-secondary', text: 'Chiudi', onClick: stopScanner }),
-      ])
-    );
-
-    if (window.Html5Qrcode) {
-      const scanner = new window.Html5Qrcode('isbn-reader');
-      activeScanner = scanner;
-      scanner
-        .start(
-          { facingMode: 'environment' },
-          { fps: 10, qrbox: { width: 250, height: 150 } },
-          (decodedText) => onScan(decodedText)
-        )
-        .catch((err) => {
-          status.textContent = `Impossibile avviare la fotocamera: ${err}`;
-        });
-    } else {
-      status.textContent = 'Libreria di scansione non disponibile.';
+function renderScanSetup(container) {
+  container.innerHTML = '';
+  const select = shelfSelectEl(getScanShelf(), 'Scegli scaffale…');
+  const message = el('div', { className: 'form-message' });
+  const startBtn = el('button', { className: 'btn-primary', text: '📷 Inizia a scansionare' });
+  startBtn.addEventListener('click', () => {
+    if (!select.value) {
+      message.textContent = 'Scegli prima lo scaffale.';
+      message.className = 'form-message error';
+      return;
     }
+    setScanShelf(select.value);
+    unlockScanAudio();
+    renderScanSession(container, select.value);
   });
+
+  container.appendChild(el('h2', { text: '📷 Scansiona ISBN' }));
+  container.appendChild(el('div', { className: 'book-author', text: 'In quale scaffale metti i libri che scansioni?' }));
+  container.appendChild(el('div', { className: 'form-row scan-setup-select' }, [select]));
+  container.appendChild(message);
+  container.appendChild(
+    el('div', { className: 'form-actions' }, [
+      startBtn,
+      el('button', { className: 'btn-secondary', text: 'Chiudi', onClick: () => closeBottomSheet(sheetBackdrop, bottomSheet) }),
+    ])
+  );
+}
+
+function renderScanSession(container, initialShelf) {
+  let shelf = initialShelf;
+  let scanner = null;
+  let paused = false;
+  let lastCode = '';
+  let ignoreUntil = 0;
+  let addedCount = 0;
+  let booksChanged = false;
+  let overlay = null;
+  const inFlight = new Set();
+  const dupQueue = [];
+
+  container.innerHTML = '';
+
+  // --- Shelf bar ("Scaffale: Scala  [Cambia]") ---
+  const shelfBar = el('div', { className: 'scan-shelf-bar' });
+  const renderShelfBar = () => {
+    shelfBar.innerHTML = '';
+    shelfBar.appendChild(el('span', { text: 'Scaffale:' }));
+    shelfBar.appendChild(el('strong', { text: shelfLabel(shelf) }));
+    shelfBar.appendChild(
+      el('button', {
+        className: 'scan-shelf-change',
+        text: 'Cambia',
+        onClick: () => {
+          shelfBar.innerHTML = '';
+          const sel = shelfSelectEl(shelf, 'Scegli scaffale…');
+          sel.addEventListener('change', () => {
+            if (sel.value) {
+              shelf = sel.value;
+              setScanShelf(shelf);
+            }
+            renderShelfBar();
+          });
+          shelfBar.appendChild(sel);
+          shelfBar.appendChild(el('button', { className: 'scan-shelf-change', text: '✕', onClick: renderShelfBar }));
+        },
+      })
+    );
+  };
+  renderShelfBar();
+
+  // --- Status banner, counter, log ---
+  const banner = el('div', { className: 'scan-banner info', text: 'Inquadra il codice a barre del libro.' });
+  const setBanner = (kind, text) => {
+    banner.className = `scan-banner ${kind}`;
+    banner.textContent = text;
+  };
+  const counter = el('div', { className: 'scan-counter', text: '0 libri aggiunti in questa sessione' });
+  const bumpCounter = () => {
+    addedCount += 1;
+    counter.textContent = `${addedCount} ${addedCount === 1 ? 'libro aggiunto' : 'libri aggiunti'} in questa sessione`;
+  };
+  const log = el('div', { className: 'scan-log' });
+  const addLogEntry = (text) => {
+    const entry = el('div', { className: 'scan-log-entry pending', text });
+    log.prepend(entry);
+    while (log.children.length > 30) log.lastChild.remove();
+    return (kind, newText) => {
+      entry.className = `scan-log-entry ${kind}`;
+      entry.textContent = newText;
+    };
+  };
+
+  const pauseScanner = () => {
+    paused = true;
+    try { if (scanner) scanner.pause(true); } catch { /* not scanning */ }
+  };
+  const resumeScanner = () => {
+    paused = false;
+    try { if (scanner) scanner.resume(); } catch { /* not paused */ }
+  };
+
+  // Books from state.books with this ISBN, in the same shape scanIsbn's
+  // 'duplicate' response uses — lets the popup open instantly, without a
+  // round-trip, for anything the app already knows about.
+  const localMatches = (key) =>
+    state.books
+      .filter((b) => b.isbn && isbnKey(b.isbn) === key)
+      .map((b) => ({ title: b.t, author: b.a || '', library: b.l || '', copies: b.copies || 1, cover: b.cover || '', heldBy: b.h || '' }));
+
+  const updateLocalCopies = (isbn, library, copies) => {
+    const key = isbnKey(isbn);
+    const book = state.books.find((b) => b.isbn && isbnKey(b.isbn) === key && (b.l || '') === library);
+    if (book) book.copies = copies > 1 ? copies : undefined;
+    booksChanged = true;
+  };
+
+  // --- "Già in libreria" popup ---
+  const showDuplicate = (res) => {
+    if (overlay) {
+      dupQueue.push(res);
+      return;
+    }
+    pauseScanner();
+    const matches = res.matches;
+    overlay = el('div', { className: 'scan-dup-overlay' });
+    const card = el('div', { className: 'scan-dup-card' });
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+
+    const close = () => {
+      overlay.remove();
+      overlay = null;
+      // The book is probably still in front of the camera: don't reopen the
+      // popup for it straight away.
+      lastCode = isbnKey(res.isbn);
+      ignoreUntil = Date.now() + 5000;
+      if (dupQueue.length) {
+        showDuplicate(dupQueue.shift());
+        return;
+      }
+      resumeScanner();
+      setBanner('info', 'Inquadra il codice a barre del libro.');
+    };
+
+    const renderCard = (note, noteKind) => {
+      card.innerHTML = '';
+      const first = matches[0];
+      card.appendChild(
+        el('div', { className: 'scan-dup-header' }, [
+          first.cover ? el('img', { className: 'scan-dup-cover', attrs: { src: first.cover, alt: '' } }) : null,
+          el('div', {}, [
+            el('div', { className: 'scan-dup-kicker', text: '🔁 Già in libreria' }),
+            el('div', { className: 'book-title', text: first.title || `ISBN ${res.isbn} (dettagli in arrivo)` }),
+            first.author ? el('div', { className: 'book-author', text: first.author }) : null,
+          ]),
+        ])
+      );
+
+      card.appendChild(el('div', { className: 'sheet-section-title', text: 'Dove si trova' }));
+      for (const m of matches) {
+        let count = m.copies;
+        const countEl = el('span', { className: 'scan-dup-count', text: String(count) });
+        const saveBtn = el('button', { className: 'scan-dup-save hidden', text: 'Salva' });
+        const refresh = () => {
+          countEl.textContent = String(count);
+          saveBtn.classList.toggle('hidden', count === m.copies);
+        };
+        saveBtn.addEventListener('click', async () => {
+          saveBtn.disabled = true;
+          try {
+            await setCopies({ isbn: res.isbn, library: m.library, copies: count });
+            m.copies = count;
+            updateLocalCopies(res.isbn, m.library, count);
+            renderCard(`Copie in ${m.library ? shelfLabel(m.library) : 'senza scaffale'}: ${count}.`, 'success');
+          } catch (err) {
+            saveBtn.disabled = false;
+            renderCard(`Errore: ${err.message}`, 'error');
+          }
+        });
+        card.appendChild(
+          el('div', { className: 'scan-dup-row' }, [
+            el('div', { className: 'scan-dup-where' }, [
+              el('div', { className: 'scan-dup-shelf', text: m.library ? shelfLabel(m.library) : 'Senza scaffale' }),
+              m.heldBy ? el('div', { className: 'book-author', text: `con ${m.heldBy}` }) : null,
+            ]),
+            el('div', { className: 'scan-dup-stepper' }, [
+              el('button', { className: 'scan-dup-step', text: '−', attrs: { 'aria-label': 'Una copia in meno' }, onClick: () => { if (count > 1) { count -= 1; refresh(); } } }),
+              countEl,
+              el('button', { className: 'scan-dup-step', text: '+', attrs: { 'aria-label': 'Una copia in più' }, onClick: () => { count += 1; refresh(); } }),
+            ]),
+            saveBtn,
+          ])
+        );
+      }
+
+      card.appendChild(el('div', { className: 'sheet-section-title', text: 'Aggiungi una copia in un altro scaffale' }));
+      const defaultOther = matches.some((m) => m.library === shelf) ? '' : shelf;
+      const otherSelect = shelfSelectEl(defaultOther, 'Scegli scaffale…');
+      const addBtn = el('button', { className: 'btn-secondary', text: '➕ Aggiungi' });
+      addBtn.addEventListener('click', async () => {
+        const library = otherSelect.value;
+        if (!library) {
+          renderCard('Scegli uno scaffale.', 'error');
+          return;
+        }
+        addBtn.disabled = true;
+        try {
+          const out = await addCopyToShelf({ isbn: res.isbn, library });
+          const existing = matches.find((m) => m.library === library);
+          if (existing) {
+            existing.copies = out.copies;
+            updateLocalCopies(res.isbn, library, out.copies);
+          } else {
+            matches.push({ ...matches[0], library, copies: 1, heldBy: '' });
+            const key = isbnKey(res.isbn);
+            const source = state.books.find((b) => b.isbn && isbnKey(b.isbn) === key);
+            if (source) {
+              state.books.push({ ...source, l: library, copies: undefined, h: undefined, notes: undefined });
+              booksChanged = true;
+            }
+            bumpCounter();
+          }
+          renderCard(`Aggiunta una copia in ${shelfLabel(library)}.`, 'success');
+        } catch (err) {
+          addBtn.disabled = false;
+          renderCard(`Errore: ${err.message}`, 'error');
+        }
+      });
+      card.appendChild(el('div', { className: 'scan-dup-add' }, [otherSelect, addBtn]));
+
+      if (note) card.appendChild(el('div', { className: `form-message ${noteKind || ''}`, text: note }));
+      card.appendChild(
+        el('div', { className: 'form-actions' }, [
+          el('button', { className: 'btn-primary', text: 'Chiudi e continua', onClick: close }),
+        ])
+      );
+    };
+    renderCard();
+  };
+
+  // --- Scan handling ---
+  const handleScanResult = (res, code, targetShelf, update) => {
+    const where = shelfLabel(targetShelf);
+    if (res.status === 'added') {
+      state.books.push(res.book);
+      booksChanged = true;
+      bumpCounter();
+      const msg = `✅ ${res.book.t}${res.book.a ? ` — ${res.book.a}` : ''} · in ${where}`;
+      update('success', msg);
+      setBanner('success', msg);
+    } else if (res.status === 'queued') {
+      bumpCounter();
+      const msg = `✅ ISBN ${code} aggiunto in ${where} — titolo in arrivo tra 1-2 minuti`;
+      update('success', msg);
+      setBanner('success', msg);
+    } else if (res.status === 'notFound') {
+      const msg = `❓ ISBN ${code} non trovato — messo in ToReview (${where})`;
+      update('warn', msg);
+      setBanner('warn', msg);
+      scanFeedback(false);
+    } else if (res.status === 'pendingReview') {
+      const msg = `❓ ISBN ${code} è già in ToReview, in attesa di revisione`;
+      update('warn', msg);
+      setBanner('warn', msg);
+    } else if (res.status === 'duplicate') {
+      update('info', `🔁 ${(res.matches[0] && res.matches[0].title) || code} — già in libreria`);
+      showDuplicate(res);
+    }
+  };
+
+  const onScan = (decodedText) => {
+    if (paused) return;
+    const code = decodedText.replace(/[^0-9Xx]/g, '').toUpperCase();
+    const key = isbnKey(code);
+    const now = Date.now();
+    if (key === lastCode && now < ignoreUntil) return;
+    lastCode = key;
+    ignoreUntil = now + 3000;
+
+    const isIsbn = (code.length === 13 && /^97[89]/.test(code)) || code.length === 10;
+    if (!isIsbn) {
+      setBanner('warn', `Il codice ${decodedText} non è un ISBN — cerca il codice a barre che inizia con 978 o 979.`);
+      scanFeedback(false);
+      return;
+    }
+    if (inFlight.has(key)) {
+      setBanner('info', `⏳ ISBN ${code} già in elaborazione…`);
+      return;
+    }
+    scanFeedback(true);
+
+    const local = localMatches(key);
+    if (local.length) {
+      addLogEntry('')('info', `🔁 ${local[0].title} — già in libreria`);
+      showDuplicate({ isbn: code, matches: local });
+      return;
+    }
+
+    inFlight.add(key);
+    const targetShelf = shelf;
+    const update = addLogEntry(`⏳ ${code} — cerco il libro…`);
+    setBanner('info', `⏳ ISBN ${code} letto, cerco il libro…`);
+    scanIsbn({ isbn: code, library: targetShelf })
+      .then((res) => handleScanResult(res, code, targetShelf, update))
+      .catch((err) => {
+        const msg = `⚠️ ISBN ${code} — errore: ${err.message}`;
+        update('error', msg);
+        setBanner('error', msg);
+        scanFeedback(false);
+      })
+      .finally(() => inFlight.delete(key));
+  };
+
+  const closeSession = () => {
+    stopActiveScanner();
+    closeBottomSheet(sheetBackdrop, bottomSheet);
+  };
+
+  container.appendChild(el('h2', { text: '📷 Scansiona ISBN' }));
+  container.appendChild(shelfBar);
+  container.appendChild(el('div', { attrs: { id: 'isbn-reader' } }));
+  container.appendChild(banner);
+  container.appendChild(counter);
+  container.appendChild(log);
+  container.appendChild(
+    el('div', { className: 'form-actions' }, [
+      el('button', { className: 'btn-secondary', text: 'Chiudi', onClick: closeSession }),
+    ])
+  );
+
+  activeScanCleanup = () => {
+    if (overlay) overlay.remove();
+    overlay = null;
+    if (booksChanged) renderActiveTab();
+  };
+
+  if (!window.Html5Qrcode) {
+    setBanner('error', 'Libreria di scansione non disponibile.');
+    return;
+  }
+  // Book barcodes are EAN-13; restricting the formats makes detection faster
+  // and more reliable than the library's default (which includes QR etc.).
+  const F = window.Html5QrcodeSupportedFormats;
+  const config = { verbose: false, experimentalFeatures: { useBarCodeDetectorIfSupported: true } };
+  if (F) config.formatsToSupport = [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E, F.CODE_128].filter((f) => f !== undefined);
+  scanner = new window.Html5Qrcode('isbn-reader', config);
+  activeScanner = scanner;
+  scanner
+    .start({ facingMode: 'environment' }, { fps: 10, qrbox: { width: 280, height: 120 } }, onScan)
+    .catch((err) => setBanner('error', `Impossibile avviare la fotocamera: ${err}`));
 }
 
 function renderAddBookForm(container) {
@@ -653,6 +989,7 @@ function openBookDetailSheet(book) {
       metaRows.push(['Serie', seriesText]);
     }
     if (book.l) metaRows.push(['Scaffale', shelfLabel(book.l)]);
+    if (book.copies > 1) metaRows.push(['Copie', String(book.copies)]);
     metaRows.push(['Lingua', LANG_FULL_NAME[bookLangCode(book)] || bookLangCode(book)]);
     if (book.pub) metaRows.push(['Editore', book.pub]);
     if (book.year) metaRows.push(['Anno', String(book.year)]);
