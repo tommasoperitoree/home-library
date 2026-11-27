@@ -301,23 +301,39 @@ function _formatBooksSheet(sh, numCols) {
 // ─────────────────────────────────────────────────────────────────────────
 
 /**
- * Splits "Author1, Author2" into separate names.
+ * Splits an Author field into separate names. Handles two separator
+ * conventions found in this sheet: "; " between distinct people (commonly
+ * author + illustrator, e.g. "Ines Belski Lagazzi; Giuseppino De Roma" —
+ * without this, that whole string was being counted as one bogus author,
+ * undercounting people who also appear elsewhere as a solo credit), and
+ * ", " within the comma-joined-name logic below.
  *
- * Strategy: split on ", ". A token that starts uppercase AND the accumulated
- * current already contains a space is treated as a new author's first name,
- * so we start a new entry. Single-word particles ("van", "de", "di") get
- * merged with the previous token automatically because they don't start
- * a new name in isolation.
+ * Deliberately NOT handled: "Jaël e Clément Lebeaume" / "Zelia e Luigi
+ * Martìn" style joins (" e " between two first names sharing a surname) —
+ * only 2 known cases, and a blanket " e " split risks wrongly breaking
+ * other names that legitimately contain that word. Fix those 2 by hand in
+ * the sheet instead.
  *
  * Works correctly for:
- *   "Dante Alighieri, Franco Nembrini"   → ["Dante Alighieri", "Franco Nembrini"]
- *   "Ludwig van Beethoven"               → ["Ludwig van Beethoven"]
- *   "Sant'Agostino"                      → ["Sant'Agostino"]
- *   "Fratelli Grimm"                     → ["Fratelli Grimm"]
+ *   "Dante Alighieri, Franco Nembrini"       → ["Dante Alighieri", "Franco Nembrini"]
+ *   "Ines Belski Lagazzi; Giuseppino De Roma" → ["Ines Belski Lagazzi", "Giuseppino De Roma"]
+ *   "Ludwig van Beethoven"                   → ["Ludwig van Beethoven"]
+ *   "Sant'Agostino"                          → ["Sant'Agostino"]
+ *   "Fratelli Grimm"                         → ["Fratelli Grimm"]
  */
 function _splitAuthors(str) {
   if (!str) return [];
   str = String(str).trim();
+  if (!str) return [];
+
+  if (str.includes(';')) {
+    const segments = str.split(/;\s*/).map((s) => s.trim()).filter(Boolean);
+    return segments.reduce((all, seg) => all.concat(_splitAuthorsByComma_(seg)), []);
+  }
+  return _splitAuthorsByComma_(str);
+}
+
+function _splitAuthorsByComma_(str) {
   if (!str.includes(', ')) return [str];
 
   const parts   = str.split(', ');
