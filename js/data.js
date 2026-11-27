@@ -129,6 +129,20 @@ export async function loadLibraryData() {
   }
 }
 
+async function postAction(action, fields) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    // text/plain avoids a CORS preflight, which Apps Script web apps don't
+    // handle; the body itself is still JSON and parsed as such server-side.
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action, token: WRITE_TOKEN, ...fields }),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+
 /**
  * Add a book via the Apps Script write endpoint.
  * @param {{title: string, author?: string, shelf?: string, language?: string,
@@ -136,18 +150,37 @@ export async function loadLibraryData() {
  *   subjects?: string, heldBy?: string}} fields
  * @returns {Promise<{ok: true, row: number}>}
  */
-export async function addBook(fields) {
-  const res = await fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    // text/plain avoids a CORS preflight, which Apps Script web apps don't
-    // handle; the body itself is still JSON and parsed as such server-side.
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ action: 'addBook', token: WRITE_TOKEN, ...fields }),
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
-  if (data.error) throw new Error(data.error);
-  return data;
+export function addBook(fields) {
+  return postAction('addBook', fields);
+}
+
+/**
+ * Sets (or clears, if heldBy is '') who's informally holding a book right
+ * now. Matches the first Books row with an exact Title match server-side.
+ * Never touches Library.
+ * @param {{title: string, heldBy: string}} fields
+ */
+export function setHeldBy(fields) {
+  return postAction('setHeldBy', fields);
+}
+
+/**
+ * Registers a formal loan (appends a Loans row). `library` is just a record
+ * of which shelf the copy came from — it's never written back to Books.
+ * @param {{title: string, library?: string, lentBy: string, borrowedBy: string,
+ *   dateLent?: string, expectedReturn?: string, notes?: string}} fields
+ * @returns {Promise<{ok: true, loanId: string, row: number}>}
+ */
+export function lendBook(fields) {
+  return postAction('lendBook', fields);
+}
+
+/**
+ * Marks a Loans row returned by LoanID.
+ * @param {{loanId: string, dateReturned?: string}} fields
+ */
+export function returnBook(fields) {
+  return postAction('returnBook', fields);
 }
 
 export function getSelectedMember() {

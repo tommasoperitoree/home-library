@@ -535,10 +535,13 @@ function parseLoans(sheet) {
   const idx = {
     id: header.indexOf('loanid'),
     book: header.indexOf('booktitle'),
+    library: header.indexOf('library'),
     lentBy: header.indexOf('lentbyfamilymember'),
     borrowedBy: header.indexOf('borrowedbyexternal'),
     dateLent: header.indexOf('datelent'),
+    expectedReturn: header.indexOf('expectedreturn'),
     dateReturned: header.indexOf('datereturned'),
+    notes: header.indexOf('notes'),
   };
 
   const loans = [];
@@ -552,9 +555,12 @@ function parseLoans(sheet) {
     loans.push({
       id: String(row[idx.id] || '').trim(),
       book: book,
+      library: idx.library >= 0 ? String(row[idx.library] || '').trim() : '',
       lentBy: String(row[idx.lentBy] || '').trim(),
       borrowedBy: String(row[idx.borrowedBy] || '').trim(),
       dateLent: formatDateDMY(row[idx.dateLent]),
+      expectedReturn: idx.expectedReturn >= 0 ? formatDateDMY(row[idx.expectedReturn]) : '',
+      notes: idx.notes >= 0 ? String(row[idx.notes] || '').trim() : '',
     });
   }
   return loans;

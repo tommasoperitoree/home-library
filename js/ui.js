@@ -57,7 +57,7 @@ export function renderMemberGrid(container, members, onSelect) {
   }
 }
 
-export function renderBookRow(book, index, { loanedTitles = new Set() } = {}) {
+export function renderBookRow(book, index, { loanedTitles = new Set(), onOpen } = {}) {
   const isLoaned = loanedTitles.has(book.t);
   const meta = [];
   if (book.sn) {
@@ -70,14 +70,21 @@ export function renderBookRow(book, index, { loanedTitles = new Set() } = {}) {
   if (book.h) meta.push(el('span', { className: 'badge-held', text: `con ${book.h}` }));
   if (isLoaned) meta.push(el('span', { className: 'badge-loan', text: '📤 in prestito' }));
 
-  return el('div', { className: 'book-row' }, [
-    el('div', { className: 'book-spine', attrs: { style: `background:${shelfColor(book.l)}` } }),
-    el('div', { className: 'book-info' }, [
-      el('div', { className: 'book-title', text: book.t }),
-      el('div', { className: 'book-author', text: book.a || '—' }),
-      el('div', { className: 'book-meta' }, meta),
-    ]),
-  ]);
+  return el(
+    'div',
+    {
+      className: onOpen ? 'book-row book-row-clickable' : 'book-row',
+      onClick: onOpen ? () => onOpen(book) : undefined,
+    },
+    [
+      el('div', { className: 'book-spine', attrs: { style: `background:${shelfColor(book.l)}` } }),
+      el('div', { className: 'book-info' }, [
+        el('div', { className: 'book-title', text: book.t }),
+        el('div', { className: 'book-author', text: book.a || '—' }),
+        el('div', { className: 'book-meta' }, meta),
+      ]),
+    ]
+  );
 }
 
 export function renderBookList(container, books, opts = {}) {
