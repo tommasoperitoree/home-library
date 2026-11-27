@@ -5,6 +5,8 @@ import {
   loadLibraryData,
   getSelectedMember,
   setSelectedMember,
+  getLastTab,
+  setLastTab,
   bookLangCode,
   addBook,
   setHeldBy,
@@ -13,6 +15,7 @@ import {
 } from './data.js';
 import {
   renderMemberGrid,
+  memberFaceEl,
   renderBookList,
   renderGroupedBookList,
   renderChipRow,
@@ -33,7 +36,7 @@ const state = {
   books: [],
   loans: [],
   updatedAt: null,
-  activeTab: 'io',
+  activeTab: 'catalogo',
   catalogo: {
     search: '',
     lang: 'Tutti',
@@ -43,9 +46,6 @@ const state = {
   },
 };
 
-const selectorScreen = document.getElementById('selector-screen');
-const appEl = document.getElementById('app');
-const memberGrid = document.getElementById('member-grid');
 const tabTitle = document.getElementById('tab-title');
 const panels = {
   io: document.getElementById('tab-io'),
@@ -63,23 +63,58 @@ function loanedTitlesSet() {
   return new Set(state.loans.map((l) => l.book));
 }
 
+// Picking a member is only ever prompted from within the Io tab (or, if
+// needed, from a lending action elsewhere — see ensureUser below); there is
+// no separate full-screen gate blocking the rest of the app anymore.
 function selectMember(name) {
   state.user = name;
   setSelectedMember(name);
-  selectorScreen.classList.add('hidden');
-  appEl.classList.remove('hidden');
   renderActiveTab();
 }
 
 function switchTab(tab) {
   stopActiveScanner();
   state.activeTab = tab;
+  setLastTab(tab);
   tabTitle.textContent = TAB_TITLES[tab];
   for (const [key, panel] of Object.entries(panels)) {
     panel.classList.toggle('hidden', key !== tab);
   }
   navButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === tab));
   renderActiveTab();
+}
+
+// Used by lending actions (which need to know who's acting) when they're
+// triggered from Catalogo/Famiglia before any member has ever been picked.
+// Renders the same chooser inline in place of `container`'s contents and
+// calls onPicked once a member is chosen, instead of leaving e.g. "Tieni tu
+// (null)" on screen.
+function ensureUser(container, onPicked) {
+  if (state.user) {
+    onPicked();
+    return;
+  }
+  renderChooser(container, onPicked);
+}
+
+// Unconditionally renders the "Chi sei?" member chooser into `container`,
+// calling onPicked once a member is chosen. Used both by ensureUser (only
+// when no identity is set yet) and directly by the Io header's face button
+// (to let someone switch identity any time, overwriting whoever's active).
+function renderChooser(container, onPicked) {
+  container.innerHTML = '';
+  container.appendChild(
+    el('div', { className: 'io-chooser' }, [
+      el('h2', { className: 'selector-title', text: 'Chi sei?' }),
+      el('p', { className: 'selector-subtitle', text: 'Dicci chi sei per continuare.' }),
+      el('div', { className: 'member-grid' }),
+    ])
+  );
+  const grid = container.querySelector('.member-grid');
+  renderMemberGrid(grid, MEMBERS, (name) => {
+    selectMember(name);
+    onPicked();
+  });
 }
 
 function renderActiveTab() {
@@ -94,11 +129,29 @@ function renderTabIo() {
   const panel = panels.io;
   panel.innerHTML = '';
 
+  if (!state.user) {
+    ensureUser(panel, () => renderTabIo());
+    return;
+  }
+
   const heldBooks = state.books.filter((b) => b.h === state.user);
   const myLoans = state.loans.filter((l) => l.lentBy === state.user);
   const loaned = loanedTitlesSet();
 
-  panel.appendChild(el('div', { className: 'greeting', text: `${timeGreeting()}, ${state.user}!` }));
+  const currentMember = MEMBERS.find((m) => m.name === state.user);
+  panel.appendChild(
+    el('div', { className: 'io-header' }, [
+      el(
+        'button',
+        {
+          className: 'io-switch-user',
+          onClick: () => renderChooser(panel, () => renderTabIo()),
+        },
+        currentMember ? [memberFaceEl(currentMember, 'io-switch-user-face')] : []
+      ),
+      el('div', { className: 'greeting', text: `${timeGreeting()}, ${state.user}!` }),
+    ])
+  );
 
   panel.appendChild(
     makeExpandableCard(
@@ -478,7 +531,7 @@ function renderTabFamiglia() {
       'div',
       { className: 'member-row', onClick: () => openMemberSheet(member) },
       [
-        el('span', { className: 'member-row-emoji', text: member.emoji }),
+        memberFaceEl(member, 'member-row-face'),
         el('span', { className: 'member-row-name', text: member.name }),
         el('span', {
           className: 'member-row-stats',
@@ -514,7 +567,10 @@ function renderTabFamiglia() {
 function openMemberSheet(member) {
   openBottomSheet(sheetBackdrop, bottomSheet, sheetContent, (container) => {
     container.appendChild(
-      el('h2', { text: `${member.emoji} ${member.name}` })
+      el('div', { className: 'sheet-member-header' }, [
+        memberFaceEl(member, 'sheet-member-face'),
+        el('h2', { text: member.name }),
+      ])
     );
 
     const heldBooks = state.books.filter((b) => b.h === member.name);
@@ -559,7 +615,8 @@ function openMemberSheet(member) {
 const LANG_FULL_NAME = { IT: 'Italiano', EN: 'Inglese', ES: 'Spagnolo', DE: 'Tedesco' };
 
 function openBookDetailSheet(book) {
-  let mode = 'main'; // 'main' | 'lend'
+  let mode = 'main'; // 'main' | 'lend' | 'chooseUser'
+  let pendingAfterUser = null; // 'heldBy' | 'lend' — which action to resume once a member is picked
 
   function renderSheetBody(container) {
     container.innerHTML = '';
@@ -628,6 +685,23 @@ function openBookDetailSheet(book) {
           message.className = 'form-message error';
         });
     };
+
+    if (mode === 'chooseUser') {
+      container.appendChild(el('div', { className: 'sheet-section-title', text: 'Chi sei?' }));
+      const grid = el('div', { className: 'member-grid' });
+      container.appendChild(grid);
+      renderMemberGrid(grid, MEMBERS, (name) => {
+        selectMember(name);
+        // Back to the normal view now that an identity is set — for "Tieni
+        // tu" they'll tap it once more (now it'll work); for "Presta a
+        // qualcuno" go straight into the lend form since nothing further is
+        // needed from them first.
+        mode = pendingAfterUser === 'lend' ? 'lend' : 'main';
+        pendingAfterUser = null;
+        renderSheetBody(container);
+      });
+      return;
+    }
 
     if (mode === 'lend') {
       const borrowedByInput = el('input', {
@@ -714,12 +788,19 @@ function openBookDetailSheet(book) {
       actions.appendChild(
         el('button', {
           className: 'btn-primary',
-          text: `📍 Tieni tu (${state.user})`,
-          onClick: () =>
+          text: state.user ? `📍 Tieni tu (${state.user})` : '📍 Tieni tu',
+          onClick: () => {
+            if (!state.user) {
+              pendingAfterUser = 'heldBy';
+              mode = 'chooseUser';
+              renderSheetBody(container);
+              return;
+            }
             runAction('Segnato: lo tieni tu.', async () => {
               await setHeldBy({ title: book.t, heldBy: state.user });
               book.h = state.user;
-            }),
+            });
+          },
         })
       );
       actions.appendChild(
@@ -727,6 +808,12 @@ function openBookDetailSheet(book) {
           className: 'btn-secondary',
           text: '📤 Presta a qualcuno',
           onClick: () => {
+            if (!state.user) {
+              pendingAfterUser = 'lend';
+              mode = 'chooseUser';
+              renderSheetBody(container);
+              return;
+            }
             mode = 'lend';
             renderSheetBody(container);
           },
@@ -751,17 +838,19 @@ sheetBackdrop.addEventListener('click', () => {
 navButtons.forEach((btn) => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
 
 async function boot() {
-  renderMemberGrid(memberGrid, MEMBERS, selectMember);
+  const existingUser = getSelectedMember();
+  if (existingUser && MEMBERS.some((m) => m.name === existingUser)) {
+    state.user = existingUser;
+  }
 
   const { books, loans, updatedAt } = await loadLibraryData();
   state.books = books || [];
   state.loans = loans || [];
   state.updatedAt = updatedAt;
 
-  const existingUser = getSelectedMember();
-  if (existingUser && MEMBERS.some((m) => m.name === existingUser)) {
-    selectMember(existingUser);
-  }
+  // Land on whatever tab was last used; Catalogo on a first-ever visit.
+  const savedTab = getLastTab();
+  switchTab(savedTab && panels[savedTab] ? savedTab : 'catalogo');
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});

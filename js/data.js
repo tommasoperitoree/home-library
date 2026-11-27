@@ -18,16 +18,17 @@ export const WRITE_TOKEN = window.WRITE_TOKEN || 'segretWriteHomeWebAppLibraryTo
 
 export const CACHE_KEY = 'hl_cache_v1';
 export const SELECTED_MEMBER_KEY = 'hl_selected_member';
+export const LAST_TAB_KEY = 'hl_last_tab';
 
 export const MEMBERS = [
-  { name: 'Giachi', emoji: '👴' },
-  { name: 'Ale',    emoji: '🧒' },
-  { name: 'Papà',   emoji: '👨' },
-  { name: 'Tommi',  emoji: '🧔' },
-  { name: 'Vitto',  emoji: '🧑' },
-  { name: 'Gio',    emoji: '👦' },
-  { name: 'Mamma',  emoji: '👩' },
-  { name: 'Checco', emoji: '👶' },
+  { name: 'Papà',   emoji: '👨', face: 'icons/family/papa.svg' },
+  { name: 'Mamma',  emoji: '👩', face: 'icons/family/mamma.svg' },
+  { name: 'Tommi',  emoji: '🧔', face: 'icons/family/tommi.svg' },
+  { name: 'Vitto',  emoji: '🧑', face: 'icons/family/vitto.svg' },
+  { name: 'Checco', emoji: '👶', face: 'icons/family/checco.svg' },
+  { name: 'Giachi', emoji: '👴', face: 'icons/family/giachi.svg' },
+  { name: 'Gio',    emoji: '👦', face: 'icons/family/gio.svg' },
+  { name: 'Ale',    emoji: '🧒', face: 'icons/family/ale.svg' },
 ];
 
 export const SHELVES = [
@@ -193,4 +194,12 @@ export function setSelectedMember(name) {
 
 export function clearSelectedMember() {
   localStorage.removeItem(SELECTED_MEMBER_KEY);
+}
+
+export function getLastTab() {
+  return localStorage.getItem(LAST_TAB_KEY);
+}
+
+export function setLastTab(tab) {
+  localStorage.setItem(LAST_TAB_KEY, tab);
 }

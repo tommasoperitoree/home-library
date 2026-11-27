@@ -49,12 +49,22 @@ export function renderMemberGrid(container, members, onSelect) {
       'button',
       { className: 'member-btn', onClick: () => onSelect(member.name) },
       [
-        el('span', { className: 'member-emoji', text: member.emoji }),
+        memberFaceEl(member, 'member-face'),
         el('span', { className: 'member-name', text: member.name }),
       ]
     );
     container.appendChild(btn);
   }
+}
+
+// Shared face-or-emoji renderer: an <img> of the member's face icon when one
+// is set, falling back to the emoji span (e.g. if a member is ever added
+// without a face asset).
+export function memberFaceEl(member, className) {
+  if (member.face) {
+    return el('img', { className, attrs: { src: member.face, alt: member.name } });
+  }
+  return el('span', { className, text: member.emoji });
 }
 
 export function renderBookRow(book, index, { loanedTitles = new Set(), onOpen } = {}) {

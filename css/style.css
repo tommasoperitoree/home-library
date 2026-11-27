@@ -41,16 +41,11 @@ input {
   font-family: inherit;
 }
 
-/* ---------- Selector screen ---------- */
+/* ---------- Member chooser (embedded in the Io tab until a member is picked) ---------- */
 
-#selector-screen {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+.io-chooser {
   text-align: center;
+  padding: 24px 0;
 }
 
 .selector-title {
@@ -71,6 +66,7 @@ input {
   gap: 14px;
   width: 100%;
   max-width: 380px;
+  margin: 0 auto;
 }
 
 .member-btn {
@@ -95,6 +91,13 @@ input {
 
 .member-emoji {
   font-size: 34px;
+}
+
+.member-face {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 /* ---------- App shell ---------- */
@@ -214,6 +217,32 @@ input {
   font-weight: 700;
   color: var(--brown);
   margin: 4px 0 18px;
+}
+
+.io-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 18px;
+}
+
+.io-header .greeting {
+  margin: 0;
+}
+
+.io-switch-user {
+  padding: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.io-switch-user-face {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
 }
 
 /* ---------- Book rows ---------- */
@@ -540,6 +569,14 @@ input {
   font-size: 26px;
 }
 
+.member-row-face {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 .member-row-name {
   flex: 1;
   font-weight: 600;
@@ -650,6 +687,25 @@ input {
   margin: 4px 0 14px;
   color: var(--brown);
   font-size: 19px;
+}
+
+.sheet-member-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 14px;
+}
+
+.sheet-member-header h2 {
+  margin: 0;
+}
+
+.sheet-member-face {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .sheet-section-title {
