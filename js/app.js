@@ -15,6 +15,7 @@ import {
 } from './data.js';
 import {
   renderMemberGrid,
+  memberFaceEl,
   renderBookList,
   renderGroupedBookList,
   renderChipRow,
@@ -93,6 +94,14 @@ function ensureUser(container, onPicked) {
     onPicked();
     return;
   }
+  renderChooser(container, onPicked);
+}
+
+// Unconditionally renders the "Chi sei?" member chooser into `container`,
+// calling onPicked once a member is chosen. Used both by ensureUser (only
+// when no identity is set yet) and directly by the Io header's face button
+// (to let someone switch identity any time, overwriting whoever's active).
+function renderChooser(container, onPicked) {
   container.innerHTML = '';
   container.appendChild(
     el('div', { className: 'io-chooser' }, [
@@ -129,7 +138,20 @@ function renderTabIo() {
   const myLoans = state.loans.filter((l) => l.lentBy === state.user);
   const loaned = loanedTitlesSet();
 
-  panel.appendChild(el('div', { className: 'greeting', text: `${timeGreeting()}, ${state.user}!` }));
+  const currentMember = MEMBERS.find((m) => m.name === state.user);
+  panel.appendChild(
+    el('div', { className: 'io-header' }, [
+      el(
+        'button',
+        {
+          className: 'io-switch-user',
+          onClick: () => renderChooser(panel, () => renderTabIo()),
+        },
+        currentMember ? [memberFaceEl(currentMember, 'io-switch-user-face')] : []
+      ),
+      el('div', { className: 'greeting', text: `${timeGreeting()}, ${state.user}!` }),
+    ])
+  );
 
   panel.appendChild(
     makeExpandableCard(
@@ -509,7 +531,7 @@ function renderTabFamiglia() {
       'div',
       { className: 'member-row', onClick: () => openMemberSheet(member) },
       [
-        el('span', { className: 'member-row-emoji', text: member.emoji }),
+        memberFaceEl(member, 'member-row-face'),
         el('span', { className: 'member-row-name', text: member.name }),
         el('span', {
           className: 'member-row-stats',
@@ -545,7 +567,10 @@ function renderTabFamiglia() {
 function openMemberSheet(member) {
   openBottomSheet(sheetBackdrop, bottomSheet, sheetContent, (container) => {
     container.appendChild(
-      el('h2', { text: `${member.emoji} ${member.name}` })
+      el('div', { className: 'sheet-member-header' }, [
+        memberFaceEl(member, 'sheet-member-face'),
+        el('h2', { text: member.name }),
+      ])
     );
 
     const heldBooks = state.books.filter((b) => b.h === member.name);
