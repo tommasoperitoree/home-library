@@ -11,26 +11,20 @@
 </head>
 <body>
 
-<div id="selector-screen" class="screen">
-  <h1 class="selector-title">📚 Home Library</h1>
-  <p class="selector-subtitle">Chi sei?</p>
-  <div id="member-grid" class="member-grid"></div>
-</div>
-
-<div id="app" class="app hidden">
+<div id="app" class="app">
   <header class="topbar">
-    <h1 id="tab-title">Io</h1>
+    <h1 id="tab-title">Catalogo</h1>
   </header>
 
-  <main id="tab-io" class="tab-panel"></main>
-  <main id="tab-catalogo" class="tab-panel hidden"></main>
+  <main id="tab-io" class="tab-panel hidden"></main>
+  <main id="tab-catalogo" class="tab-panel"></main>
   <main id="tab-famiglia" class="tab-panel hidden"></main>
 
   <nav class="bottom-nav">
-    <button class="nav-btn active" data-tab="io">
+    <button class="nav-btn" data-tab="io">
       <span class="nav-icon">📖</span><span class="nav-label">Io</span>
     </button>
-    <button class="nav-btn" data-tab="catalogo">
+    <button class="nav-btn active" data-tab="catalogo">
       <span class="nav-icon">🔍</span><span class="nav-label">Catalogo</span>
     </button>
     <button class="nav-btn" data-tab="famiglia">

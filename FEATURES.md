@@ -53,9 +53,11 @@ Status: 💡 idea → 🚧 in progress → ✅ done → ⏸️ blocked
 
 ## Already shipped
 
-- Core PWA: selector screen, Io/Catalogo/Famiglia tabs, bottom sheet, offline cache (`sw.js`).
+- Core PWA: Io/Catalogo/Famiglia tabs, bottom sheet, offline cache (`sw.js`).
 - Live data via Apps Script (`doGet`), with shelf/heldBy/active-loans column mapping fixed to match the real sheet headers.
 - Daily GitHub Action sync (`scripts/sync.py`) as the bundled offline fallback.
 - Catalogo: alphabetical list with letter-section headers (leading Italian/English articles ignored for sorting, e.g. "Il senso religioso" files under S), sub-sorted by shelf within each letter so same-shelf books cluster together (`sortCatalogBooks`/`groupLetter` in `js/app.js`, `renderGroupedBookList` in `js/ui.js`).
 - Book spine color is now a stable per-shelf color (`shelfColor` in `js/data.js`), replacing the old purely-decorative per-row-index color cycle.
 - Tapping any book row (Catalogo, Io, Famiglia) opens a unified book detail + lending sheet — see the row above.
+- No more forced "Chi sei?" gate on launch. Catalogo is the landing tab (first-ever visit); Famiglia is open to anyone too. Picking a member is only prompted where it's actually needed: switching to the Io tab, or tapping "Tieni tu"/"Presta a qualcuno" on a book before any member has ever been picked (`ensureUser` in `js/app.js` for Io, an equivalent inline `chooseUser` mode in the book detail sheet — both preserve whatever content was already on screen, e.g. the book's own info, rather than wiping it). Per explicit decision.
+- The app remembers which tab you last had open (`hl_last_tab` in localStorage, `getLastTab`/`setLastTab` in `js/data.js`) and reopens there, falling back to Catalogo if nothing's been saved yet (e.g. first-ever visit).

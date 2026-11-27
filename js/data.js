@@ -18,6 +18,7 @@ export const WRITE_TOKEN = window.WRITE_TOKEN || 'segretWriteHomeWebAppLibraryTo
 
 export const CACHE_KEY = 'hl_cache_v1';
 export const SELECTED_MEMBER_KEY = 'hl_selected_member';
+export const LAST_TAB_KEY = 'hl_last_tab';
 
 export const MEMBERS = [
   { name: 'Giachi', emoji: '👴' },
@@ -193,4 +194,12 @@ export function setSelectedMember(name) {
 
 export function clearSelectedMember() {
   localStorage.removeItem(SELECTED_MEMBER_KEY);
+}
+
+export function getLastTab() {
+  return localStorage.getItem(LAST_TAB_KEY);
+}
+
+export function setLastTab(tab) {
+  localStorage.setItem(LAST_TAB_KEY, tab);
 }
