@@ -109,6 +109,18 @@ function doPost(e) {
     return handleSetLibrary(ss, params);
   }
 
+  if (params.action === 'scanIsbn') {
+    return handleScanIsbn(ss, params);
+  }
+
+  if (params.action === 'setCopies') {
+    return handleSetCopies(ss, params);
+  }
+
+  if (params.action === 'addCopyToShelf') {
+    return handleAddCopyToShelf(ss, params);
+  }
+
   return jsonResponse({ error: 'unknown action' });
 }
 
@@ -220,6 +232,26 @@ function _handleAddBookShortcut(params) {
   const found  = enrichSingleRow(reviewSheet, row, col, isbn);
   const title  = String(col['Title']  ? reviewSheet.getRange(row, col['Title']).getValue()        : '');
   const status = String(col['ReviewStatus'] ? reviewSheet.getRange(row, col['ReviewStatus']).getValue() : '');
+
+  // ToReview is only for books that need a human (ISBN not found). A found
+  // book goes straight on to Books.
+  if (found) {
+    const lock = LockService.getScriptLock();
+    lock.waitLock(10000);
+    let moved = null;
+    try {
+      moved = _moveToReviewRowToBooks_(ss, reviewSheet, row, isbn);
+    } finally {
+      lock.releaseLock();
+    }
+    if (moved) {
+      const where = library ? ` in "${library}"` : '';
+      const message = moved.incremented
+        ? `✓ "${title}" — copia aggiuntiva${where} (ora ${moved.copies})`
+        : `✓ "${title}" aggiunto a Books${where}`;
+      return jsonResponse({ ok: true, row: moved.row, isbn, title, status, movedToBooks: true, message });
+    }
+  }
 
   const message = found
     ? `✓ "${title}" aggiunto a ToReview — ${status}`
@@ -532,6 +564,269 @@ function _writeBooksLibrary_(ss, title, library) {
   return { error: 'book not found: ' + wanted };
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// WEBAPP ISBN SCANNING
+// ─────────────────────────────────────────────────────────────────────────
+// The webapp scanner picks a shelf first, then calls scanIsbn per barcode:
+//   - ISBN already in Books        -> { status: 'duplicate', matches } and
+//     nothing is written; the webapp shows a popup offering setCopies /
+//     addCopyToShelf.
+//   - ISBN pending in ToReview     -> { status: 'pendingReview' }
+//   - looked up and found          -> Books row, { status: 'added', book }
+//   - confirmed not found          -> ToReview "Manca Titolo", { status: 'notFound' }
+//   - lookup failed (network etc.) -> Books row with blank Title, which
+//     runEnrichmentBatch retries; { status: 'queued' }
+// Books rows are identified by ISBN + Library (never by row number, which
+// shifts when rows are deleted elsewhere).
+
+// Canonical ISBN for comparisons: digits only, ISBN-10 converted to ISBN-13
+// so an old 10-digit entry still matches the 13-digit barcode on the book.
+function isbnKey_(raw) {
+  const s = String(raw || '').replace(/[^0-9Xx]/g, '').toUpperCase();
+  if (s.length !== 10) return s;
+  const core = '978' + s.slice(0, 9);
+  let sum = 0;
+  for (let i = 0; i < 12; i++) sum += Number(core[i]) * (i % 2 ? 3 : 1);
+  return core + ((10 - (sum % 10)) % 10);
+}
+
+function _booksTable_(ss) {
+  const sheet = ss.getSheetByName('Books');
+  const values = sheet.getDataRange().getValues();
+  const header = values[0].map(normalizeHeaderKey);
+  return { sheet, values, header, col: (k) => header.indexOf(k) };
+}
+
+function _findBooksByIsbn_(ss, isbn) {
+  const t = _booksTable_(ss);
+  const key = isbnKey_(isbn);
+  const isbnC = t.col('isbn');
+  if (!key || isbnC < 0) return [];
+  const get = (r, k) => (t.col(k) >= 0 ? t.values[r][t.col(k)] : '');
+  const out = [];
+  for (let r = 1; r < t.values.length; r++) {
+    if (isbnKey_(t.values[r][isbnC]) !== key) continue;
+    out.push({
+      row: r + 1,
+      title: String(get(r, 'title') || '').trim(),
+      author: String(get(r, 'author') || '').trim(),
+      library: String(get(r, 'library') || '').trim(),
+      copies: Number(get(r, 'copies')) || 1,
+      cover: String(get(r, 'coverurl') || '').trim(),
+      heldBy: String(get(r, 'heldby') || '').trim(),
+    });
+  }
+  return out;
+}
+
+function _findToReviewByIsbn_(ss, isbn) {
+  const sheet = ss.getSheetByName('ToReview');
+  if (!sheet || sheet.getLastRow() < 2) return null;
+  const values = sheet.getDataRange().getValues();
+  const header = values[0].map(normalizeHeaderKey);
+  const isbnC = header.indexOf('isbn');
+  const key = isbnKey_(isbn);
+  if (isbnC < 0 || !key) return null;
+  for (let r = 1; r < values.length; r++) {
+    if (isbnKey_(values[r][isbnC]) === key) {
+      const libC = header.indexOf('library');
+      const stC = header.indexOf('reviewstatus');
+      return {
+        row: r + 1,
+        library: libC >= 0 ? String(values[r][libC] || '').trim() : '',
+        status: stC >= 0 ? String(values[r][stC] || '').trim() : '',
+      };
+    }
+  }
+  return null;
+}
+
+// Appends a Books row from a { normalizedHeaderKey: value } map, gives it
+// the Status/Active Loans formulas, and returns its row number. Caller holds
+// the script lock.
+function _appendBooksRow_(ss, fields) {
+  const t = _booksTable_(ss);
+  const row = new Array(t.header.length).fill('');
+  for (const key in fields) {
+    const i = t.header.indexOf(key);
+    const v = fields[key];
+    if (i >= 0 && v !== undefined && v !== null && v !== '') row[i] = v;
+  }
+  t.sheet.appendRow(row);
+  const rowNum = t.sheet.getLastRow();
+  _setComputedStatusFormulas_(t.sheet, t.header, rowNum);
+  return rowNum;
+}
+
+// Appends a ToReview row from a { 'Header Name': value } map.
+function _appendToReview_(ss, fields) {
+  const sheet = ss.getSheetByName('ToReview');
+  if (!sheet) return null;
+  const headerRaw = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const row = new Array(headerRaw.length).fill('');
+  headerRaw.forEach((name, i) => {
+    const v = fields[String(name).trim()];
+    if (v !== undefined && v !== null && v !== '') row[i] = v;
+  });
+  sheet.appendRow(row);
+  return sheet.getLastRow();
+}
+
+// Adds `delta` copies to the Books row with this ISBN on this shelf.
+// Returns the new count, or null if there's no such row. Caller holds the lock.
+function _bumpCopies_(ss, isbn, library, delta) {
+  const match = _findBooksByIsbn_(ss, isbn).find((m) => m.library === library);
+  if (!match) return null;
+  const t = _booksTable_(ss);
+  const copiesC = t.col('copies');
+  if (copiesC < 0) return null;
+  const copies = Math.max(1, match.copies + delta);
+  t.sheet.getRange(match.row, copiesC + 1).setValue(copies);
+  return { row: match.row, copies };
+}
+
+// Moves one ToReview row to Books (all shared columns copied by header name),
+// then deletes it from ToReview. If Books already has this ISBN on the same
+// shelf, its Copies is bumped instead of adding a duplicate row. Re-checks
+// the row's ISBN first, so a row number that went stale (rows deleted since
+// it was read) never moves the wrong book. Caller holds the script lock.
+// Returns { row, incremented, copies } or null if skipped.
+function _moveToReviewRowToBooks_(ss, reviewSheet, rowNum, expectedIsbn) {
+  if (rowNum < 2 || rowNum > reviewSheet.getLastRow()) return null;
+  const headerRaw = reviewSheet.getRange(1, 1, 1, reviewSheet.getLastColumn()).getValues()[0];
+  const header = headerRaw.map(normalizeHeaderKey);
+  const data = reviewSheet.getRange(rowNum, 1, 1, headerRaw.length).getValues()[0];
+  const get = (k) => (header.indexOf(k) >= 0 ? data[header.indexOf(k)] : '');
+
+  if (expectedIsbn && isbnKey_(get('isbn')) !== isbnKey_(expectedIsbn)) return null;
+  if (!String(get('title') || '').trim()) return null;
+
+  const library = String(get('library') || '').trim();
+  const copies = Number(get('copies')) || 1;
+  const isbn = get('isbn');
+
+  let result;
+  const bumped = isbn ? _bumpCopies_(ss, isbn, library, copies) : null;
+  if (bumped) {
+    result = { row: bumped.row, incremented: true, copies: bumped.copies };
+  } else {
+    const fields = {};
+    header.forEach((k, i) => {
+      if (k && k !== 'reviewstatus' && k !== 'scannote' && k !== 'status' && k !== 'activeloans') fields[k] = data[i];
+    });
+    fields.copies = copies;
+    result = { row: _appendBooksRow_(ss, fields), incremented: false, copies };
+  }
+  reviewSheet.deleteRow(rowNum);
+  return result;
+}
+
+function handleScanIsbn(ss, payload) {
+  const isbn = String(payload.isbn || '').replace(/[^0-9Xx]/g, '').toUpperCase();
+  if (isbn.length !== 10 && isbn.length !== 13) return jsonResponse({ error: 'ISBN non valido: ' + isbn });
+  const library = String(payload.library || '').trim();
+
+  const matches = _findBooksByIsbn_(ss, isbn);
+  if (matches.length) return jsonResponse({ ok: true, status: 'duplicate', isbn, matches });
+  const pending = _findToReviewByIsbn_(ss, isbn);
+  if (pending) return jsonResponse({ ok: true, status: 'pendingReview', isbn, library: pending.library, reviewStatus: pending.status });
+
+  // Slow (several HTTP calls), so done before taking the lock.
+  const info = lookupIsbn_(isbn); // enrich.gs
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    // Re-check: the same ISBN may have been scanned twice in quick succession.
+    const again = _findBooksByIsbn_(ss, isbn);
+    if (again.length) return jsonResponse({ ok: true, status: 'duplicate', isbn, matches: again });
+
+    if (info === null) {
+      _appendToReview_(ss, {
+        'ReviewStatus': 'Manca Titolo',
+        'ScanNote': notFoundNote_(), // enrich.gs
+        'ISBN': isbn,
+        'Library': library,
+        'Copies': 1,
+        'Scanned time': new Date(),
+      });
+      return jsonResponse({ ok: true, status: 'notFound', isbn, library });
+    }
+
+    const fields = Object.assign(
+      { isbn, library, copies: 1, scannedtime: new Date() },
+      info ? infoToBookFields_(info) : {} // enrich.gs
+    );
+    const row = _appendBooksRow_(ss, fields);
+    if (!info) return jsonResponse({ ok: true, status: 'queued', isbn, library, row });
+
+    const book = { t: fields.title, a: fields.author || '', isbn };
+    if (library) book.l = library;
+    if (fields.language) book.lang = normalizeLanguage(fields.language);
+    if (fields.publisher) book.pub = fields.publisher;
+    if (fields.year) book.year = fields.year;
+    if (fields.coverurl) book.cover = fields.coverurl;
+    if (fields.subjects) book.subjects = fields.subjects;
+    return jsonResponse({ ok: true, status: 'added', isbn, library, row, book });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Sets the Copies count of the Books row with this ISBN on this shelf.
+function handleSetCopies(ss, payload) {
+  const isbn = String(payload.isbn || '').trim();
+  const library = String(payload.library || '').trim();
+  const copies = Math.floor(Number(payload.copies));
+  if (!isbn) return jsonResponse({ error: 'isbn is required' });
+  if (!(copies >= 1)) return jsonResponse({ error: 'copies must be at least 1' });
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const match = _findBooksByIsbn_(ss, isbn).find((m) => m.library === library);
+    if (!match) return jsonResponse({ error: 'book not found on this shelf' });
+    const t = _booksTable_(ss);
+    if (t.col('copies') < 0) return jsonResponse({ error: 'Books sheet missing Copies column' });
+    t.sheet.getRange(match.row, t.col('copies') + 1).setValue(copies);
+    return jsonResponse({ ok: true, row: match.row, copies });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Adds one copy of an already-catalogued ISBN on `library`: bumps Copies if
+// that shelf already has it, otherwise adds a new Books row copying the
+// existing row's bibliographic data (no re-lookup needed).
+function handleAddCopyToShelf(ss, payload) {
+  const isbn = String(payload.isbn || '').trim();
+  const library = String(payload.library || '').trim();
+  if (!isbn) return jsonResponse({ error: 'isbn is required' });
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const bumped = _bumpCopies_(ss, isbn, library, 1);
+    if (bumped) return jsonResponse({ ok: true, status: 'incremented', row: bumped.row, copies: bumped.copies });
+
+    const matches = _findBooksByIsbn_(ss, isbn);
+    if (!matches.length) return jsonResponse({ error: 'book not found: ' + isbn });
+
+    const t = _booksTable_(ss);
+    const source = t.values[matches[0].row - 1];
+    const skip = ['library', 'copies', 'heldby', 'status', 'activeloans', 'notes', 'readby', 'scannedtime'];
+    const fields = {};
+    t.header.forEach((k, i) => { if (k && skip.indexOf(k) < 0) fields[k] = source[i]; });
+    fields.library = library;
+    fields.copies = 1;
+    fields.scannedtime = new Date();
+    const row = _appendBooksRow_(ss, fields);
+    return jsonResponse({ ok: true, status: 'added', row, copies: 1 });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
 function parseBooks(sheet) {
   if (!sheet) return [];
   const rows = sheet.getDataRange().getValues();
@@ -551,6 +846,7 @@ function parseBooks(sheet) {
     coverUrl: header.indexOf('coverurl'),
     subjects: header.indexOf('subjects'),
     notes: header.indexOf('notes'),
+    copies: header.indexOf('copies'),
   };
 
   const books = [];
@@ -596,6 +892,9 @@ function parseBooks(sheet) {
 
     const notes = idx.notes >= 0 ? String(row[idx.notes] || '').trim() : '';
     if (notes) book.notes = notes;
+
+    const copies = idx.copies >= 0 ? Number(row[idx.copies]) || 1 : 1;
+    if (copies > 1) book.copies = copies;
 
     books.push(book);
   }

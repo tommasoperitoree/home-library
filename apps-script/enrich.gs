@@ -46,8 +46,24 @@ function removeEnrichmentTriggers_() {
   }
 }
 
+// Each run: (1) fill in scan-only Books rows, (2) sweep ToReview — see
+// processToReviewBatch_. A run with several lookups can take longer than the
+// 1-minute interval, so overlapping runs are skipped via the document lock
+// (the request handlers in api.gs use the script lock, so this never blocks
+// them).
 function runEnrichmentBatch() {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const guard = LockService.getDocumentLock();
+  if (guard && !guard.tryLock(0)) return;
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    enrichBooksBatch_(ss);
+    processToReviewBatch_(ss);
+  } finally {
+    if (guard) guard.releaseLock();
+  }
+}
+
+function enrichBooksBatch_(ss) {
   const sheet = ss.getSheetByName('Books');
   if (!sheet) return;
 
@@ -152,7 +168,7 @@ function moveNotFoundRowsToToReview_(ss, booksIdx, entries) {
     };
 
     set('ReviewStatus', 'Manca Titolo');
-    set('ScanNote', 'ISBN non trovato su SBN né OpenLibrary');
+    set('ScanNote', notFoundNote_());
     set('ISBN', entry.isbn);
     if (booksIdx.library >= 0) set('Library', row[booksIdx.library]);
     if (booksIdx.copies >= 0) set('Copies', row[booksIdx.copies] || 1);
@@ -160,6 +176,109 @@ function moveNotFoundRowsToToReview_(ss, booksIdx, entries) {
 
     reviewSheet.appendRow(newRow);
     booksSheet.deleteRow(entry.sheetRow);
+  }
+}
+
+// ScanNote for a confirmed miss. Carries the date so processToReviewBatch_
+// retries each not-found ISBN at most once a day.
+function notFoundNote_() {
+  return 'ISBN non trovato su SBN né OpenLibrary (verificato ' + todayStamp_() + ')';
+}
+
+function todayStamp_() {
+  return Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+}
+
+// lookupIsbn_ result -> { normalizedHeaderKey: value } for a Books/ToReview row.
+function infoToBookFields_(info) {
+  const fields = { title: info.title };
+  if (info.author) fields.author = info.author;
+  if (info.publisher) fields.publisher = info.publisher;
+  const yearMatch = info.year ? String(info.year).match(/\b(\d{4})\b/) : null;
+  if (yearMatch) fields.year = Number(yearMatch[1]);
+  // Italian is the default/omitted value (see normalizeLanguage in api.gs).
+  if (info.language && info.language !== 'Italian') fields.language = info.language;
+  if (info.subjects) fields.subjects = info.subjects;
+  if (info.coverUrl) fields.coverurl = info.coverUrl;
+  return fields;
+}
+
+// ToReview is only for books whose ISBN wasn't found. Each run:
+//   - rows the enrichment filled in (ReviewStatus "Pronto"/"Manca Autore",
+//     Title set) are moved to Books — including any backlog from before
+//     this rule, and rows a human marked "Pronto" after fixing them;
+//   - rows still without a Title (status blank, "Cercando...", or
+//     "Manca Titolo" not yet retried today) get looked up again; found ->
+//     filled in and moved to Books, not found -> stays as "Manca Titolo".
+// Rows a human is editing keep "Manca Titolo"/"Duplicato" and are left alone
+// even once they have a Title, until someone sets them to "Pronto".
+const REVIEW_AUTO_MOVE_STATUSES = ['Pronto', 'Manca Autore'];
+const REVIEW_RETRY_STATUSES = ['', 'Cercando...', 'Manca Titolo'];
+
+function processToReviewBatch_(ss) {
+  const sheet = ss.getSheetByName('ToReview');
+  if (!sheet || sheet.getLastRow() < 2) return;
+
+  const values = sheet.getDataRange().getValues();
+  const header = values[0].map(normalizeHeaderKey);
+  const c = (k) => header.indexOf(k);
+  if (c('isbn') < 0 || c('title') < 0) return;
+
+  const today = todayStamp_();
+  const toMove = []; // { row, isbn }
+  let lookups = 0;
+
+  for (let r = 1; r < values.length; r++) {
+    const row = values[r];
+    const status = c('reviewstatus') >= 0 ? String(row[c('reviewstatus')] || '').trim() : '';
+    const note = c('scannote') >= 0 ? String(row[c('scannote')] || '') : '';
+    const title = String(row[c('title')] || '').trim();
+    const isbn = cleanIsbn_(row[c('isbn')]);
+    const sheetRow = r + 1;
+
+    if (title) {
+      if (REVIEW_AUTO_MOVE_STATUSES.indexOf(status) >= 0) toMove.push({ row: sheetRow, isbn });
+      continue;
+    }
+    if (!isbn || lookups >= ENRICH_MAX_PER_RUN) continue;
+    if (REVIEW_RETRY_STATUSES.indexOf(status) < 0) continue;
+    if (status === 'Manca Titolo' && note.indexOf(today) >= 0) continue;
+
+    lookups++;
+    const info = lookupIsbn_(isbn);
+    Utilities.sleep(300);
+    if (info === undefined) continue; // fetch error — try again next run
+
+    const setCell = (key, value) => {
+      if (c(key) >= 0) sheet.getRange(sheetRow, c(key) + 1).setValue(value);
+    };
+    if (!info || !info.title) {
+      setCell('reviewstatus', 'Manca Titolo');
+      setCell('scannote', notFoundNote_());
+      continue;
+    }
+
+    const fields = infoToBookFields_(info);
+    for (const key in fields) {
+      if (c(key) >= 0 && String(row[c(key)] || '') === '') setCell(key, fields[key]);
+    }
+    setCell('reviewstatus', info.author ? 'Pronto' : 'Manca Autore');
+    setCell('scannote', 'Fonte: ' + info.source);
+    toMove.push({ row: sheetRow, isbn });
+  }
+
+  if (!toMove.length) return;
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    // Bottom-up, so each deletion doesn't shift the rows still to move.
+    toMove.sort((a, b) => b.row - a.row);
+    for (const entry of toMove) {
+      _moveToReviewRowToBooks_(ss, sheet, entry.row, entry.isbn); // api.gs
+    }
+  } finally {
+    lock.releaseLock();
   }
 }
 

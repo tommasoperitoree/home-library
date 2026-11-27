@@ -19,6 +19,7 @@ export const WRITE_TOKEN = window.WRITE_TOKEN || 'segretWriteHomeWebAppLibraryTo
 export const CACHE_KEY = 'hl_cache_v1';
 export const SELECTED_MEMBER_KEY = 'hl_selected_member';
 export const LAST_TAB_KEY = 'hl_last_tab';
+export const SCAN_SHELF_KEY = 'hl_scan_shelf';
 
 export const MEMBERS = [
   { name: 'Papà',   emoji: '👨', face: 'icons/family/papa.svg' },
@@ -31,16 +32,20 @@ export const MEMBERS = [
   { name: 'Ale',    emoji: '🧒', face: 'icons/family/ale.svg' },
 ];
 
+// `key` is the exact Library value in the sheet, and is also what's shown
+// wherever there's room (selects, detail sheet, messages — see shelfName in
+// ui.js). `label` is the compact "Furniture · Room" form for the filter chips
+// and the badge on each book row.
 export const SHELVES = [
-  { key: 'Cubotti - cameretta grandi',          label: 'Cubotti G.' },
-  { key: 'Cubotti - cameretta piccoli',         label: 'Cubotti P.' },
-  { key: 'Cubotti - mansarda',                  label: 'Cubotti M.' },
-  { key: 'Libreria - scala',                    label: 'Scala' },
-  { key: 'Libreria bianca - cameretta piccoli', label: 'Bianca P.' },
-  { key: 'Libreria bianca - mansarda',          label: 'Bianca M.' },
-  { key: 'Libreria legno - mansarda',           label: 'Legno' },
-  { key: 'Mensola - cameretta grandi',          label: 'Mensola G.' },
-  { key: 'Mensola - letto Ale',                 label: 'Mensola Ale' },
+  { key: 'Cubotti - cameretta grandi',          label: 'Cubotti · Grandi' },
+  { key: 'Cubotti - cameretta piccoli',         label: 'Cubotti · Piccoli' },
+  { key: 'Cubotti - mansarda',                  label: 'Cubotti · Mansarda' },
+  { key: 'Libreria - scala',                    label: 'Libreria · Scala' },
+  { key: 'Libreria bianca - cameretta piccoli', label: 'Bianca · Piccoli' },
+  { key: 'Libreria bianca - mansarda',          label: 'Bianca · Mansarda' },
+  { key: 'Libreria legno - mansarda',           label: 'Legno · Mansarda' },
+  { key: 'Mensola - cameretta grandi',          label: 'Mensola · Grandi' },
+  { key: 'Mensola - letto Ale',                 label: 'Mensola · Letto Ale' },
 ];
 
 export const LANGUAGES = [
@@ -192,6 +197,53 @@ export function returnBook(fields) {
  */
 export function setLibrary(fields) {
   return postAction('setLibrary', fields);
+}
+
+/**
+ * Scanner entry point: looks the ISBN up and files it on `library`.
+ * Resolves to { status: 'added' | 'queued' | 'notFound' | 'duplicate' |
+ * 'pendingReview', ... } — see handleScanIsbn in apps-script/api.gs.
+ * @param {{isbn: string, library: string}} fields
+ */
+export function scanIsbn(fields) {
+  return postAction('scanIsbn', fields);
+}
+
+/**
+ * Sets Copies on the Books row with this ISBN on this shelf.
+ * @param {{isbn: string, library: string, copies: number}} fields
+ */
+export function setCopies(fields) {
+  return postAction('setCopies', fields);
+}
+
+/**
+ * Adds one copy of an already-catalogued ISBN on `library` (bumps Copies if
+ * that shelf already has it, otherwise a new row).
+ * @param {{isbn: string, library: string}} fields
+ * @returns {Promise<{status: 'incremented'|'added', copies: number}>}
+ */
+export function addCopyToShelf(fields) {
+  return postAction('addCopyToShelf', fields);
+}
+
+// Canonical ISBN for comparisons (digits only, ISBN-10 -> ISBN-13). Mirrors
+// isbnKey_ in apps-script/api.gs.
+export function isbnKey(raw) {
+  const s = String(raw || '').replace(/[^0-9Xx]/g, '').toUpperCase();
+  if (s.length !== 10) return s;
+  const core = '978' + s.slice(0, 9);
+  let sum = 0;
+  for (let i = 0; i < 12; i++) sum += Number(core[i]) * (i % 2 ? 3 : 1);
+  return core + ((10 - (sum % 10)) % 10);
+}
+
+export function getScanShelf() {
+  try { return localStorage.getItem(SCAN_SHELF_KEY) || ''; } catch { return ''; }
+}
+
+export function setScanShelf(key) {
+  try { localStorage.setItem(SCAN_SHELF_KEY, key); } catch { /* ignore */ }
 }
 
 export function getSelectedMember() {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'home-library-v2';
+const CACHE_NAME = 'home-library-v4';
 
 const PRECACHE_URLS = [
   'index.html',
@@ -47,15 +47,19 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first for the app shell.
+  // Network-first for the app shell too, falling back to the cache when
+  // offline. Cache-first meant a deployed update only showed up after the
+  // service worker itself changed *and* the page was reloaded twice.
+  if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+    fetch(event.request)
+      .then((response) => {
+        if (response.ok && url.origin === self.location.origin) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
         return response;
-      });
-    })
+      })
+      .catch(() => caches.match(event.request))
   );
 });
