@@ -702,17 +702,21 @@ function renderScanSession(container, initialShelf) {
     closeBottomSheet(sheetBackdrop, bottomSheet);
   };
 
-  container.appendChild(el('h2', { text: '📷 Scansiona ISBN' }));
-  container.appendChild(shelfBar);
-  container.appendChild(el('div', { attrs: { id: 'isbn-reader' } }));
-  container.appendChild(banner);
-  container.appendChild(counter);
-  container.appendChild(log);
+  // Controls and feedback sit above the camera (sticky), so the video can
+  // never push "Chiudi" or the latest result out of view.
   container.appendChild(
-    el('div', { className: 'form-actions' }, [
-      el('button', { className: 'btn-secondary', text: 'Chiudi', onClick: closeSession }),
+    el('div', { className: 'scan-top' }, [
+      el('div', { className: 'scan-title-row' }, [
+        el('h2', { text: '📷 Scansiona ISBN' }),
+        el('button', { className: 'scan-close', text: 'Chiudi', onClick: closeSession }),
+      ]),
+      shelfBar,
+      banner,
     ])
   );
+  container.appendChild(el('div', { attrs: { id: 'isbn-reader' } }));
+  container.appendChild(counter);
+  container.appendChild(log);
 
   activeScanCleanup = () => {
     if (overlay) overlay.remove();
@@ -732,7 +736,15 @@ function renderScanSession(container, initialShelf) {
   scanner = new window.Html5Qrcode('isbn-reader', config);
   activeScanner = scanner;
   scanner
-    .start({ facingMode: 'environment' }, { fps: 10, qrbox: { width: 280, height: 120 } }, onScan)
+    .start(
+      { facingMode: 'environment' },
+      {
+        fps: 10,
+        aspectRatio: 1.6,
+        qrbox: (w, h) => ({ width: Math.floor(Math.min(280, w * 0.85)), height: Math.floor(Math.min(110, h * 0.5)) }),
+      },
+      onScan
+    )
     .catch((err) => setBanner('error', `Impossibile avviare la fotocamera: ${err}`));
 }
 

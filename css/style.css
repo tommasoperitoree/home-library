@@ -453,9 +453,38 @@ input {
 }
 
 #isbn-reader {
-  margin: 10px 0;
+  margin: 10px auto;
+  max-width: 420px;
   border-radius: 10px;
   overflow: hidden;
+}
+#isbn-reader video {
+  max-height: 30dvh;
+  object-fit: cover;
+}
+
+.scan-top {
+  position: sticky;
+  top: -8px; /* cancels the bottom sheet's top padding */
+  z-index: 2;
+  background: var(--surface);
+  padding: 8px 0 6px;
+}
+.scan-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.scan-title-row h2 { margin: 0; }
+.scan-close {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--muted);
 }
 
 .scan-setup-select { margin-top: 12px; }
