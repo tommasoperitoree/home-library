@@ -126,9 +126,7 @@ function enrichBooksBatch_(ss) {
       if (yearMatch) sheet.getRange(sheetRow, idx.year + 1).setValue(Number(yearMatch[1]));
     }
 
-    // Italian is the default/omitted value elsewhere in this app (see
-    // normalizeLanguage in api.gs) — only write a non-Italian language.
-    if (idx.language >= 0 && info.language && info.language !== 'Italian') {
+    if (idx.language >= 0 && info.language) {
       sheet.getRange(sheetRow, idx.language + 1).setValue(info.language);
     }
 
@@ -196,8 +194,7 @@ function infoToBookFields_(info) {
   if (info.publisher) fields.publisher = info.publisher;
   const yearMatch = info.year ? String(info.year).match(/\b(\d{4})\b/) : null;
   if (yearMatch) fields.year = Number(yearMatch[1]);
-  // Italian is the default/omitted value (see normalizeLanguage in api.gs).
-  if (info.language && info.language !== 'Italian') fields.language = info.language;
+  if (info.language) fields.language = info.language;
   if (info.subjects) fields.subjects = info.subjects;
   if (info.coverUrl) fields.coverurl = info.coverUrl;
   return fields;
@@ -304,6 +301,8 @@ function lookupIsbn_(isbn) {
 
   if (result) {
     result.coverUrl = findCoverUrl_(isbn);
+    // SBN usually gives the language; Open Library (jscmd=data) never does.
+    if (!result.language) result.language = languageFromIsbn_(isbn);
     return result;
   }
 
@@ -513,6 +512,21 @@ function parsePubblicazione_(value) {
   }
 
   return { publisher, year };
+}
+
+// Best guess at a book's language from its ISBN registration group: 88 /
+// 979-12 are Italian-language publishers, 0/1 English, 2 French, 3 German,
+// 84 Spanish. Only a fallback when the catalogue record has no language — a
+// publisher can still print in another language.
+function languageFromIsbn_(raw) {
+  const isbn = isbnKey_(raw); // api.gs — ISBN-10 converted to 13
+  if (isbn.length !== 13) return null;
+  if (/^97888|^97912/.test(isbn)) return 'Italian';
+  if (/^978[01]/.test(isbn)) return 'English';
+  if (/^9782/.test(isbn)) return 'French';
+  if (/^9783/.test(isbn)) return 'German';
+  if (/^97884/.test(isbn)) return 'Spanish';
+  return null;
 }
 
 function cleanIsbn_(raw) {

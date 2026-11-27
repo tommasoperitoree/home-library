@@ -227,6 +227,15 @@ export function addCopyToShelf(fields) {
   return postAction('addCopyToShelf', fields);
 }
 
+/**
+ * Adds (read: true) or removes (read: false) a family member from a book's
+ * ReadBy list. Resolves to { readBy: string[] }.
+ * @param {{title: string, member: string, read: boolean}} fields
+ */
+export function setRead(fields) {
+  return postAction('setRead', fields);
+}
+
 // Canonical ISBN for comparisons (digits only, ISBN-10 -> ISBN-13). Mirrors
 // isbnKey_ in apps-script/api.gs.
 export function isbnKey(raw) {
