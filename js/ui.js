@@ -20,9 +20,15 @@ export function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// Compact name, for chips and row badges.
 export function shelfLabel(key) {
   const shelf = SHELVES.find((s) => s.key === key);
   return shelf ? shelf.label : key;
+}
+
+// Full name (the sheet's own Library value), for anywhere with room.
+export function shelfName(key) {
+  return key || '';
 }
 
 export function timeGreeting() {

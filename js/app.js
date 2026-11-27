@@ -35,6 +35,7 @@ import {
   timeGreeting,
   formatDateDMY,
   shelfLabel,
+  shelfName,
   el,
 } from './ui.js';
 
@@ -431,7 +432,7 @@ function renderScanSession(container, initialShelf) {
   const renderShelfBar = () => {
     shelfBar.innerHTML = '';
     shelfBar.appendChild(el('span', { text: 'Scaffale:' }));
-    shelfBar.appendChild(el('strong', { text: shelfLabel(shelf) }));
+    shelfBar.appendChild(el('strong', { text: shelfName(shelf) }));
     shelfBar.appendChild(
       el('button', {
         className: 'scan-shelf-change',
@@ -557,7 +558,7 @@ function renderScanSession(container, initialShelf) {
             await setCopies({ isbn: res.isbn, library: m.library, copies: count });
             m.copies = count;
             updateLocalCopies(res.isbn, m.library, count);
-            renderCard(`Copie in ${m.library ? shelfLabel(m.library) : 'senza scaffale'}: ${count}.`, 'success');
+            renderCard(`Copie in ${m.library ? shelfName(m.library) : 'senza scaffale'}: ${count}.`, 'success');
           } catch (err) {
             saveBtn.disabled = false;
             renderCard(`Errore: ${err.message}`, 'error');
@@ -566,7 +567,7 @@ function renderScanSession(container, initialShelf) {
         card.appendChild(
           el('div', { className: 'scan-dup-row' }, [
             el('div', { className: 'scan-dup-where' }, [
-              el('div', { className: 'scan-dup-shelf', text: m.library ? shelfLabel(m.library) : 'Senza scaffale' }),
+              el('div', { className: 'scan-dup-shelf', text: m.library ? shelfName(m.library) : 'Senza scaffale' }),
               m.heldBy ? el('div', { className: 'book-author', text: `con ${m.heldBy}` }) : null,
             ]),
             el('div', { className: 'scan-dup-stepper' }, [
@@ -606,7 +607,7 @@ function renderScanSession(container, initialShelf) {
             }
             bumpCounter();
           }
-          renderCard(`Aggiunta una copia in ${shelfLabel(library)}.`, 'success');
+          renderCard(`Aggiunta una copia in ${shelfName(library)}.`, 'success');
         } catch (err) {
           addBtn.disabled = false;
           renderCard(`Errore: ${err.message}`, 'error');
@@ -626,7 +627,7 @@ function renderScanSession(container, initialShelf) {
 
   // --- Scan handling ---
   const handleScanResult = (res, code, targetShelf, update) => {
-    const where = shelfLabel(targetShelf);
+    const where = shelfName(targetShelf);
     if (res.status === 'added') {
       state.books.push(res.book);
       booksChanged = true;
@@ -757,7 +758,7 @@ function renderAddBookForm(container) {
 
   const shelfSelect = el('select', { className: 'form-select' }, [
     el('option', { text: 'Scaffale (opzionale)', attrs: { value: '' } }),
-    ...SHELVES.map((s) => el('option', { text: s.label, attrs: { value: s.key } })),
+    ...SHELVES.map((s) => el('option', { text: s.key, attrs: { value: s.key } })),
   ]);
 
   const langSelect = el('select', { className: 'form-select' }, [
@@ -972,7 +973,7 @@ function shelfSelectEl(current, placeholder) {
   if (current && !SHELVES.some((s) => s.key === current)) {
     options.push(el('option', { text: current, attrs: { value: current } }));
   }
-  for (const s of SHELVES) options.push(el('option', { text: s.label, attrs: { value: s.key } }));
+  for (const s of SHELVES) options.push(el('option', { text: s.key, attrs: { value: s.key } }));
   const select = el('select', { className: 'form-select' }, options);
   select.value = current || '';
   return select;
@@ -1000,7 +1001,7 @@ function openBookDetailSheet(book) {
         : book.sn;
       metaRows.push(['Serie', seriesText]);
     }
-    if (book.l) metaRows.push(['Scaffale', shelfLabel(book.l)]);
+    if (book.l) metaRows.push(['Scaffale', shelfName(book.l)]);
     if (book.copies > 1) metaRows.push(['Copie', String(book.copies)]);
     metaRows.push(['Lingua', LANG_FULL_NAME[bookLangCode(book)] || bookLangCode(book)]);
     if (book.pub) metaRows.push(['Editore', book.pub]);
@@ -1085,7 +1086,7 @@ function openBookDetailSheet(book) {
           return;
         }
         saveBtn.disabled = true;
-        runAction(`Spostato in ${shelfLabel(library)}.`, async () => {
+        runAction(`Spostato in ${shelfName(library)}.`, async () => {
           await setLibrary({ title: book.t, library });
           book.l = library;
         }).finally(() => {
@@ -1114,7 +1115,7 @@ function openBookDetailSheet(book) {
       const doPutBack = (library) => {
         // Only send `library` when it actually changes the Books row.
         const libraryField = library !== (book.l || '') ? { library } : {};
-        return runAction(`${successMsg} in ${shelfLabel(library)}.`, async () => {
+        return runAction(`${successMsg} in ${shelfName(library)}.`, async () => {
           if (putBackKind === 'loan') {
             await returnBook({ loanId: activeLoan.id, title: book.t, ...libraryField });
             state.loans = state.loans.filter((l) => l.id !== activeLoan.id);
@@ -1134,8 +1135,8 @@ function openBookDetailSheet(book) {
 
       if (mode === 'putBack' && home) {
         container.appendChild(el('div', { className: 'sheet-section-title', text: 'Dove lo rimetti?' }));
-        container.appendChild(el('div', { className: 'book-author', text: `Rimetterlo in ${shelfLabel(home)}?` }));
-        const yesBtn = el('button', { className: 'btn-primary', text: `✅ Sì, in ${shelfLabel(home)}` });
+        container.appendChild(el('div', { className: 'book-author', text: `Rimetterlo in ${shelfName(home)}?` }));
+        const yesBtn = el('button', { className: 'btn-primary', text: `✅ Sì, in ${shelfName(home)}` });
         yesBtn.addEventListener('click', () => {
           yesBtn.disabled = true;
           doPutBack(home).finally(() => { yesBtn.disabled = false; });

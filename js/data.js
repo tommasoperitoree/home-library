@@ -32,16 +32,20 @@ export const MEMBERS = [
   { name: 'Ale',    emoji: '🧒', face: 'icons/family/ale.svg' },
 ];
 
+// `key` is the exact Library value in the sheet, and is also what's shown
+// wherever there's room (selects, detail sheet, messages — see shelfName in
+// ui.js). `label` is the compact "Furniture · Room" form for the filter chips
+// and the badge on each book row.
 export const SHELVES = [
-  { key: 'Cubotti - cameretta grandi',          label: 'Cubotti G.' },
-  { key: 'Cubotti - cameretta piccoli',         label: 'Cubotti P.' },
-  { key: 'Cubotti - mansarda',                  label: 'Cubotti M.' },
-  { key: 'Libreria - scala',                    label: 'Scala' },
-  { key: 'Libreria bianca - cameretta piccoli', label: 'Bianca P.' },
-  { key: 'Libreria bianca - mansarda',          label: 'Bianca M.' },
-  { key: 'Libreria legno - mansarda',           label: 'Legno' },
-  { key: 'Mensola - cameretta grandi',          label: 'Mensola G.' },
-  { key: 'Mensola - letto Ale',                 label: 'Mensola Ale' },
+  { key: 'Cubotti - cameretta grandi',          label: 'Cubotti · Grandi' },
+  { key: 'Cubotti - cameretta piccoli',         label: 'Cubotti · Piccoli' },
+  { key: 'Cubotti - mansarda',                  label: 'Cubotti · Mansarda' },
+  { key: 'Libreria - scala',                    label: 'Libreria · Scala' },
+  { key: 'Libreria bianca - cameretta piccoli', label: 'Bianca · Piccoli' },
+  { key: 'Libreria bianca - mansarda',          label: 'Bianca · Mansarda' },
+  { key: 'Libreria legno - mansarda',           label: 'Legno · Mansarda' },
+  { key: 'Mensola - cameretta grandi',          label: 'Mensola · Grandi' },
+  { key: 'Mensola - letto Ale',                 label: 'Mensola · Letto Ale' },
 ];
 
 export const LANGUAGES = [
