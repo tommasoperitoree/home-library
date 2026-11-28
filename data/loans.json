@@ -1,30 +1,16 @@
 [
   {
-    "id": "L002",
-    "book": "Il treno delle spighe dorate. Cronaca di una missione in Siberia",
-    "lentBy": "Tommi",
-    "borrowedBy": "Bonni",
-    "dateLent": "01/09/2026"
-  },
-  {
-    "id": "L003",
-    "book": "La mia storia",
-    "lentBy": "Tommi",
-    "borrowedBy": "Gio Roca",
-    "dateLent": "01/09/2026"
-  },
-  {
-    "id": "L004",
-    "book": "L'origine del sublime",
-    "lentBy": "Tommi",
-    "borrowedBy": "Strizza",
-    "dateLent": "07/09/2026"
-  },
-  {
     "id": "L005",
     "book": "Harry Potter and the philosopher's stone",
     "lentBy": "Tommi",
     "borrowedBy": "Cate Zac",
     "dateLent": "01/09/2026"
+  },
+  {
+    "id": "L007",
+    "book": "Castità : la riconciliazione dei sensi",
+    "lentBy": "Tommi",
+    "borrowedBy": "Anna Torl",
+    "dateLent": "13/10/2026"
   }
 ]

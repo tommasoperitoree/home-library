@@ -1431,8 +1431,7 @@
   {
     "t": "Il richiamo della foresta",
     "a": "Jack London",
-    "l": "Libreria bianca - mansarda",
-    "h": "Gio"
+    "l": "Libreria bianca - mansarda"
   },
   {
     "t": "Farès pecàt a lamentàm : Dario e Clementina Nembrini: una fede feconda",
@@ -5444,15 +5443,27 @@
     "a": "Fabio Rosini"
   },
   {
-    "t": "⚠️ ISBN non trovato — inserisci manualmente",
-    "a": ""
-  },
-  {
-    "t": "⚠️ ISBN non trovato — inserisci manualmente",
-    "a": ""
-  },
-  {
     "t": "Il maestro nuovo",
-    "a": "Rob Buyea"
+    "a": "Rob Buyea",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Il Natale delle pulcette",
+    "a": "Beatrice Alemagna",
+    "l": "Cubotti - cameretta piccoli"
+  },
+  {
+    "t": "Che cos'è un bambino?",
+    "a": "Beatrice Alemagna",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Io e Pepper",
+    "a": "Beatrice Alemagna",
+    "l": "Libreria bianca - cameretta piccoli"
+  },
+  {
+    "t": "Un tesoro di nome Cico. Lettera a mio figlio",
+    "a": "Giovanna Romolotti Villani"
   }
 ]
